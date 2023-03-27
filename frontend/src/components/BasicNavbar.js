@@ -1,7 +1,7 @@
 import React from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
-function BasicNavbar({user}) {
+function BasicNavbar({user, handleLogout}) {
   const navigate = useNavigate()
 
   return (
@@ -13,7 +13,7 @@ function BasicNavbar({user}) {
             { user ?
               <Container>
                 <NavDropdown title={user.userName} id="nav-dropdown">
-                  <NavDropdown.Item eventKey="4.1">Logout</NavDropdown.Item>
+                  <NavDropdown.Item eventKey="4.1" onClick={handleLogout}>Logout</NavDropdown.Item>
                   <NavDropdown.Item eventKey="4.2">Another action</NavDropdown.Item>
                   <NavDropdown.Item eventKey="4.3">Something else here</NavDropdown.Item>
                   <NavDropdown.Divider />

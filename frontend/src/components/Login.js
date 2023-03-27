@@ -5,7 +5,7 @@ import gService from "../services/general_services";
 import authService from "../services/authService";
 import {Button, Container, Form} from "react-bootstrap";
 
-const Login = ({handleLogin, setloginPageData}) => {
+const Login = ({handleLogin, loginPageData}) => {
 
 
   return (
@@ -23,6 +23,7 @@ const Login = ({handleLogin, setloginPageData}) => {
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
             <Form.Check type="checkbox" label="Remember Me" />
           </Form.Group>
+          {loginPageData && <p style = {{color:"red"}}> {loginPageData}</p>}
           <Button variant="primary" type="submit">
             Submit
           </Button>

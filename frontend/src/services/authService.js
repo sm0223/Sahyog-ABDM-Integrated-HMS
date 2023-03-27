@@ -18,7 +18,7 @@ const login = async (username, password) => {
     return responseData;
   }
   else {
-    return {};
+    return null;
   }
 }
 
