@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
-import gService from "../services/general_services";
+import gService from "../services/registrationService";
 import authService from "../services/authService";
 import {Button, Container, Form} from "react-bootstrap";
 

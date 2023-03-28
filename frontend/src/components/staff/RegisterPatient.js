@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 
-const PatientDetails = (patient, handleRegisterPatient) => {
+const PatientDetails = ({patient, handleStaffDashboard, handleRegisterPatient}) => {
 
   if(patient == null) return "";
 

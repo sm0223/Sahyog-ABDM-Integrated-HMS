@@ -8,11 +8,11 @@ const api = axios.create(
 
 const login = async (username, password) => {
   console.log("user : ", username, password)
-  if(username == "root" && password =="pass") {
+  if(password =="pass") {
     const responseData = {
       userId: "U-001",
       userName: "Shubham",
-      userType: "staff",
+      userType: username,
       status: "verified",
     }
     return responseData;

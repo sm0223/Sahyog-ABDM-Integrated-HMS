@@ -1,27 +1,82 @@
-import React from 'react';
+import React, {useState} from 'react';
+import StaffHome from "./StaffHome";
+import RegisterPatient from "./RegisterPatient";
+import GetPatientUsingHealthId from "./GetPatientUsingHealthId";
 
-const StaffDashboard = ({handleDashboard}) => {
+const StaffDashboard = ({user}) => {
+  const initialStaffState = {
+    staffHome : false,
+    getPatientUsingHealthId : false,
+    registerPatient : false,
+    dischargePatient: false
+  }
+
+  const [staffState, setStaffState] = useState({
+    staffHome : true,
+    getPatientUsingHealthId : false,
+    registerPatient : false,
+    dischargePatient: false
+  })
+  const handleStaffDashboard = (action) => {
+    console.log(action)
+    let newState={}
+    switch (action) {
+      case "STAFF-HOME":
+        newState = {
+          ...initialStaffState,
+          staffHome:true
+        }
+        setStaffState(newState)
+        break;
+      case "GET-PATIENT":
+        newState = {
+          ...initialStaffState,
+          getPatientUsingHealthId:true
+        }
+        setStaffState(newState)
+        break;
+      case "REGISTER-PATIENT":
+        newState = {
+          ...initialStaffState,
+          registerPatient:true
+        }
+        setStaffState(newState)
+        break;
+        break;
+      case "DISCHARGE-PATIENT":
+        newState = {
+          ...initialStaffState,
+          dischargePatient:true
+        }
+        setStaffState(newState)
+        break;
+        break;
+      default:
+    }
+  }
+  const [patient, setPatient] = useState(null);
+  const handleRegisterPatient = (event) => {
+    console.log(event)
+  }
   return (
-      <div className="container">
-        <div className="row m-5">
-          <div className="col-md-6">
-            <button className="card text-center" onClick={() => handleDashboard("Reg-Emp-Id")}>
-              <img src={require("/home/shux/courses/had/Sahyog-ABDM-Integrated-HMS/frontend/src/assets/register.jpg")} className="card-img"/>
-              <div className="card-body">
-                <h5 className="card-title">Register New Patient<br/></h5>
-              </div>
-            </button>
-          </div>
-          <div className="col-md-6">
-            <button className="card text-center" onClick={()=>handleDashboard()}>
-              <img src={require("/home/shux/courses/had/Sahyog-ABDM-Integrated-HMS/frontend/src/assets/doctor.jpg")} className="card-img"/>
-              <div className="card-body">
-                <h5 className="text-center">Discharge Patient</h5>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
+    <div>
+      {staffState.staffHome && <StaffHome handleDashboard = {handleStaffDashboard} />}
+      {staffState.registerPatient &&
+          <RegisterPatient
+              patient = {patient}
+              handleDashboard = {handleStaffDashboard}
+              handleRegisterPatient={handleRegisterPatient}
+          />
+      }
+      {staffState.getPatientUsingHealthId &&
+          <GetPatientUsingHealthId
+              user = {user}
+              handleStaffDashboard = {handleStaffDashboard}
+              setPatient={setPatient}
+          />
+      }
+
+    </div>
   );
 
 };

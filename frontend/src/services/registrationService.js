@@ -2,11 +2,11 @@ import axios from 'axios';
 
 const api = axios.create(
     {
-        baseURL : 'https://dea4-119-161-98-68.in.ngrok.io/'
+        baseURL : 'https://2b5a-103-156-19-229.in.ngrok.io'
     }
 );
 
-const registerUsingAbhaAddress = async (healthId) => {
+const registerUsingHealthId = async (healthId) => {
     console.log(healthId);
     const response = await api.post('api/register/health-id', {"healthId": healthId});
     console.log("as " + response.data);
@@ -28,7 +28,7 @@ const registerPatient = async(patient) => {
 }
 
 
-const gService = { registerUsingAbhaAddress, sendOtpForPatientRegistration, registerPatient }
+const gService = { registerUsingHealthId, sendOtpForPatientRegistration, registerPatient }
 
 
 export default gService
