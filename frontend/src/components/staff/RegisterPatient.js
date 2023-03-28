@@ -5,12 +5,12 @@ import {useNavigate} from "react-router-dom";
 
 const RegisterPatient = ({patient, handleStaffDashboard}) => {
   const navigate = useNavigate();
-  const handleRegisterPatient = () => {
-    const response = registrationService.registerPatient(patient)
+  const handleRegisterPatient = async () => {
+    const response = await registrationService.registerPatient(patient)
     if(response) {
-      alert("Patient Data Saved")
       navigate("/staff")
     }
+    alert("Patient Data Saved")
   }
   if(patient == null) return "";
   return (
