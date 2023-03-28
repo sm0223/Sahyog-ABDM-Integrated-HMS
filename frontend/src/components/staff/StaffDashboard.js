@@ -61,13 +61,6 @@ const StaffDashboard = ({user}) => {
   return (
     <div>
       {staffState.staffHome && <StaffHome handleDashboard = {handleStaffDashboard} />}
-      {staffState.registerPatient &&
-          <RegisterPatient
-              patient = {patient}
-              handleDashboard = {handleStaffDashboard}
-              handleRegisterPatient={handleRegisterPatient}
-          />
-      }
       {staffState.getPatientUsingHealthId &&
           <GetPatientUsingHealthId
               user = {user}
@@ -75,7 +68,13 @@ const StaffDashboard = ({user}) => {
               setPatient={setPatient}
           />
       }
-
+      {staffState.registerPatient &&
+          <RegisterPatient
+              patient = {patient}
+              handleDashboard = {handleStaffDashboard}
+              handleRegisterPatient={handleRegisterPatient}
+          />
+      }
     </div>
   );
 

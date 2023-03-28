@@ -34,7 +34,6 @@ const App = () => {
                 setuser(user)
                 setLoginPageData(null)
                 if (stayLoggedIn) window.localStorage.setItem("user", JSON.stringify(user))
-                if (user.userType == "staff") navigate("/staff")
             }
             else {
                 setLoginPageData("Invalid Credentials")

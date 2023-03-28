@@ -1,6 +1,6 @@
 import {useState} from "react";
 import registrationService from "../../services/registrationService";
-const GetPatientUsingHealthId = ({user, setPatient})=> {
+const GetPatientUsingHealthId = ({user, handleStaffDashboard, setPatient})=> {
   const [state, setState] = useState({
     showOTPInput: false,
     errorMessage:""
@@ -20,10 +20,26 @@ const GetPatientUsingHealthId = ({user, setPatient})=> {
   }
   const handleOTPSubmit = async (event)=> {
     event.preventDefault()
-    const response = await registrationService.sendOtpForPatientRegistration(healthId, transactionID, otp)
-    console.log(response)
-    setPatient(response)
-    handle
+    const responseRaw = await registrationService.sendOtpForPatientRegistration(healthId, transactionID, otp)
+    const response = JSON.parse(responseRaw)
+
+    setPatient({
+      healthId: response.id,
+      name: response.name,
+      gender: response.gender,
+      yearOfBirth: response.yearOfBirth,
+      monthOfBirth: response.monthOfBirth,
+      dayOfBirth: 3,
+      address: {
+        line: response.address ? response.address.line : null,
+        district: response.address ? response.address.district : null,
+        state: response.address ? response.address.state : null,
+        pincode: response.address ? response.address.pincode : null,
+      },
+      mobile: response.identifiers.find(identifier=>identifier.type==="MOBILE").value,
+      healthNumber: response.identifiers.find(identifier=>identifier.type==="HEALTH_NUMBER").value,
+    })
+    handleStaffDashboard("REGISTER-PATIENT")
   }
   const changeHealthId = (event)=> {
     event.preventDefault()
