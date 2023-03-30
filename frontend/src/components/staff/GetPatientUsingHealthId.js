@@ -1,6 +1,6 @@
 import {useState} from "react";
-import registrationService from "../../services/registrationService";
-const GetPatientUsingHealthId = ({user, handleStaffDashboard, setPatient})=> {
+import registrationService from "../../services/patientService";
+const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [state, setState] = useState({
     showOTPInput: false,
     errorMessage:""
@@ -39,7 +39,7 @@ const GetPatientUsingHealthId = ({user, handleStaffDashboard, setPatient})=> {
       mobile: response.identifiers.find(identifier=>identifier.type==="MOBILE").value,
       healthNumber: response.identifiers.find(identifier=>identifier.type==="HEALTH_NUMBER").value,
     })
-    handleStaffDashboard("REGISTER-PATIENT")
+    handleDashboard("REGISTER-PATIENT")
   }
   const changeHealthId = (event)=> {
     event.preventDefault()
