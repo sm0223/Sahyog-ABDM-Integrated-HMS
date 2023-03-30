@@ -2,22 +2,25 @@ import React, {useState} from 'react';
 import StaffHome from "./StaffHome";
 import RegisterPatient from "./RegisterPatient";
 import GetPatientUsingHealthId from "./GetPatientUsingHealthId";
+import CreateAppointment from "./CreateAppointment";
 
 const StaffDashboard = ({user}) => {
   const initialStaffState = {
     staffHome : false,
     getPatientUsingHealthId : false,
     registerPatient : false,
-    dischargePatient: false
+    dischargePatient: false,
+    createAppointment: false
   }
 
   const [staffState, setStaffState] = useState({
     staffHome : true,
     getPatientUsingHealthId : false,
     registerPatient : false,
-    dischargePatient: false
+    dischargePatient: false,
+    createAppointment: false
   })
-  const handleStaffDashboard = (action) => {
+  const handleDashboard = (action) => {
     console.log(action)
     let newState={}
     switch (action) {
@@ -43,6 +46,14 @@ const StaffDashboard = ({user}) => {
         setStaffState(newState)
         break;
         break;
+      case "CREATE_APPOINTMENT":
+        newState = {
+          ...initialStaffState,
+          createAppointment: true
+        }
+        setStaffState(newState)
+        break;
+        break;
       case "DISCHARGE-PATIENT":
         newState = {
           ...initialStaffState,
@@ -60,19 +71,24 @@ const StaffDashboard = ({user}) => {
   }
   return (
     <div>
-      {staffState.staffHome && <StaffHome handleDashboard = {handleStaffDashboard} />}
+      {staffState.staffHome && <StaffHome handleDashboard = {handleDashboard} />}
       {staffState.getPatientUsingHealthId &&
           <GetPatientUsingHealthId
               user = {user}
-              handleStaffDashboard = {handleStaffDashboard}
+              handleDashboard= {handleDashboard}
               setPatient={setPatient}
           />
       }
       {staffState.registerPatient &&
           <RegisterPatient
               patient = {patient}
-              handleDashboard = {handleStaffDashboard}
+              handleDashboard = {handleDashboard}
               handleRegisterPatient={handleRegisterPatient}
+          />
+      }
+      {staffState.createAppointment&& <CreateAppointment
+          user ={user}
+          patient={patient}
           />
       }
     </div>

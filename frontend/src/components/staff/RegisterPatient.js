@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import registrationService from "../../services/registrationService";
+import registrationService from "../../services/patientService";
 import {useNavigate} from "react-router-dom";
 
-const RegisterPatient = ({patient, handleStaffDashboard}) => {
+const RegisterPatient = ({patient, handleDashboard}) => {
   const navigate = useNavigate();
   const handleRegisterPatient = async () => {
     const response = await registrationService.registerPatient(patient)
-    if(response) {
-      navigate("/staff")
-    }
-    alert("Patient Data Saved")
+    handleDashboard("CREATE-APPOINTMENT")
   }
   if(patient == null) return "";
   return (

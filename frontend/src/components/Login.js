@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
-import gService from "../services/registrationService";
+import gService from "../services/patientService";
 import authService from "../services/authService";
 import {Button, Container, Form} from "react-bootstrap";
 
@@ -10,6 +10,7 @@ const Login = ({handleLogin, loginPageData}) => {
 
   return (
       <Container style={{padding:20}}>
+        <h1> Login </h1>
         <Form onSubmit={handleLogin}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>User Name</Form.Label>
