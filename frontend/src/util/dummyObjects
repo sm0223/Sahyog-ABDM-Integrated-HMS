@@ -1,0 +1,23 @@
+const dummyPatient = {
+    id : "P-001",
+    healthId : "shubham0223@sbx",
+    name : "Shubham Mondal",
+    gender : "Male",
+    address : {
+        line: "Raniganj",
+        district: "Burdwan",
+        state: "West Bengal"
+    },
+    yearOfBirth : 1998,
+    monthOfBirth : 02,
+    dayOfBirth : 23,
+    healthNumber : "91-8123-4314-12",
+    mobile : "8436089576"
+}
+const dummyUser = {
+    userId: "shubham0223@sbx",
+    userName: "Shubham",
+    userType: "practitioner",
+    status: "verified",
+}
+export default {dummyPatient, dummyUser}

@@ -3,18 +3,18 @@ import {Container} from 'react-bootstrap';
 import PractitionerHome from "./PractitionerHome";
 import ViewAllConsents from "./ViewAllConsents";
 import MySchedule from "./MySchedule";
-import CreateVisit from "./CreateVisit";
+import PatientVisit from "./PatientVisit";
 export default function PractitionerDashboard({user}) {
   const falseState = {
     practitionerHome : false,
-    createVisit : false,
+    patientVisit : false,
     viewAllConsents : false,
     mySchedule: false
   }
 
   const [state, setState] = useState({
     practitionerHome : true,
-    createVisit : false,
+    patientVisit : false,
     viewAllConsents : false,
     mySchedule: false
   })
@@ -32,7 +32,7 @@ export default function PractitionerDashboard({user}) {
       case "GET-PATIENT":
         newState = {
           ...falseState,
-          createVisit:true
+          patientVisit:true
         }
         setState(newState)
         break;
@@ -58,7 +58,7 @@ export default function PractitionerDashboard({user}) {
   return (
     <Container>
       {state.practitionerHome && <PractitionerHome user = {user} handleDashboard = {handleDashboard} />}
-      {state.createVisit && <CreateVisit user = {user} handleDashboard = {handleDashboard} />}
+      {state.patientVisit && <PatientVisit user = {user} handleDashboard = {handleDashboard} />}
       {state.viewAllConsents && <ViewAllConsents user = {user} handleDashboard = {handleDashboard} />}
       {state.mySchedule && <MySchedule user = {user} handleDashboard = {handleDashboard} />}
     </Container>

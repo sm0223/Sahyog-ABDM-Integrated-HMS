@@ -9,7 +9,7 @@ const PractitionerHome = ({user, handleDashboard}) => {
             <button style = {{width: 250, height: 250}} className="card text-center" onClick={() => handleDashboard("GET-PATIENT")}>
               <img src={require("../../assets/create-care-context.png")} className="card-img"/>
               <div className="card-body">
-                <h5 className="card-title">Create a Visit<br/></h5>
+                <h5 className="card-title">Patient Visit<br/></h5>
               </div>
             </button>
           </div>
