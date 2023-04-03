@@ -5,14 +5,15 @@ import {useNavigate} from "react-router-dom";
 
 const RegisterPatient = ({patient, handleDashboard}) => {
   const navigate = useNavigate();
-  const handleRegisterPatient = async () => {
+  const handleRegisterPatient = async (event) => {
+    event.preventDefault();
     const response = await registrationService.registerPatient(patient)
     handleDashboard("CREATE-APPOINTMENT")
   }
   if(patient == null) return "";
   return (
     <div className="container">
-      <Form>
+      <Form onSubmit={handleRegisterPatient}>
         <h1> Patient Details </h1>
         <FormGroup>
           <Label for="healthId">Health ID</Label>

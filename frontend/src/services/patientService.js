@@ -1,8 +1,9 @@
 import axios from 'axios';
+import dummyPatient from '../util/dummyObjects';
 
 const api = axios.create(
     {
-        baseURL : 'https://2b5a-103-156-19-229.in.ngrok.io'
+        baseURL : 'https://0ebc-119-161-98-68.in.ngrok.io'
     }
 );
 
@@ -27,14 +28,30 @@ const registerPatient = async(patient) => {
     return data;
 }
 const getPatientFromHealthId = async (healthId) => {
-    const response = await api.get('api/patient',{
-        params: {
-            healthId: healthId
-        }
-    });
-    const data = JSON.parse(response.data.substring(5));
-    console.log("asdfadffd",data)
-    return data;
+    // const response = await api.get('api/patient',{
+    //     params: {
+    //         healthId: healthId
+    //     }
+    // });
+
+    // const data = JSON.parse(response.data.substring(5));
+    // return data;
+    return {
+        id : "P-001",
+        healthId : "shubham0223@sbx",
+        name : "Shubham Mondal",
+        gender : "Male",
+        address : {
+            line: "Raniganj",
+            district: "Burdwan",
+            state: "West Bengal"
+        },
+        yearOfBirth : 1998,
+        monthOfBirth : 2,
+        dayOfBirth : 23,
+        healthNumber : "91-8123-4314-12",
+        mobile : "8436089576"
+    }
 }
 const getAllPatientsWithDoctor = async (healthId) => {
     const response = await api.post('api/register/details');

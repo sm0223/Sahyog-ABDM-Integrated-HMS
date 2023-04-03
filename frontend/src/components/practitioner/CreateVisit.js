@@ -4,30 +4,58 @@ import patientService from "../../services/patientService";
 import login from "../Login";
 
 const CreateVisit = ({user}) => {
-  const [patient, setPatient] = useState(null);
   const [healthIdSearchInput, setHealthIdSearchInput] = useState("");
   const [patientList, setPatientList] = useState(null);
-  const handleSearchPatient = async (healthId) => {
-    console.log(healthIdSearchInput);
-    // const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
-    // console.log(response);
-    const response = "asf"
+  const [visit, setVisit] = useState({
+    patient: null,
+    reasonOfVisit : "",
+    diagnosis : "",
+    pdf: null
+  })
+  const [visitCreated, setVisitCreated] = useState(false);
+  
 
-    setPatient("asdf")
-  }
   useEffect(async () => {
     console.log('effect')
     const patients = await patientService.getAllPatientsWithDoctor(user.userId)
     setPatientList(patients)
   }, [])
+
   const handleView = (patientData) => {
-    setPatient(patientData)
+    setVisit({
+      ...visit,
+      patient : patientData
+    })  }
+
+  const handleSearchPatient = async (event) => {
+    event.preventDefault()
+    const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
+    setVisit({
+      ...visit,
+      patient : response
+    })
+  }
+  const handleSubmitVisit = async(event) => {
+    event.preventDefault()
+    setVisit({
+      ...visit,
+      reasonOfVisit : event.target[0].value,
+      diagnosis : event.target[1].value   
+    })
+    console.log("event " , event)
+
+    // const response = await doctorService.createVisit(visit)
+    // if(response.status == 202) 
+    setVisitCreated(true)
+  }
+  const handleReEditVisit = () => {
+    setVisitCreated(false)
   }
   return (
       <div>
-        <Form>
+        <Form onSubmit={handleSearchPatient}>
           <h1> Visit Details </h1>
-          {!patient && <Row>
+          {!visit.patient && <Row>
             <Label for="healthId">Health ID</Label>
             <Col>
               <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID" onChange={(event) => {
@@ -35,11 +63,13 @@ const CreateVisit = ({user}) => {
               }}/>
             </Col>
             <Col>
-              <Button color="primary" outline onClick={handleSearchPatient}> Search </Button>
+              <Button type ="submit" color="primary" outline> Search </Button>
             </Col>
           </Row>
           }
-          {(patient==null && patientList != null) && <Row>
+        </Form>
+
+          {(visit.patient==null && patientList != null) && <Row>
             <div className="container">
               <h3 className="my-5">Today's Patients</h3>
               <table className="table table-responsive shadow">
@@ -76,57 +106,82 @@ const CreateVisit = ({user}) => {
                 </tbody>
               </table>
             </div>
-          </Row>
+          </Row>  
           }
-          {patient? <Row>
-            <Col>
-              <div className="container">
-                <Form>
-                  <FormGroup>
-                    <Label for="healthId">Health ID</Label>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="healthNumber">Health ID Number</Label>
-                    <Input type="text" name="healthNumber" id="healthNumber" placeholder="Enter Health ID Number" value={patient.healthNumber} />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="name">Name</Label>
-                    <Input type="text" name="name" id="name" placeholder="Enter Name" value={patient.name} />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="gender">Gender</Label>
-                    <Input type="select" name="gender" id="gender" value={patient.gender}>
-                      <option value="">Select Gender</option>
-                      <option id="M" value="M">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="birthDate">Birth Date</Label>
-                    <Input type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"  value={patient.dayOfBirth+"-"+patient.monthOfBirth+"-"+patient.yearOfBirth} />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="mobileNumber">Mobile Number</Label>
-                    <Input type="tel" name="mobileNumber" id="mobileNumber" placeholder="Enter Mobile Number" value={patient.mobile} />
-                  </FormGroup>
-                </Form>
-              </div>
-
-            </Col>
-            <Col>
-              <FormGroup>
+          {visit.patient && <Row>
+            <div className="col-8 border rounded p-4 mt-2 shadow">
+                <h5>Patient Details</h5>
+                <div className="card">
+                    <div className="card-header">
+                        <ul className="list-group list-group-flush">
+                            <li className="list-inline-item align-middle">
+                                <p><b>Name : </b>{visit.patient.name}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Gender : </b>{visit.patient.gender}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Health Id : </b>{visit.patient.healthId}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Health Id Number : </b>{visit.patient.healthIdNumber}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Contact : </b> {visit.patient.mobile}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Age : </b>{-visit.patient.yearOfBirth + new Date().getFullYear()}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p> <b>Address : </b>{visit.patient.address && visit.patient.address.line}, {visit.patient.address && visit.patient.address.district},  {visit.patient.address && visit.patient.address.state}, {visit.patient.address && visit.patient.address.pincode}</p>
+                            </li>
+                        </ul>
+                        <br/>
+                        {visitCreated && <ul className="list-group list-group-flush">
+                            <li className="list-inline-item align-middle">
+                                <p><b>Reason of Visit : </b>{visit.reasonOfVisit}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>Diagnosis : </b>{visit.diagnosis}</p>
+                            </li>
+                            <li className="list-inline-item align-middle">
+                                <p><b>pdf : </b>{visit.pdf}</p>
+                            </li>
+                            <FormGroup>
+                              <Button className='btn btn-primary' type='submit' onClick={handleReEditVisit}>Re-Edit</Button>
+                            </FormGroup>
+                        </ul>
+                        }
+                        {!visitCreated && <ul className="list-group list-group-flush">
+                          <form onSubmit = {handleSubmitVisit}>
+                            <FormGroup>
+                              <Label><b>Reason of Visit </b></Label>
+                              <Input type='textarea' id = "reasonOfVisit" name="reasonOfVisit" ></Input>
+                            </FormGroup>
+                            <FormGroup>
+                              <Label><b>Diagnosis</b></Label>
+                              <Input type='textarea' id = "diagonsis" name="diagonsis"></Input>
+                            </FormGroup>
+                            <FormGroup>
+                              <Label>Attach Prescription </Label>
+                              <Input type='file' id = "pdf" name="pdf"></Input>
+                            </FormGroup>
+                            <FormGroup>
+                              <Input className='btn btn-primary' type='submit'/>
+                            </FormGroup>
+                          </form>
+                        </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div className="col-4 border rounded p-4 mt-2 shadow">
+            <FormGroup>
                 <Row>
-                  <Button color="primary" outline> Assign a Care Context </Button>
+                  <Button color="primary" outline> Create new Consent Request </Button>
                 </Row>
               </FormGroup>
-              <FormGroup>
-                <Row>
-                  <Button color="primary" outline> Create a new Care Context </Button>
-                </Row>
-              </FormGroup>
-
-              <FormGroup>
+            <FormGroup>
                 <Row>
                   <Button color="primary" outline> View Consent status </Button>
                 </Row>
@@ -137,20 +192,23 @@ const CreateVisit = ({user}) => {
                   <Button color="primary" outline> View Patient History </Button>
                 </Row>
               </FormGroup>
+              {visitCreated && <>
+                <FormGroup>
+                  <Row>
+                    <Button color="primary" outline> Assign Care-Context</Button>
+                  </Row>
+                </FormGroup>
 
-              <FormGroup>
-                <Row>
-                  <Button color="primary" outline> Attach PDF to this Visit </Button>
-                </Row>
-
-              </FormGroup>
-
-
-
-            </Col>
-          </Row> :null
+                <FormGroup>
+                  <Row>
+                    <Button color="primary" outline> Create new Care-Context </Button>
+                  </Row>
+                </FormGroup>
+              </>
+              }
+            </div>
+          </Row>
           }
-        </Form>
       </div>
   );
 };

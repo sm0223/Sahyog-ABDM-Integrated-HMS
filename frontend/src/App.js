@@ -26,7 +26,7 @@ const App = () => {
         console.log(event);
         const username = event.target[0].value;
         const password = event.target[1].value;
-        const stayLoggedIn = event.target[2].value;
+        const stayLoggedIn = event.target[2].checked;
 
         authService.login(username, password).then((user) => {
             if(user) {

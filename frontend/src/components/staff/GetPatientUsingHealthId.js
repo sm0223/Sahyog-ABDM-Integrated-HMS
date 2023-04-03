@@ -53,7 +53,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   return (
       <div className="container">
         <h1>Register Patient </h1>
-        <form >
+        <form onSubmit={handleOTPSubmit}>
           <div className="form">
             <label htmlFor="email">Health ID</label><br/>
             <input className="input" type="text" id="healthId"  onChange={changeHealthId}/> <br/>
@@ -62,7 +62,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
             </div>}<br/>
           </div>
           {!state.showOTPInput && <button className= "btn btn-primary" type="button" onClick={handleSubmit}> Submit</button>}
-          {state.showOTPInput && <button type="button" className= "btn btn-primary" onClick={handleOTPSubmit}> Verify OTP</button>}
+          {state.showOTPInput && <button type="submit" className= "btn btn-primary" onClick={handleOTPSubmit}> Verify OTP</button>}
         </form>
       </div>
   );

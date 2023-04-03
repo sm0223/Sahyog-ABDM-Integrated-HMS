@@ -15,7 +15,7 @@ const StaffHome = ({handleDashboard}) => {
           </div>
           <div className="col-md-6">
             <button style = {{width: 500, height: 500}} className="card text-center" onClick={()=>handleDashboard("DISCHARGE-PATIENT")}>
-              <img src={require("../../assets/doctor.jpg")} si className="card-img"/>
+              <img src={require("../../assets/doctor.jpg")} className="card-img"/>
               <div className="card-body">
                 <h5 className="text-center">Discharge Patient</h5>
               </div>
