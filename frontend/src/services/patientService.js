@@ -1,12 +1,10 @@
 import axios from 'axios';
-import dummyPatient from '../util/dummyObjects';
-
+import configData from './apiConfig.json'
 const api = axios.create(
     {
-        baseURL : 'https://0ebc-119-161-98-68.in.ngrok.io'
+        baseURL : configData['url']
     }
 );
-
 const registerUsingHealthId = async (healthId) => {
     console.log(healthId);
     const response = await api.post('api/register/health-id', {"healthId": healthId});
@@ -28,13 +26,14 @@ const registerPatient = async(patient) => {
     return data;
 }
 const getPatientFromHealthId = async (healthId) => {
-    // const response = await api.get('api/patient',{
+    // const response = await api.get('api/patient/details',{
     //     params: {
     //         healthId: healthId
     //     }
     // });
-
+    //
     // const data = JSON.parse(response.data.substring(5));
+    // console.log(data)
     // return data;
     return {
         id : "P-001",

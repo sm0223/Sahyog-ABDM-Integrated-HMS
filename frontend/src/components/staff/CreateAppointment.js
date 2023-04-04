@@ -12,18 +12,13 @@ const CreateAppointment = ({user, patient}) => {
             <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID" value={patient.healthId} />
           </FormGroup>
           <FormGroup>
-            <Label for="healthId">Reason of Visit</Label>
+            <Label for="reasonOfVisit">Reason of Visit</Label>
             <Input type="text" name="reasonOfVisit" id="reasonOfVisit" placeholder="Enter Reason of Visit" />
           </FormGroup>
           <FormGroup>
-            <Label for="healthId"></Label>
-            <Input type="text" name="reasonOfVisit" id="reasonOfVisit" placeholder="Enter Reason of Visit" />
+            <Label for="appointmentDate">Appointment Date</Label>
+            <Input type="date" name="appointmentDate" id="appointmentDate" />
           </FormGroup>
-          <FormGroup>
-            <Label for="healthId"></Label>
-            <Input type="date" name="dateOfVisit" id="dateOfVisit" value={new Date().toString()} />
-          </FormGroup>
-
         </Form>
       </div>
   );

@@ -1,8 +1,8 @@
 import axios from "axios";
-
+import configData from './apiConfig.json'
 const api = axios.create(
     {
-      baseURL : 'https://0ebc-119-161-98-68.in.ngrok.io/'
+      baseURL : configData['url']
     }
 );
 
