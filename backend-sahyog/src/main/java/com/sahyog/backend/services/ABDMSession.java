@@ -85,4 +85,35 @@ public class ABDMSession {
                 HttpResponse.BodyHandlers.ofString());
         return response.statusCode();
     }
+
+    public int careContextLinking(String accessToken) throws Exception {
+        String requestBody =  "{\n    \"requestId\": \""+ UUID.randomUUID()+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"link\": {\n" +
+                "        \"accessToken\": \""+accessToken+"\",\n" +
+                "        \"patient\": {\n" +
+                "            \"referenceNumber\": \"P-ID-001\",\n" +
+                "            \"display\": \"hardeep\",\n" +
+                "            \"careContexts\": [\n" +
+                "                {\n" +
+                "                    \"referenceNumber\": \"CC-ID-004\",\n" +
+                "                    \"display\": \"care context 4\"\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    } \n}";
+        System.out.println(requestBody);
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/links/link/add-contexts"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("asdfghj  "+response.toString());
+        return response.statusCode();
+    }
 }

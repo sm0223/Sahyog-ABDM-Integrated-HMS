@@ -1,6 +1,7 @@
 package com.sahyog.backend.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.NaturalId;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,8 @@ public class Patient{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
+    @Column(unique = true)
     public String healthId;
-    public String healthIdNumber;
     public String name;
     public String gender;
 
@@ -28,10 +28,9 @@ public class Patient{
     public Patient() {
     }
 
-    public Patient(int id, String healthId, String healthIdNumber, String name, String gender, Address address, int yearOfBirth, int dayOfBirth, int monthOfBirth, String healthNumber, String mobile) {
+    public Patient(int id, String healthId, String name, String gender, Address address, int yearOfBirth, int dayOfBirth, int monthOfBirth, String healthNumber, String mobile) {
         this.id = id;
         this.healthId = healthId;
-        this.healthIdNumber = healthIdNumber;
         this.name = name;
         this.gender = gender;
         this.address = address;
@@ -56,14 +55,6 @@ public class Patient{
 
     public void setHealthId(String healthId) {
         this.healthId = healthId;
-    }
-
-    public String getHealthIdNumber() {
-        return healthIdNumber;
-    }
-
-    public void setHealthIdNumber(String healthIdNumber) {
-        this.healthIdNumber = healthIdNumber;
     }
 
     public String getName() {
@@ -135,7 +126,6 @@ public class Patient{
         return "Patient{" +
                 "id=" + id +
                 ", healthId='" + healthId + '\'' +
-                ", healthIdNumber='" + healthIdNumber + '\'' +
                 ", name='" + name + '\'' +
                 ", gender='" + gender + '\'' +
                 ", address=" + address +

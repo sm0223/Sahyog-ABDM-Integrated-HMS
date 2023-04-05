@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class AdminService {
-
+//   *****************doctor crud service===============
     @Autowired
     private DoctorRepository doctorRepository;
 
@@ -24,10 +24,13 @@ public class AdminService {
         return doctorRepository.findAll();
     }
 
-    public String deleteDoctor(String healthIdNumber)
+    public Doctor findDoctorByHealthId(String healthIdNumber) { return doctorRepository.findByHealthIdNumber(healthIdNumber);}
+
+    //    public Doctor findDoctorById(int id) { return doctorRepository.findById(id).orElse(null);}
+    public String deleteDoctor(int id)
     {
-        doctorRepository.deleteByHealthIdNumber(healthIdNumber);
-        return "doctor deleted !! " + healthIdNumber;
+        doctorRepository.deleteById(id);
+        return "doctor deleted !! " + id;
     }
 
     public Doctor updateDoctor(Doctor doctor){
@@ -46,12 +49,26 @@ public class AdminService {
 
     @Autowired
     private StaffRepository staffRepository;
-    public Staff addStaff(Staff staff){ return staffRepository.save(staff); }
-    public List<Staff> findStaffs(){ return staffRepository.findAll();}
-    public String deleteStaff(String healthIdNumber){
-        staffRepository.deleteByHealthIdNumber(healthIdNumber);
-        return "staff Deleted !!" + healthIdNumber;
+
+    public Staff addStaff(Staff staff)
+    {
+        return staffRepository.save(staff);
     }
+
+    public List<Staff> findStaffs()
+    {
+        return staffRepository.findAll();
+    }
+
+    public Staff findStaffByHealthId(String healthIdNumber) { return staffRepository.findByHealthIdNumber(healthIdNumber);}
+
+    //    public Staff findStaffById(int id) { return staffRepository.findById(id).orElse(null);}
+    public String deleteStaff(int id)
+    {
+        staffRepository.deleteById(id);
+        return "staff deleted !! " + id;
+    }
+
     public Staff updateStaff(Staff staff){
         Staff existingStaff = staffRepository.findByHealthIdNumber(staff.getHealthIdNumber());
         existingStaff.setAddress(staff.getAddress());
@@ -61,9 +78,9 @@ public class AdminService {
         existingStaff.setDayOfBirth(staff.getDayOfBirth());
         existingStaff.setMonthOfBirth(staff.getMonthOfBirth());
         existingStaff.setYearOfBirth(staff.getYearOfBirth());
+//        existingStaff.setRegistrationNumber(staff.getRegistrationNumber());
         existingStaff.setHealthId(staff.getHealthId());
         return staffRepository.save(existingStaff);
     }
-
 
 }
