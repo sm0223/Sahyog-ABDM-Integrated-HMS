@@ -8,6 +8,9 @@ import authService from './services/authService';
 import AdminDashboard from './components/admin/AdminDashboard';
 import UnexpectedError from './components/UnexpectedError';
 import BasicNavbar from "./components/BasicNavbar";
+import AddDoctor from "./components/admin/doctor/AddDoctor";
+import EditDoctor from "./components/admin/doctor/EditDoctor";
+import ViewDoctor from "./components/admin/doctor/ViewDoctor";
 
 
 const App = () => {
@@ -59,6 +62,9 @@ const App = () => {
                                                     (user.userType == "practitioner"? <Navigate replace to="/practitioner" /> :
                                                     (user.userType == "admin"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
                                                   : <Login handleLogin={handleLogin} loginPageData= {loginPageData} />} />
+                    <Route path="/adddoctor" element={<AddDoctor/>} />
+                    <Route path="/editdoctor/:id" element={<EditDoctor/>}/>
+                    <Route path="/viewdoctor/:id" element={<ViewDoctor/>}/>
                 </Routes>
             
             }
