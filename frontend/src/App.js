@@ -16,6 +16,7 @@ import AddStaff from "./components/admin/staff/AddStaff";
 import EditStaff from "./components/admin/staff/EditStaff";
 
 
+
 const App = () => {
     const navigate  = useNavigate();
     const [user, setuser] = useState(null);
@@ -62,6 +63,7 @@ const App = () => {
                     <Route path="/practitioner" element={ user?<PractitionerDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/admin" element={ user?<AdminDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/" element={user ? (user.userType == "staff"? <Navigate replace to="/staff" /> :
+
                             (user.userType == "practitioner"? <Navigate replace to="/practitioner" /> :
                                 (user.userType == "admin"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
                         : <Login handleLogin={handleLogin} loginPageData= {loginPageData} />} />
@@ -71,6 +73,7 @@ const App = () => {
                     <Route path="/addstaff" element={<AddStaff/>} />
                     <Route path="/editstaff/:id" element={<EditStaff/>}/>
                     <Route path="/viewstaff/:id" element={<ViewStaff/>}/>
+
                 </Routes>
 
             }
