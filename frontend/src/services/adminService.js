@@ -7,12 +7,12 @@ const api = axios.create(
 );
 
 const getDoctor = async (id) => {
-    const response = await api.get(`api/admin/getDoctor/${id}`);
+    const response = await api.post(`api/admin/getDoctor/${id}`);
     return response;
 };
 
 const getalldoctor = async ()=>{
-  const response = await api.get("api/admin/getAllDoctors");
+  const response = await api.post("api/admin/getAllDoctors");
   return response;
 };
 const addDoctor = async (doctor) =>{
