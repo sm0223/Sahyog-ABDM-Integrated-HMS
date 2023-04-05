@@ -1,19 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Col, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import patientService from "../../services/patientService";
+import doctorService from "../../services/doctorService";
 
 const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
-
+  
   const [healthIdSearchInput, setHealthIdSearchInput] = useState("");
   const [patientList, setPatientList] = useState(null);
   const [visitCreated, setVisitCreated] = useState(false);
-
-
-  useEffect(async () => {
-    console.log('effect')
-    const patients = await patientService.getAllPatientsWithDoctor(user.userId)
-    setPatientList(patients)
-  }, [])
 
   const handleView = (patientData) => {
     setVisit({
@@ -36,12 +30,26 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
       diagnosis : event.target[1].value
     })
     console.log("event " , event)
-    // const response = await doctorService.createVisit(visit)
-    // if(response.status == 202)
     setVisitCreated(true)
   }
   const handleReEditVisit = () => {
     setVisitCreated(false)
+  }
+  const handleCreateNewCareContext = async () => {
+    try {
+      const response = await doctorService.createNewCareContext()
+    }
+    catch (err){
+
+    }
+  }
+  const handleAssignCareContext = async()=> {
+    try {
+      const response = await doctorService.getCareContextFromPatientHealthID()
+    }
+    catch (err){
+
+    }
   }
   return (
       <div>
@@ -139,8 +147,19 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                     <p><b>pdf : </b>{visit.pdf}</p>
                   </li>
                   <FormGroup>
-                    <Button className='btn btn-primary' type='submit' onClick={handleReEditVisit}>Re-Edit</Button>
+                    <Row>
+                    <Col md = "2">
+                    <Button color="secondary" type='submit' onClick={handleReEditVisit}>Re-Edit</Button>
+                    </Col>
+                    <Col md = "5">
+                    <Button className="btn btn-block" color = 'primary' type='submit' onClick={handleAssignCareContext}>Assign to Existing Care-Context</Button>
+                    </Col>
+                    <Col md = "5">
+                    <Button color='primary' type='submit' onClick={handleReEditVisit}>Create New Care-context</Button>
+                    </Col>
+                    </Row>
                   </FormGroup>
+
                 </ul>
                 }
                 {!visitCreated && <ul className="list-group list-group-flush">
@@ -183,20 +202,6 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                 <Button color="primary" outline> View Patient History </Button>
               </Row>
             </FormGroup>
-            {visitCreated && <>
-              <FormGroup>
-                <Row>
-                  <Button color="primary" outline> Assign Care-Context</Button>
-                </Row>
-              </FormGroup>
-
-              <FormGroup>
-                <Row>
-                  <Button color="primary" outline> Create new Care-Context </Button>
-                </Row>
-              </FormGroup>
-            </>
-            }
           </div>
         </Row>
         }
