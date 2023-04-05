@@ -22,7 +22,7 @@ const Doctor = () => {
     };
     const deleteDoctor = async (id) => {
         // await axios.delete(`http://localhost:9191/api/admin/deleteDoctor/${id}`);
-         await adminService.deletedoctor(id);
+        await adminService.deletedoctor(id);
         loadDoctors();
     };
 
@@ -31,13 +31,13 @@ const Doctor = () => {
             <div className="py-4">
                 <table className="table border shadow">
                     <thead>
-                        <tr>
-                            <th scope="col">S.N</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Username</th>
-                            <th scope="col">mobile</th>
-                            <th scope="col">Action</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">S.N</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">mobile</th>
+                        <th scope="col">Action</th>
+                    </tr>
                     </thead>
                     <tbody>
                     {doctors.map((doctor, index) => (
@@ -78,13 +78,13 @@ const Doctor = () => {
                     ))}
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td>
-                                <Link className="btn btn-outline-primary" to="/adddoctor">
-                                    Add Doctor
-                                </Link>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <Link className="btn btn-outline-primary" to="/adddoctor">
+                                Add Doctor
+                            </Link>
+                        </td>
+                    </tr>
                     </tfoot>
 
                 </table>
