@@ -8,29 +8,23 @@ public class CustomRequest {
     String healthId;
     String mobileOTP;
     String transactionId;
+    Visit visit;
+    String display;
+
+
     public CustomRequest() {
     }
 
-    public CustomRequest(String healthId) {
+    public CustomRequest(String healthId, String mobileOTP, String transactionId, Visit visit, String display) {
         this.healthId = healthId;
-    }
-
-    public CustomRequest(String healthId, String mobileOTP, String transactionId) {
-        this.healthId = healthId;
-        this.transactionId = transactionId;
         this.mobileOTP = mobileOTP;
+        this.transactionId = transactionId;
+        this.visit = visit;
+        this.display = display;
     }
 
     public String getHealthId() {
         return healthId;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
     }
 
     public void setHealthId(String healthId) {
@@ -45,15 +39,39 @@ public class CustomRequest {
         this.mobileOTP = mobileOTP;
     }
 
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Visit getVisit() {
+        return visit;
+    }
+
+    public void setVisit(Visit visit) {
+        this.visit = visit;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
+
     @Override
     public String toString() {
-        try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String json = ow.writeValueAsString(this);
-            return json;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        return "CustomRequest{" +
+                "healthId='" + healthId + '\'' +
+                ", mobileOTP='" + mobileOTP + '\'' +
+                ", transactionId='" + transactionId + '\'' +
+                ", visit=" + visit +
+                ", display='" + display + '\'' +
+                '}';
     }
-}
 }
 

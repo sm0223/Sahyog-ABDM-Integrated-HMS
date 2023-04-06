@@ -98,7 +98,7 @@ const EditDoctor = () => {
 
     const loadUser = async () => {
         // const result = await axios.get(`http://localhost:9191/api/admin/getDoctor/${id}`);
-       const result= await adminService.getDoctor(id);
+        const result= await adminService.getDoctor(id);
         setDoctor(result.data);
     };
     return (
@@ -323,9 +323,9 @@ const EditDoctor = () => {
                             </Link>
                         </center>
                     </form>
-                        </div>
                 </div>
             </div>
+        </div>
 
 
     );

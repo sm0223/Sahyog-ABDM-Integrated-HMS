@@ -11,6 +11,10 @@ import BasicNavbar from "./components/BasicNavbar";
 import AddDoctor from "./components/admin/doctor/AddDoctor";
 import EditDoctor from "./components/admin/doctor/EditDoctor";
 import ViewDoctor from "./components/admin/doctor/ViewDoctor";
+import ViewStaff from "./components/admin/staff/ViewStaff";
+import AddStaff from "./components/admin/staff/AddStaff";
+import EditStaff from "./components/admin/staff/EditStaff";
+
 
 
 const App = () => {
@@ -20,7 +24,7 @@ const App = () => {
         const userData = JSON.parse(localStorage.getItem("user"));
         console.log('effect',userData)
         setuser(userData)
-      }, [])
+    }, [])
 
     const [loginPageData, setLoginPageData] = useState("")
 
@@ -59,14 +63,19 @@ const App = () => {
                     <Route path="/practitioner" element={ user?<PractitionerDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/admin" element={ user?<AdminDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/" element={user ? (user.userType == "staff"? <Navigate replace to="/staff" /> :
-                                                    (user.userType == "practitioner"? <Navigate replace to="/practitioner" /> :
-                                                    (user.userType == "admin"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
-                                                  : <Login handleLogin={handleLogin} loginPageData= {loginPageData} />} />
+
+                            (user.userType == "practitioner"? <Navigate replace to="/practitioner" /> :
+                                (user.userType == "admin"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
+                        : <Login handleLogin={handleLogin} loginPageData= {loginPageData} />} />
                     <Route path="/adddoctor" element={<AddDoctor/>} />
                     <Route path="/editdoctor/:id" element={<EditDoctor/>}/>
                     <Route path="/viewdoctor/:id" element={<ViewDoctor/>}/>
+                    <Route path="/addstaff" element={<AddStaff/>} />
+                    <Route path="/editstaff/:id" element={<EditStaff/>}/>
+                    <Route path="/viewstaff/:id" element={<ViewStaff/>}/>
+
                 </Routes>
-            
+
             }
         </div>
     )

@@ -12,12 +12,17 @@ public class PatientService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public Patient savePatient(Patient patient)
+    public boolean savePatient(Patient patient)
     {
-        return patientRepository.save(patient);
+        patientRepository.save(patient);
+        return true;
     }
     public List<Patient> findDetails() {
         return patientRepository.findAll();
+    }
+
+    public Patient findPatientByHealthId(String healthId) {
+        return patientRepository.findByHealthId(healthId);
     }
 
 //    public int savePatient()
