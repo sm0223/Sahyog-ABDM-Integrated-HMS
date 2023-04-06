@@ -5,12 +5,21 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONObject;
 //import org.codehaus.jackson.map.*;
 //import org.codehaus.jackson.*;
 
 import java.io.File;
 
 public class Util{
+
+    public static String getAccessToken(String response)
+    {
+        JSONObject responseWebhook = new JSONObject(response);
+        JSONObject auth = (JSONObject) responseWebhook.get("auth");
+        return auth.get("accessToken").toString();
+    }
     public String getValueFromString(String keypath, String text) throws Exception {
         int n1=text.length();
         int n2=keypath.length();

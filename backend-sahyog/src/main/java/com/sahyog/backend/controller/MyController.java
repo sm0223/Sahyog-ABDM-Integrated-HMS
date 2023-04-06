@@ -6,7 +6,7 @@ import com.sahyog.backend.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
+
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -15,7 +15,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @RestController
+
 public class MyController {
+    String accessToken;
     private static CustomResponse asyncCustomResponse = new CustomResponse();
     public List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
     public List<SseEmitter> emitters2 = new CopyOnWriteArrayList<>();
@@ -37,12 +39,18 @@ public class MyController {
     }
     @PostMapping("/v0.5/users/auth/on-confirm")
     public void onConfirm(@RequestBody String response) throws Exception {
+
+        accessToken = Util.getAccessToken(response);
+//        post
+        System.out.println("AccessToken arrived  " + accessToken);
+
         System.out.println("Response on confirm " + response);
         String keyPath1 = "patient\":";
         String keyPath2 = "\"error\"";
         String patient = new Util().getValueFromString2(keyPath1,keyPath2, response);
 
         asyncCustomResponse.setPatient(patient);
+        asyncCustomResponse.setAuthCode(accessToken);
         for(SseEmitter emitter :emitters2){
             emitter.send((asyncCustomResponse));
         }
@@ -56,7 +64,7 @@ public class MyController {
         session.setToken();
         System.out.println("retreived token : " + session.getToken());
         int statusCode = session.patientInitUsingMobile(customRequest.getHealthId()); //Calling abha to init patient using mobile otp
-        SseEmitter sseEmitter = new SseEmitter((long)1000);
+        SseEmitter sseEmitter = new SseEmitter((long)5000);
         if (statusCode == 202) {
 //            sseEmitter.send(SseEmitter.event().name("INIT"));
             System.out.println("INIT Patient using mobile (sent to abha): " + statusCode);
@@ -67,6 +75,9 @@ public class MyController {
         emitters.add(sseEmitter);
         return sseEmitter;
     }
+
+
+
     @PostMapping(value = "/api/register/confirmMobileOTP")
     public SseEmitter confirmMobileOTP(@RequestBody CustomRequest customRequest) throws Exception {
         System.out.println(customRequest.toString());
@@ -77,7 +88,7 @@ public class MyController {
         int statusCode = session.confirmMobileOTP(customRequest.getTransactionId(), customRequest.getMobileOTP());
         System.out.println("COmfirm Mobbile OTP Status Code: " + statusCode);
 
-        SseEmitter sseEmitter = new SseEmitter((long)3000);
+        SseEmitter sseEmitter = new SseEmitter((long)5000);
         sseEmitter.onCompletion(()->emitters2.remove(sseEmitter));
         emitters2.add(sseEmitter);
         return sseEmitter;
@@ -85,18 +96,35 @@ public class MyController {
 
     }
 
-//    @PostMapping(value = "/api/register/save")
-//    public String SavePatient(@RequestBody Patient patient)
-//    {
-//        System.out.println(patient.toString());
-//        PatientService patientService = new PatientService();
-//            int res = patientService.savePatient(patient);
-//        return ""+res;
-//    }
+    @PostMapping(value = "/api/link/care-context")
+    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
+        System.out.println("\nIn linking");
+        ABDMSession session = new ABDMSession();
+        CareContext careContext = new CareContext();
+        careContext.patientId = customRequest.getHealthId();
+        careContext.display = customRequest.getDisplay();
 
-    //    ---------Patient Services------------
-    @Autowired
-    private PatientService patientService;
+        String patientReferenceNumber = careContext.patientId;
+        String displayPatientName = customRequest.getName();
+        String display = careContext.display;
+        String careContextReferenceNumber = ""+doctorService.addCareContext(careContext).getId();
+        String linkToken = customRequest.getTransactionId();
+
+        session.setToken();
+        System.out.println("Linking retreived token : " + session.getToken());
+
+        System.out.println(patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
+
+        int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
+
+        return statusCode;
+    }
+
+
+
+//    ---------Patient Services------------
+        @Autowired
+        private PatientService patientService;
 
     @PostMapping("/api/patient/save")
     public boolean SavePatient(@RequestBody Patient patient)
@@ -105,7 +133,7 @@ public class MyController {
         return patientService.savePatient(patient);
     }
 
-    @PostMapping("/api/patient/details")
+    @PostMapping("/api/patient/all")
     public List<Patient> getAllPatients()
     {
         return patientService.findDetails();
@@ -123,16 +151,18 @@ public class MyController {
     private DoctorService doctorService;
 
     @PostMapping("/api/doctor/care-context/create")
-    public CareContext createNewCareContext(@RequestBody CareContext careContext)
+    public int createNewCareContext(@RequestBody CustomRequest customRequest)
     {
-        careContext.patient = patientService.findPatientByHealthId(careContext.patient.healthId);
-
-        return doctorService.addCareContext(careContext);
+        CareContext careContext = new CareContext();
+        careContext.patientId = customRequest.getHealthId();
+        careContext.display = customRequest.getDisplay();
+        int careContextId = doctorService.addCareContext(careContext).getId();
+        return 200;
     }
 
 
 
-    //    ---------Admin Doctor services-------------
+//    ---------Admin Doctor services-------------
     @Autowired
     private AdminService adminDoctorService;
 
@@ -141,14 +171,13 @@ public class MyController {
     {
         return adminDoctorService.addDoctor(doctor);
     }
-    //    @CrossOrigin(origins = "http://172.16.134.145:3000")
+//    @CrossOrigin(origins = "http://172.16.134.145:3000")
     @PostMapping(value="/api/admin/getAllDoctors")
     public List<Doctor> getAllDoctors()
     {
         System.out.println("asdf");
         return adminDoctorService.findDoctors();
     }
-
 
     @PostMapping("/api/admin/getDoctor/{healthIdNumber}")
     public Doctor getDoctor(@PathVariable String healthIdNumber)
@@ -174,40 +203,23 @@ public class MyController {
         return adminDoctorService.updateDoctor(doctor);
     }
 
-    //    ---------Admin Staff services-------------
+
+    //---------Admin Staff services------------------
     @Autowired
     private AdminService adminStaffService;
-
     @PostMapping("/api/admin/addStaff")
-    public Staff saveStaff(@RequestBody Staff staff)
-    {
-        return adminStaffService.addStaff(staff);
-    }
-    //    @CrossOrigin(origins = "http://172.16.134.145:3000")
-    @PostMapping(value="/api/admin/getAllStaffs")
+    public Staff saveStaff(@RequestBody Staff staff){ return adminStaffService.addStaff(staff);}
+
+    @PostMapping("/api/admin/getAllStaffs")
     public List<Staff> getAllStaffs()
     {
-        System.out.println("asdf");
         return adminStaffService.findStaffs();
     }
 
-
-    @PostMapping("/api/admin/getStaff/{healthIdNumber}")
-    public Staff getStaff(@PathVariable String healthIdNumber)
+    @DeleteMapping("/api/admin/deleteStaff/{healthIdNumber}")
+    public String deleteStaff(@PathVariable int healthIdNumber)
     {
-        return adminStaffService.findStaffByHealthId(healthIdNumber);
-    }
-
-//    @GetMapping("/api/admin/getStaff/{id}")
-//    public Staff getStaff(@PathVariable int id)
-//    {
-//        return adminStaffService.findStaffById(id);
-//    }
-
-    @DeleteMapping("/api/admin/deleteStaff/{id}")
-    public String deleteStaff(@PathVariable int id)
-    {
-        return adminStaffService.deleteStaff(id);
+        return adminStaffService.deleteStaff(healthIdNumber);
     }
 
     @PutMapping("/api/admin/updateStaff")
@@ -216,7 +228,11 @@ public class MyController {
         return adminStaffService.updateStaff(staff);
     }
 
-
+    @PostMapping("/api/admin/getStaff/{healthIdNumber}")
+    public Staff getStaff(@PathVariable String healthIdNumber)
+    {
+        return adminStaffService.findStaffByHealthId(healthIdNumber);
+    }
 
 }
 

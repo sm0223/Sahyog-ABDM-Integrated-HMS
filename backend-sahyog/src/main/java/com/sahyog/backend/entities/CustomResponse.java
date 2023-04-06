@@ -8,25 +8,9 @@ public class CustomResponse {
     String transactionId;
     int statusCode;
     String patient;
+    String authCode;
+
     public CustomResponse() {
-    }
-
-    public String getPatient() {
-        return patient;
-    }
-
-    public void setPatient(String patient) {
-        this.patient = patient;
-    }
-
-    public CustomResponse(String transactionId, int statusCode, String patient) {
-        this.transactionId = transactionId;
-        this.statusCode = statusCode;
-        this.patient = patient;
-    }
-
-    public CustomResponse(int statusCode) {
-        this.statusCode=statusCode;
     }
 
     public String getTransactionId() {
@@ -43,6 +27,22 @@ public class CustomResponse {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getPatient() {
+        return patient;
+    }
+
+    public void setPatient(String patient) {
+        this.patient = patient;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
     }
 
     @Override

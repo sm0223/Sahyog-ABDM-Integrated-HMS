@@ -86,16 +86,16 @@ public class ABDMSession {
         return response.statusCode();
     }
 
-    public int careContextLinking(String accessToken) throws Exception {
+    public int careContextLinking(String patientReferenceNumber, String displayPatientName, String display, String careContextReferenceNumber, String linkToken) throws Exception {
         String requestBody =  "{\n    \"requestId\": \""+ UUID.randomUUID()+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"link\": {\n" +
-                "        \"accessToken\": \""+accessToken+"\",\n" +
+                "        \"accessToken\": \""+linkToken+"\",\n" +
                 "        \"patient\": {\n" +
-                "            \"referenceNumber\": \"P-ID-001\",\n" +
-                "            \"display\": \"hardeep\",\n" +
+                "            \"referenceNumber\": \""+patientReferenceNumber+"P-ID-001\",\n" +
+                "            \"display\": \""+displayPatientName+"\",\n" +
                 "            \"careContexts\": [\n" +
                 "                {\n" +
-                "                    \"referenceNumber\": \"CC-ID-004\",\n" +
-                "                    \"display\": \"care context 4\"\n" +
+                "                    \"referenceNumber\": \""+careContextReferenceNumber+"\",\n" +
+                "                    \"display\": \""+display+"\"\n" +
                 "                }\n" +
                 "            ]\n" +
                 "        }\n" +

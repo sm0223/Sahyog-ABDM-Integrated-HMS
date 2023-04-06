@@ -1,25 +1,21 @@
 package com.sahyog.backend.entities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 public class CustomRequest {
     String healthId;
     String mobileOTP;
     String transactionId;
-    Visit visit;
+    String name;
     String display;
 
 
     public CustomRequest() {
     }
 
-    public CustomRequest(String healthId, String mobileOTP, String transactionId, Visit visit, String display) {
+    public CustomRequest(String healthId, String mobileOTP, String transactionId, String visit, String display) {
         this.healthId = healthId;
         this.mobileOTP = mobileOTP;
         this.transactionId = transactionId;
-        this.visit = visit;
+        this.name = visit;
         this.display = display;
     }
 
@@ -47,12 +43,12 @@ public class CustomRequest {
         this.transactionId = transactionId;
     }
 
-    public Visit getVisit() {
-        return visit;
+    public String getName() {
+        return name;
     }
 
-    public void setVisit(Visit visit) {
-        this.visit = visit;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDisplay() {
@@ -69,7 +65,7 @@ public class CustomRequest {
                 "healthId='" + healthId + '\'' +
                 ", mobileOTP='" + mobileOTP + '\'' +
                 ", transactionId='" + transactionId + '\'' +
-                ", visit=" + visit +
+                ", visit=" + name +
                 ", display='" + display + '\'' +
                 '}';
     }

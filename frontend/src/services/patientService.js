@@ -37,6 +37,12 @@ const getPatientFromHealthId = async (healthId) => {
     return response.data;
 
 }
+const getAllPatients = async () => {
+    const response = await api.post('api/patient/all');
+    console.log("response " , response)
+    return response.data;
+
+}
 const getAllPatientsWithDoctor = async (healthId) => {
     const response = await api.post('api/register/details');
     const data = JSON.parse(response.data.substring(5));
@@ -44,7 +50,7 @@ const getAllPatientsWithDoctor = async (healthId) => {
 }
 
 
-const gService = { sendOtpForCareContextLinking ,registerUsingHealthId, sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
+const gService = {getAllPatients ,sendOtpForCareContextLinking ,registerUsingHealthId, sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
 
 
 export default gService

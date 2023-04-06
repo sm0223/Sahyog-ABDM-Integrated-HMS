@@ -2,8 +2,16 @@ import React, {useState} from 'react';
 import Doctor from "./Doctor";
 import AdminHome from "./AdminHome";
 import Staff from "./Staff";
-import { Button } from "reactstrap"
-
+import {Button, Col} from "reactstrap"
+import {
+    CDBSidebar,
+    CDBSidebarContent,
+    CDBSidebarFooter,
+    CDBSidebarHeader,
+    CDBSidebarMenu,
+    CDBSidebarMenuItem,
+} from 'cdbreact';
+import Sidebar from "./Sidebar";
 function AdminDashboard({user}) {
     const falseState = {
         adminHome: false,
@@ -43,29 +51,19 @@ function AdminDashboard({user}) {
         }
     }
     return (
-        <div>
-            <div className="row">
-                <div className="col-md-3">
-                    <div style={{height: 1000}}>
-                        <div className="row">
-                            <Button color="warning" onClick={()=>handleDashboard("ADMIN-HOME")}>HOME</Button>
-                        </div>
-                        <div className="row">
-                            <Button color="primary" onClick={()=>handleDashboard("DOCTOR")}>DOCTOR</Button>
-                        </div>
-                        <div className="row">
-                            <Button color="secondary" onClick={()=>handleDashboard("STAFF")}>STAFF</Button>
+        <div className="row">
+            <Sidebar handleDashboard={handleDashboard}/>
+            <div className="col" style={{height: '100vh'}}>
+                <div className="b-example-divider"></div>
+                <div className="row">
+                    <div className="col-md-9">
+                        <div style={ {height: 1000}}>
+                            {adminState.doctor && <Doctor/>}
+                            {adminState.staff && <Staff/>}
+                            {adminState.adminHome && <AdminHome/>}
                         </div>
                     </div>
                 </div>
-                <div className="col-md-9">
-                    <div style={ {height: 1000}}>
-                        {adminState.doctor && <Doctor/>}
-                        {adminState.staff && <Staff/>}
-                        {adminState.adminHome && <AdminHome/>}
-                    </div>
-                </div>
-
             </div>
         </div>
     )

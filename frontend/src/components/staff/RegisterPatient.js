@@ -8,7 +8,8 @@ const RegisterPatient = ({patient, handleDashboard}) => {
   const handleRegisterPatient = async (event) => {
     event.preventDefault();
     const response = await registrationService.registerPatient(patient)
-    handleDashboard("CREATE-APPOINTMENT")
+    alert('Patient Registered')
+    handleDashboard("REGISTER-PATIENT")
   }
   if(patient == null) return "";
   return (
@@ -62,7 +63,7 @@ const RegisterPatient = ({patient, handleDashboard}) => {
         </FormGroup>
         <FormGroup>
           <Label for="birthDate">Birth Date</Label>
-          <Input type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"  value={patient.dayOfBirth+"-"+patient.monthOfBirth+"-"+patient.yearOfBirth} />
+          <Input type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"  value={patient.yearOfBirth+"-"+patient.monthOfBirth+"-"+patient.dayOfBirth} />
         </FormGroup>
         <FormGroup>
           <Label for="mobileNumber">Mobile Number</Label>
