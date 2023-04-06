@@ -94,24 +94,45 @@ public class MyController {
 //        return ""+res;
 //    }
 
-    //---------Patient Services------------
-        @Autowired
-        private PatientService patientService;
+    //    ---------Patient Services------------
+    @Autowired
+    private PatientService patientService;
 
-    @PostMapping("/api/register/save")
-    public Patient SavePatient(@RequestBody Patient patient)
+    @PostMapping("/api/patient/save")
+    public boolean SavePatient(@RequestBody Patient patient)
     {
         System.out.println("Patient : "+patient.toString());
         return patientService.savePatient(patient);
     }
 
-    @GetMapping("/api/register/details")
+    @PostMapping("/api/patient/details")
     public List<Patient> getAllPatients()
     {
         return patientService.findDetails();
     }
+    @PostMapping("/api/patient/{healthId}")
+    public Patient getPatient(@PathVariable String healthId)
+    {
+        System.out.println("asdf "+ healthId);
+        return patientService.findPatientByHealthId(healthId);
+    }
 
-    //---------Admin Doctor services-------------
+//    ---------Doctor Services-------------------
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @PostMapping("/api/doctor/care-context/create")
+    public CareContext createNewCareContext(@RequestBody CareContext careContext)
+    {
+        careContext.patient = patientService.findPatientByHealthId(careContext.patient.healthId);
+
+        return doctorService.addCareContext(careContext);
+    }
+
+
+
+    //    ---------Admin Doctor services-------------
     @Autowired
     private AdminService adminDoctorService;
 
@@ -120,45 +141,76 @@ public class MyController {
     {
         return adminDoctorService.addDoctor(doctor);
     }
-
-    @GetMapping("/api/admin/getAllDoctors")
+    //    @CrossOrigin(origins = "http://172.16.134.145:3000")
+    @PostMapping(value="/api/admin/getAllDoctors")
     public List<Doctor> getAllDoctors()
     {
+        System.out.println("asdf");
         return adminDoctorService.findDoctors();
     }
 
-    @DeleteMapping("/api/admin/deleteDoctor/{healthIdNumber}")
-    public String deleteDoctor(@PathVariable String healthIdNumber)
+
+    @PostMapping("/api/admin/getDoctor/{healthIdNumber}")
+    public Doctor getDoctor(@PathVariable String healthIdNumber)
     {
-        return adminDoctorService.deleteDoctor(healthIdNumber);
+        return adminDoctorService.findDoctorByHealthId(healthIdNumber);
     }
 
-    @PutMapping("/api/admin/update")
+//    @GetMapping("/api/admin/getDoctor/{id}")
+//    public Doctor getDoctor(@PathVariable int id)
+//    {
+//        return adminDoctorService.findDoctorById(id);
+//    }
+
+    @DeleteMapping("/api/admin/deleteDoctor/{id}")
+    public String deleteDoctor(@PathVariable int id)
+    {
+        return adminDoctorService.deleteDoctor(id);
+    }
+
+    @PutMapping("/api/admin/updateDoctor")
     public Doctor updateDoctor(@RequestBody Doctor doctor)
     {
         return adminDoctorService.updateDoctor(doctor);
     }
 
-
-    //---------Admin Staff services------------------
+    //    ---------Admin Staff services-------------
     @Autowired
     private AdminService adminStaffService;
-    @PostMapping("/api/admin/addStaff")
-    public Staff saveStaff(@RequestBody Staff staff){ return adminStaffService.addStaff(staff);}
 
-    @GetMapping("/api/admin/getAllStaffs")
+    @PostMapping("/api/admin/addStaff")
+    public Staff saveStaff(@RequestBody Staff staff)
+    {
+        return adminStaffService.addStaff(staff);
+    }
+    //    @CrossOrigin(origins = "http://172.16.134.145:3000")
+    @PostMapping(value="/api/admin/getAllStaffs")
     public List<Staff> getAllStaffs()
     {
+        System.out.println("asdf");
         return adminStaffService.findStaffs();
     }
 
-    @DeleteMapping("/api/admin/deleteStaff/{healthIdNumber}")
-    public String deleteStaff(@PathVariable String healthIdNumber)
+
+    @PostMapping("/api/admin/getStaff/{healthIdNumber}")
+    public Staff getStaff(@PathVariable String healthIdNumber)
     {
-        return adminStaffService.deleteStaff(healthIdNumber);
+        return adminStaffService.findStaffByHealthId(healthIdNumber);
     }
 
-    @PutMapping("/api/admin/update")
+//    @GetMapping("/api/admin/getStaff/{id}")
+//    public Staff getStaff(@PathVariable int id)
+//    {
+//        return adminStaffService.findStaffById(id);
+//    }
+
+    @DeleteMapping("/api/admin/deleteStaff/{id}")
+    public String deleteStaff(@PathVariable int id)
+    {
+        return adminStaffService.deleteStaff(id);
+    }
+
+    @PutMapping("/api/admin/updateStaff")
     public Staff updateStaff(@RequestBody Staff staff)
     {
         return adminStaffService.updateStaff(staff);
