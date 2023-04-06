@@ -6,19 +6,22 @@ const api = axios.create(
     }
 );
 
-const createNewCareContext = async (visit, careContextDisplayName) => {
-  console.log("visit: ", visit)
-  console.log("careContextDisplayName", careContextDisplayName)
+const createNewCareContext = async (accessToken,patientId,patientName,display) => {
+  const temp = {
+    healthId: patientId,
+    transactionId: accessToken,
+    name: patientName,
+    display: display
+  }
+  console.log("temp " , temp)
   try {
-    const response = await api.post("api/doctor/care-context/create", {
-      visit: visit,
-      displayName: careContextDisplayName
-    })
+    const response = await api.post("api/link/care-context", temp)
     return response;
   }
   catch (err) {
     throw new Error("Unable to create new care-context in Server")
   }
+
 }
 const getAllCareContextFromPatientID = async (visit, careContextDisplayName) => {
   console.log("visit: ", visit)

@@ -18,39 +18,24 @@ const sendOtpForPatientRegistration = async(healthId, transactionId, mobileOTP) 
     const data = JSON.parse(response.data.substring(5));
     return data.patient;
 }
+const sendOtpForCareContextLinking = async(healthId, transactionId, mobileOTP) => {
+    console.log(transactionId+"trans");
+    const response = await api.post('api/register/confirmMobileOTP', {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
+    const data = JSON.parse(response.data.substring(5));
+    return data.authCode;
+}
 
 const registerPatient = async(patient) => {
     console.log(patient+"trans");
     const response = await api.post('api/patient/save', patient);
-    const data = JSON.parse(response.data.substring(5));
+    const data = JSON.parse(response.data);
     return data;
 }
 const getPatientFromHealthId = async (healthId) => {
-    // const response = await api.get('api/patient/details',{
-    //     params: {
-    //         healthId: healthId
-    //     }
-    // });
-    //
-    // const data = JSON.parse(response.data.substring(5));
-    // console.log(data)
-    // return data;
-    return {
-        id : "P-001",
-        healthId : "shubham0223@sbx",
-        name : "Shubham Mondal",
-        gender : "Male",
-        address : {
-            line: "Raniganj",
-            district: "Burdwan",
-            state: "West Bengal"
-        },
-        yearOfBirth : 1998,
-        monthOfBirth : 2,
-        dayOfBirth : 23,
-        healthNumber : "91-8123-4314-12",
-        mobile : "8436089576"
-    }
+    const response = await api.post('api/patient/' + healthId);
+    console.log("response " , response)
+    return response.data;
+
 }
 const getAllPatientsWithDoctor = async (healthId) => {
     const response = await api.post('api/register/details');
@@ -59,7 +44,7 @@ const getAllPatientsWithDoctor = async (healthId) => {
 }
 
 
-const gService = { registerUsingHealthId, sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
+const gService = { sendOtpForCareContextLinking ,registerUsingHealthId, sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
 
 
 export default gService

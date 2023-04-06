@@ -1,19 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Button, Col, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import patientService from "../../services/patientService";
 import doctorService from "../../services/doctorService";
-
 const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
   
   const [healthIdSearchInput, setHealthIdSearchInput] = useState("");
-  const [patientList, setPatientList] = useState(null);
   const [visitCreated, setVisitCreated] = useState(false);
+  const [viewOTP, setViewOTP] = useState(false);
+  const [transactionID, setTransactionID] = useState(null)
+  const [OTP, setOTP] = useState(null)
 
-  const handleView = (patientData) => {
-    setVisit({
-      ...visit,
-      patient : patientData
-    })  }
   const handleSearchPatient = async (event) => {
     event.preventDefault()
     const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
@@ -36,20 +32,22 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
     setVisitCreated(false)
   }
   const handleCreateNewCareContext = async () => {
-    try {
-      const response = await doctorService.createNewCareContext()
-    }
-    catch (err){
-
-    }
+    const transactionID = await patientService.registerUsingHealthId(visit.patient.healthId);
+    setTransactionID(transactionID)
+    setViewOTP(true)
   }
   const handleAssignCareContext = async()=> {
-    try {
-      const response = await doctorService.getCareContextFromPatientHealthID()
-    }
-    catch (err){
-
-    }
+    //todo
+    console.log("todo ")
+  }
+  const handleOTPSubmit = async (event)=> {
+    event.preventDefault()
+    console.log("event " , event)
+    const accessToken = await patientService.sendOtpForCareContextLinking(visit.patient.healthId, transactionID, OTP)
+    console.log("accessToken " , accessToken)
+    const response = await doctorService.createNewCareContext(accessToken,visit.patient.id,visit.patient.name,visit.diagnosis)
+    if(response) alert('saved')
+    setViewOTP(false)
   }
   return (
       <div>
@@ -68,45 +66,6 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           </Row>
           }
         </Form>
-        {(visit.patient==null && patientList != null) && <Row>
-          <div className="container">
-            <h3 className="my-5">Today's Patients</h3>
-            <table className="table table-responsive shadow">
-              <thead className="table table-dark shadow ">
-              <tr>
-                <th scope="col"><p className="my-2 text-center">Patient Health Id</p></th>
-                <th scope="col"><p className="my-2 text-center">Name </p></th>
-                <th scope="col"><p className="my-2 text-center">Age </p></th>
-                <th scope="col"><p className="my-2 text-center">Gender</p></th>
-                <th scope="col"><p className="my-2 text-center">Reason Of Visit</p></th>
-                <th scope="col"><p className="my-2 text-center">Action</p></th>
-              </tr>
-              </thead>
-              <tbody>
-              {
-                patientList.map(patientData =>
-                    <tr className="m-2" key={patientData.healthId}>
-                      <th> {patientData.healthId}</th>
-                      <td> {patientData.name}</td>
-                      <td> {patientData.age}</td>
-                      <td> {patientData.gender}</td>
-                      <td> {patientData.reasonOfVisit}</td>
-                      <td >
-                        <p><button className="btn btn-success m-2"
-                                   id={"view"+patientData.id}
-                                   key={"view"+patientData.id}
-                                   onClick={()=>handleView(patientData)}>
-                          &nbsp;&nbsp;Start Visit&nbsp;&nbsp;</button>
-                        </p>
-                      </td>
-                    </tr>
-                )
-              }
-              </tbody>
-            </table>
-          </div>
-        </Row>
-        }
         {visit.patient && <Row>
           <div className="col-8 border rounded p-4 mt-2 shadow">
             <h5>Patient Details</h5>
@@ -146,6 +105,18 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                   <li className="list-inline-item align-middle">
                     <p><b>pdf : </b>{visit.pdf}</p>
                   </li>
+                  {viewOTP && <Form onSubmit={handleOTPSubmit}>
+                    <FormGroup>
+                      <Row>
+                      <Label>Enter OTP</Label>
+                      <Col>
+                      <Input id = "otp" onChange={(event) => setOTP(event.target.value)}/></Col>
+                      <Col>
+                      <Button type ="submit" onClick={handleOTPSubmit}>Submit OTP</Button></Col>
+                      </Row>
+                    </FormGroup>
+                  </Form>
+                  }
                   <FormGroup>
                     <Row>
                     <Col md = "2">
@@ -155,7 +126,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                     <Button className="btn btn-block" color = 'primary' type='submit' onClick={handleAssignCareContext}>Assign to Existing Care-Context</Button>
                     </Col>
                     <Col md = "5">
-                    <Button color='primary' type='submit' onClick={handleReEditVisit}>Create New Care-context</Button>
+                    <Button color='primary' type='submit' onClick={handleCreateNewCareContext}>Create New Care-context</Button>
                     </Col>
                     </Row>
                   </FormGroup>
