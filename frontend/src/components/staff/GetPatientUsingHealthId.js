@@ -1,5 +1,8 @@
 import {useState} from "react";
 import registrationService from "../../services/patientService";
+import configData from "../../services/apiConfig.json";
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+
 const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [state, setState] = useState({
     showOTPInput: false,
@@ -10,36 +13,75 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [transactionID, setTransactionID] = useState("");
   const handleSubmit = async (event)=> {
     event.preventDefault()
-    console.log("ss",healthId)
-    const transactionId = await registrationService.registerUsingHealthId(healthId);
-    setState({
-      showOTPInput:true,
-      errorMessage:""
+    await fetchEventSource(configData['url']+ "/api/register/health-id", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"healthId": healthId}),
+      onmessage(response) {
+        console.log("response " , response.data)
+        setTransactionID(JSON.parse(response.data).transactionId)
+        setState({
+          ...state,
+          showOTPInput:true,
+        })
+      },
+      onclose(){
+        console.log("closed")
+      },
+      onerror(error){
+        console.log("error ", error)
+      }
     })
-    setTransactionID(transactionId)
   }
+  // const handleOTPSubmit = async (event)=> {
+  //   event.preventDefault()
+  //   const responseRaw = await registrationService.sendOtpForPatientRegistration(healthId, transactionID, otp)
+  //   const response = JSON.parse(responseRaw)
+
+  //   
+  //   handleDashboard("REGISTER-PATIENT")
+  // }
   const handleOTPSubmit = async (event)=> {
     event.preventDefault()
-    const responseRaw = await registrationService.sendOtpForPatientRegistration(healthId, transactionID, otp)
-    const response = JSON.parse(responseRaw)
 
-    setPatient({
-      healthId: response.id,
-      name: response.name,
-      gender: response.gender,
-      yearOfBirth: response.yearOfBirth,
-      monthOfBirth: response.monthOfBirth,
-      dayOfBirth: 3,
-      address: {
-        line: response.address ? response.address.line : null,
-        district: response.address ? response.address.district : null,
-        state: response.address ? response.address.state : null,
-        pincode: response.address ? response.address.pincode : null,
+    await fetchEventSource(configData['url']+ "/api/register/confirmMobileOTP", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
       },
-      mobile: response.identifiers.find(identifier=>identifier.type==="MOBILE").value,
-      healthNumber: response.identifiers.find(identifier=>identifier.type==="HEALTH_NUMBER").value,
+      body: JSON.stringify({"healthId" : healthId, "transactionId": transactionID, "mobileOTP":otp}),
+
+      onmessage(response) {
+        console.log("response " , response)
+        const res = JSON.parse(JSON.parse(response.data).patient);
+        console.log("res",res);
+        setPatient({
+              healthId: res.id,
+              name: res.name,
+              gender: res.gender,
+              yearOfBirth: res.yearOfBirth,
+              monthOfBirth: res.monthOfBirth,
+              dayOfBirth: 3,
+              address: {
+                line: res.address ? res.address.line : null,
+                district: res.address ? res.address.district : null,
+                state: res.address ? res.address.state : null,
+                pincode: res.address ? res.address.pincode : null,
+              },
+              mobile: res.identifiers?res.identifiers.find(identifier=>identifier.type==="MOBILE").value:null,
+              healthNumber: res.identifiers?res.identifiers.find(identifier=>identifier.type==="HEALTH_NUMBER").value:null,
+            })
+        handleDashboard("REGISTER-PATIENT")
+      },
+      onclose(){
+        console.log("closed")
+      },
+      onerror(error){
+        console.log("error ", error)
+      }
     })
-    handleDashboard("REGISTER-PATIENT")
   }
   const changeHealthId = (event)=> {
     event.preventDefault()
