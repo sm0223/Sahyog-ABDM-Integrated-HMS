@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class CustomRequest {
+    String userId;
     String healthId;
     String mobileOTP;
     String transactionId;
@@ -15,12 +16,12 @@ public class CustomRequest {
     public CustomRequest() {
     }
 
-    public CustomRequest(String healthId, String mobileOTP, String transactionId, Visit visit, String display) {
-        this.healthId = healthId;
-        this.mobileOTP = mobileOTP;
-        this.transactionId = transactionId;
-        this.visit = visit;
-        this.display = display;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getHealthId() {
@@ -63,15 +64,13 @@ public class CustomRequest {
         this.display = display;
     }
 
-    @Override
-    public String toString() {
-        return "CustomRequest{" +
-                "healthId='" + healthId + '\'' +
-                ", mobileOTP='" + mobileOTP + '\'' +
-                ", transactionId='" + transactionId + '\'' +
-                ", visit=" + visit +
-                ", display='" + display + '\'' +
-                '}';
+    public CustomRequest(String userId, String healthId, String mobileOTP, String transactionId, Visit visit, String display) {
+        this.userId = userId;
+        this.healthId = healthId;
+        this.mobileOTP = mobileOTP;
+        this.transactionId = transactionId;
+        this.visit = visit;
+        this.display = display;
     }
 }
 

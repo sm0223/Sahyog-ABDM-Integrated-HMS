@@ -21,7 +21,7 @@ public class Doctor {
     public int yearOfBirth;
     public int dayOfBirth;
     public int monthOfBirth;
-    //    public String healthNumber;
+//    public String healthNumber;
     public String mobile;
 
     @OneToOne(cascade = {CascadeType.ALL})
