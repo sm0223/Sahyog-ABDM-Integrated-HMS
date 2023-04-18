@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Doctor {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     public String healthId;
@@ -15,7 +15,7 @@ public class Doctor {
     public String name;
     public String gender;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     public Address address;
     public int yearOfBirth;
@@ -24,7 +24,7 @@ public class Doctor {
 //    public String healthNumber;
     public String mobile;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     public Users users;
 

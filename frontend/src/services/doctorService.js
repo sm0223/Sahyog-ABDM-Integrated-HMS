@@ -1,5 +1,6 @@
 import axios from "axios";
 import configData from './apiConfig.json'
+
 const api = axios.create(
     {
       baseURL : configData['url']

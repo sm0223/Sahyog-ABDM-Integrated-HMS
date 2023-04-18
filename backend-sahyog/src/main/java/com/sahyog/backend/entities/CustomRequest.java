@@ -1,17 +1,33 @@
 package com.sahyog.backend.entities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 public class CustomRequest {
     String userId;
     String healthId;
     String mobileOTP;
     String transactionId;
-    Visit visit;
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
+
+    public CustomRequest(String display) {
+        this.display = display;
+    }
+
+    String name;
     String display;
 
+    public CustomRequest(String userId, String healthId, String mobileOTP, String transactionId, String name) {
+        this.userId = userId;
+        this.healthId = healthId;
+        this.mobileOTP = mobileOTP;
+        this.transactionId = transactionId;
+        this.name = name;
+    }
 
     public CustomRequest() {
     }
@@ -48,29 +64,23 @@ public class CustomRequest {
         this.transactionId = transactionId;
     }
 
-    public Visit getVisit() {
-        return visit;
+    public String getName() {
+        return name;
     }
 
-    public void setVisit(Visit visit) {
-        this.visit = visit;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(String display) {
-        this.display = display;
-    }
-
-    public CustomRequest(String userId, String healthId, String mobileOTP, String transactionId, Visit visit, String display) {
-        this.userId = userId;
-        this.healthId = healthId;
-        this.mobileOTP = mobileOTP;
-        this.transactionId = transactionId;
-        this.visit = visit;
-        this.display = display;
+    @Override
+    public String toString() {
+        return "CustomRequest{" +
+                "userId='" + userId + '\'' +
+                ", healthId='" + healthId + '\'' +
+                ", mobileOTP='" + mobileOTP + '\'' +
+                ", transactionId='" + transactionId + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 

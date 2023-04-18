@@ -9,10 +9,12 @@ public class Visit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "id")
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "patient_id")
     public Patient patient;
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     public Doctor doctor;
     public String reasonOfVisit;

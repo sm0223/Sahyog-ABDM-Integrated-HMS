@@ -1,29 +1,17 @@
 import axios from 'axios';
 import configData from './apiConfig.json'
-
 const api = axios.create(
     {
         baseURL : configData['url']
     }
 );
-
-
-// const registerUsingHealthId = async (healthId) => {
-//     console.log("sending registration request")
-//     console.log(healthId);
-//     let data = "";
-    
-// }
-
-
-// const registerUsingHealthId = async (healthId) => {
-//     console.log(healthId);
-//     const sse = new EventSource('api/register/health-id');
-//     const response = await api.post('api/register/health-id', {"healthId": healthId});
-//     console.log("as " + response.data);
-//     const data = JSON.parse(response.data.substring(5));
-//     return data.transactionId;
-// }
+const registerUsingHealthId = async (healthId) => {
+    console.log(healthId);
+    const response = await api.post('api/register/health-id', {"healthId": healthId});
+    console.log("as " + response.data);
+    const data = JSON.parse(response.data.substring(5));
+    return data.transactionId;
+}
 const sendOtpForPatientRegistration = async(healthId, transactionId, mobileOTP) => {
     console.log(transactionId+"trans");
     const response = await api.post('api/register/confirmMobileOTP', {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
@@ -49,6 +37,12 @@ const getPatientFromHealthId = async (healthId) => {
     return response.data;
 
 }
+const getAllPatients = async () => {
+    const response = await api.post('api/patient/all');
+    console.log("response " , response)
+    return response.data;
+
+}
 const getAllPatientsWithDoctor = async (healthId) => {
     const response = await api.post('api/register/details');
     const data = JSON.parse(response.data.substring(5));
@@ -56,7 +50,7 @@ const getAllPatientsWithDoctor = async (healthId) => {
 }
 
 
-const gService = { sendOtpForCareContextLinking , sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
+const gService = {getAllPatients ,sendOtpForCareContextLinking ,registerUsingHealthId, sendOtpForPatientRegistration, registerPatient , getPatientFromHealthId, getAllPatientsWithDoctor}
 
 
 export default gService

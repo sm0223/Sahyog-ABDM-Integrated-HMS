@@ -5,28 +5,22 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "care_context")
 public class CareContext {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @OneToMany(cascade = {CascadeType.ALL})
-    public List<Visit> visitList;
-
     public String display;
-
-    @ManyToOne(cascade = {CascadeType.ALL})
-    public Patient patient;
-
-    public CareContext(int id, List<Visit> visitList, String display, Patient patient) {
-        this.id = id;
-        this.visitList = visitList;
-        this.display = display;
-        this.patient = patient;
-    }
+    public String patientId;
 
     public CareContext() {
+    }
+
+    public CareContext(int id, String display, String patientId) {
+        this.id = id;
+        this.display = display;
+        this.patientId = patientId;
     }
 
     public int getId() {
@@ -37,14 +31,6 @@ public class CareContext {
         this.id = id;
     }
 
-    public List<Visit> getVisitList() {
-        return visitList;
-    }
-
-    public void setVisitList(List<Visit> visitList) {
-        this.visitList = visitList;
-    }
-
     public String getDisplay() {
         return display;
     }
@@ -53,21 +39,20 @@ public class CareContext {
         this.display = display;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
+    //    @OneToMany    public String patientId;
+//    public List<Visit> visitList;
 
-    @Override
-    public String toString() {
-        return "CareContext{" +
-                "id=" + id +
-                ", visitList=" + visitList +
-                ", display='" + display + '\'' +
-                ", patient=" + patient +
-                '}';
-    }
+
+
+//    @ManyToOne
+//    @JoinColumn(name = "patient_id_fk")
+//    public Patient patient;
+
 }

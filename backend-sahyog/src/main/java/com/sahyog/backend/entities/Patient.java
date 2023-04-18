@@ -4,20 +4,22 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.NaturalId;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
 public class Patient{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(unique = true)
     public String healthId;
     public String name;
     public String gender;
-
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL)
+    List<CareContext> careContextList;
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     public Address address;
     public int yearOfBirth;

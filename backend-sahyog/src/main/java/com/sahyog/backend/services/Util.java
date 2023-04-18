@@ -16,6 +16,7 @@ public class Util{
 
     public static String getAccessToken(String response)
     {
+
         JSONObject responseObject = new JSONObject(response);
         JSONObject auth = (JSONObject) responseObject.get("auth");
         return auth.get("accessToken").toString();

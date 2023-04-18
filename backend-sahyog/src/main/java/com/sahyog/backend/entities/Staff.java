@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Staff {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     public String healthId;

@@ -11,11 +11,6 @@ import java.util.List;
 @Service
 public class DoctorService {
 
-//    @Autowired
-//    private DoctorRepository doctorRepository;
-//
-//    @Autowired
-//    private VisitRepository visitRepository;
 
     @Autowired
     private CareContextRepository careContextRepository;
@@ -39,10 +34,10 @@ public class DoctorService {
         return careContextRepository.save(careContext);
     }
 
-    public List<CareContext> getAllCareContextByPatientId(Patient patient)
-    {
-        return careContextRepository.findByPatient(patient);
-    }
+//    public List<CareContext> getAllCareContextByPatientId(Patient patient)
+//    {
+//        return careContextRepository.findByPatient(patient);
+//    }
 
 
 }
