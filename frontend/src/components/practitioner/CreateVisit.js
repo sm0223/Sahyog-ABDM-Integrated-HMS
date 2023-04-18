@@ -2,14 +2,22 @@ import React, {useState} from 'react';
 import {Button, Col, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import patientService from "../../services/patientService";
 import doctorService from "../../services/doctorService";
+import {fetchEventSource} from "@microsoft/fetch-event-source";
+import configData from "../../services/apiConfig.json";
 const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
-  
+  const visitState = {
+    getPatientForm: true,
+    visitForm:false,
+    careContextForm:false,
+    consentRequestForm:false,
+  }
+  const [patient, setPatient] = useState();
   const [healthIdSearchInput, setHealthIdSearchInput] = useState("");
   const [visitCreated, setVisitCreated] = useState(false);
   const [viewOTP, setViewOTP] = useState(false);
   const [transactionID, setTransactionID] = useState(null)
   const [OTP, setOTP] = useState(null)
-
+  const [accessToken, setAccessToken] = useState(null);
   const handleSearchPatient = async (event) => {
     event.preventDefault()
     const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
@@ -32,9 +40,30 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
     setVisitCreated(false)
   }
   const handleCreateNewCareContext = async () => {
-    const transactionID = await patientService.registerUsingHealthId(visit.patient.healthId);
-    setTransactionID(transactionID)
-    setViewOTP(true)
+    try {
+      await fetchEventSource(configData['url'] + "/api/register/health-id", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"healthId": visit.patient.healthId}),
+        onmessage(response) {
+          console.log("response ", response.data)
+          setTransactionID(JSON.parse(response.data).transactionId)
+          setViewOTP(true)
+        },
+        onclose() {
+          console.log("closed")
+        },
+        onerror(error) {
+          throw new Error("Server Un-responsive")
+          console.log("error ", error)
+        }
+      })
+    }
+    catch (err) {
+      console.log(err.toString())
+    }
   }
   const handleAssignCareContext = async()=> {
     //todo
@@ -42,13 +71,37 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
   }
   const handleOTPSubmit = async (event)=> {
     event.preventDefault()
-    console.log("event " , event)
-    const accessToken = await patientService.sendOtpForCareContextLinking(visit.patient.healthId, transactionID, OTP)
-    console.log("accessToken " , accessToken)
-    const response = await doctorService.createNewCareContext(accessToken,visit.patient.id,visit.patient.name,visit.diagnosis)
-    if(response) alert('saved')
-    setViewOTP(false)
+    try {
+      await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"healthId": visit.patient.healthId, "transactionId": transactionID, "mobileOTP": OTP}),
+
+        async onmessage(response) {
+          console.log("On confirm response: ", (JSON.parse(response.data)).accessToken)
+          setAccessToken((JSON.parse(response.data)).accessToken);
+          setViewOTP(false)
+          const res = await doctorService.createNewCareContext(accessToken, visit.patient.id, visit.patient.name, visit.diagnosis)
+          console.log("linkCareContextResponse",res)
+          if(res.data = 202) alert('Care Context Saved')
+          else alert('unknown error occurred')
+        },
+        onclose() {
+          console.log("closed")
+        },
+        onerror(error) {
+          throw new Error("Server Unresponsive");
+          console.log("error ", error)
+        }
+      })
+    }
+    catch (err){
+      console.log(err.toString())
+    }
   }
+
   return (
       <div>
         <Form onSubmit={handleSearchPatient}>
@@ -159,7 +212,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           <div className="col-4 border rounded p-4 mt-2 shadow">
             <FormGroup>
               <Row>
-                <Button color="primary" outline onClick={()=>handleDashboard("CONSENT-REQUEST")}> Create new Consent Request </Button>
+                <Button color="primary" outline onClick={()=>handleDashboard("CREATE-CONSENT-REQUEST")}> Create new Consent Request </Button>
               </Row>
             </FormGroup>
             <FormGroup>

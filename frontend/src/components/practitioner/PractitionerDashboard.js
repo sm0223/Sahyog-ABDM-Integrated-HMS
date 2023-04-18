@@ -11,7 +11,6 @@ export default function PractitionerDashboard({user}) {
     viewAllConsents : false,
     mySchedule: false
   }
-
   const [state, setState] = useState({
     practitionerHome : true,
     patientVisit : false,
@@ -50,7 +49,6 @@ export default function PractitionerDashboard({user}) {
           mySchedule:true
         }
         setState(newState)
-        break;
         break;
       default:
     }

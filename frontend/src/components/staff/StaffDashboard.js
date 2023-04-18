@@ -73,11 +73,13 @@ const StaffDashboard = ({user}) => {
     <div>
       {staffState.staffHome && <StaffHome handleDashboard = {handleDashboard} />}
       {staffState.getPatientUsingHealthId &&
+          <><h1>Register Patient </h1>
           <GetPatientUsingHealthId
               user = {user}
               handleDashboard= {handleDashboard}
               setPatient={setPatient}
           />
+          </>
       }
       {staffState.registerPatient &&
           <RegisterPatient

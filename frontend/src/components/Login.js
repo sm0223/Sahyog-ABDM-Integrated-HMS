@@ -1,34 +1,36 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
-import gService from "../services/patientService";
-import authService from "../services/authService";
-import {Button, Container, Form} from "react-bootstrap";
+import {Card, CardBody, CardFooter, CardTitle, Container, Form, FormGroup, Input, Label} from "reactstrap";
 
 const Login = ({handleLogin, loginPageData}) => {
 
 
   return (
-      <Container style={{padding:20}}>
-        <h1> Login </h1>
-        <Form onSubmit={handleLogin}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>User Name</Form.Label>
-            <Form.Control type="text" placeholder="Enter Username" />
-          </Form.Group>
+      <Container style={{marginTop:100,width:"30%"}}>
+        <Card style={{backgroundColor: "#212529"}}>
+          <Form onSubmit={handleLogin}>
+            <CardBody style={{color:"#cccccc"}}>
+              <h1 style={{color:"#cccccc"}} align="center"> Login </h1>
+              <hr/>
+              <FormGroup className="mb-3">
+                <Label><b>User Name</b></Label>
+                <Input type="text" placeholder="Enter Username" name="username" id="username"/>
+              </FormGroup>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check type="checkbox" label="Remember Me" />
-          </Form.Group>
-          {loginPageData && <p style = {{color:"red"}}> {loginPageData}</p>}
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
+              <FormGroup className="mb-3">
+                <Label><b>Password</b></Label>
+                <Input type="password" placeholder="Password" name="password" id="password"/>
+              </FormGroup>
+              <FormGroup check className="mb-3">
+                <Input type="checkbox"/>
+                <Label><b>Remember Me</b></Label>
+              </FormGroup>
+              {loginPageData && <p style = {{color:"red"}}> {loginPageData}</p>}
+              <Input type="submit" className="btn btn-primary" type="submit">
+                Submit
+              </Input>
+            </CardBody>
+          </Form>
+        </Card>
       </Container>
   );
 };

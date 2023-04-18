@@ -1,7 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Col, Form, FormGroup, Input, Label, Row} from "reactstrap";
-import patientService from "../../services/patientService";
-import login from "../Login";
 import ConsentRequest from "./ConsentRequest";
 import CreateVisit from "./CreateVisit";
 
@@ -31,12 +28,17 @@ const PatientVisit = ({user}) => {
           home: true
         })
         break;
-      case "CONSENT-REQUEST":
+      case "CREATE-CONSENT-REQUEST":
         setState({
-          ...falseState,
+          ...state,
           createConsentRequest: true
         })
         break;
+      case "CLOSE-CONSENT-REQUEST":
+        setState({
+          ...state,
+          createConsentRequest: false
+        })
       default :
         setState({
           ...falseState,
@@ -61,7 +63,7 @@ const PatientVisit = ({user}) => {
             handleDashboard = {handleDashboard}
         />
         }
-        {<ConsentRequest modal={state.createConsentRequest} user = {user} patient = {visit.patient} />
+        {<ConsentRequest modal={state.createConsentRequest} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />
         }
       </>
   );

@@ -31,7 +31,7 @@ const registerPatient = async(patient) => {
     const data = JSON.parse(response.data);
     return data;
 }
-const getPatientFromHealthId = async (healthId) => {
+const getPatientFromHealthId = async (healthId) => { //Returns Patient Data in object form
     const response = await api.post('api/patient/' + healthId);
     console.log("response " , response)
     return response.data;

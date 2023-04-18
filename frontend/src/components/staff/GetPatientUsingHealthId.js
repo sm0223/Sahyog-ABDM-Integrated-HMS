@@ -1,5 +1,4 @@
 import {useState} from "react";
-import registrationService from "../../services/patientService";
 import configData from "../../services/apiConfig.json";
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
@@ -13,75 +12,78 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [transactionID, setTransactionID] = useState("");
   const handleSubmit = async (event)=> {
     event.preventDefault()
-    await fetchEventSource(configData['url']+ "/api/register/health-id", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({"healthId": healthId}),
-      onmessage(response) {
-        console.log("response " , response.data)
-        setTransactionID(JSON.parse(response.data).transactionId)
-        setState({
-          ...state,
-          showOTPInput:true,
-        })
-      },
-      onclose(){
-        console.log("closed")
-      },
-      onerror(error){
-        console.log("error ", error)
-      }
-    })
+    try {
+      await fetchEventSource(configData['url'] + "/api/register/health-id", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"healthId": healthId}),
+        onmessage(response) {
+          console.log("response ", response.data)
+          setTransactionID(JSON.parse(response.data).transactionId)
+          setState({
+            ...state,
+            showOTPInput: true,
+          })
+        },
+        onclose() {
+          console.log("closed")
+        },
+        onerror(error) {
+          throw new Error("Server Un-responsive")
+          console.log("error ", error)
+        }
+      })
+    }
+    catch (err) {
+      console.log(err.toString())
+    }
   }
-  // const handleOTPSubmit = async (event)=> {
-  //   event.preventDefault()
-  //   const responseRaw = await registrationService.sendOtpForPatientRegistration(healthId, transactionID, otp)
-  //   const response = JSON.parse(responseRaw)
-
-  //   
-  //   handleDashboard("REGISTER-PATIENT")
-  // }
   const handleOTPSubmit = async (event)=> {
     event.preventDefault()
+    try {
+      await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"healthId": healthId, "transactionId": transactionID, "mobileOTP": otp}),
 
-    await fetchEventSource(configData['url']+ "/api/register/confirmMobileOTP", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({"healthId" : healthId, "transactionId": transactionID, "mobileOTP":otp}),
-
-      onmessage(response) {
-        console.log("response " , response)
-        const res = JSON.parse(JSON.parse(response.data).patient);
-        console.log("res",res);
-        setPatient({
-              healthId: res.id,
-              name: res.name,
-              gender: res.gender,
-              yearOfBirth: res.yearOfBirth,
-              monthOfBirth: res.monthOfBirth,
-              dayOfBirth: 3,
-              address: {
-                line: res.address ? res.address.line : null,
-                district: res.address ? res.address.district : null,
-                state: res.address ? res.address.state : null,
-                pincode: res.address ? res.address.pincode : null,
-              },
-              mobile: res.identifiers?res.identifiers.find(identifier=>identifier.type==="MOBILE").value:null,
-              healthNumber: res.identifiers?res.identifiers.find(identifier=>identifier.type==="HEALTH_NUMBER").value:null,
-            })
-        handleDashboard("REGISTER-PATIENT")
-      },
-      onclose(){
-        console.log("closed")
-      },
-      onerror(error){
-        console.log("error ", error)
-      }
-    })
+        onmessage(response) {
+          console.log("response ", response)
+          const res = JSON.parse(JSON.parse(response.data).patient);
+          console.log("res", res);
+          setPatient({
+            healthId: res.id,
+            name: res.name,
+            gender: res.gender,
+            yearOfBirth: res.yearOfBirth,
+            monthOfBirth: res.monthOfBirth,
+            dayOfBirth: 3,
+            address: {
+              line: res.address ? res.address.line : null,
+              district: res.address ? res.address.district : null,
+              state: res.address ? res.address.state : null,
+              pincode: res.address ? res.address.pincode : null,
+            },
+            mobile: res.identifiers ? res.identifiers.find(identifier => identifier.type === "MOBILE").value : null,
+            healthNumber: res.identifiers ? res.identifiers.find(identifier => identifier.type === "HEALTH_NUMBER").value : null,
+          })
+          handleDashboard("REGISTER-PATIENT")
+        },
+        onclose() {
+          console.log("closed")
+        },
+        onerror(error) {
+          throw new Error("Server Unresponsive");
+          console.log("error ", error)
+        }
+      })
+    }
+    catch (err){
+      console.log(err.toString())
+    }
   }
   const changeHealthId = (event)=> {
     event.preventDefault()
@@ -94,7 +96,6 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
 
   return (
       <div className="container">
-        <h1>Register Patient </h1>
         <form onSubmit={handleOTPSubmit}>
           <div className="form">
             <label htmlFor="email">Health ID</label><br/>
