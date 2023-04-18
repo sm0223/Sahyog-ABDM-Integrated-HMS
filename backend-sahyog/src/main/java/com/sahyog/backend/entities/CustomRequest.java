@@ -1,22 +1,43 @@
 package com.sahyog.backend.entities;
 
 public class CustomRequest {
+    String userId;
     String healthId;
     String mobileOTP;
     String transactionId;
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
+
+    public CustomRequest(String display) {
+        this.display = display;
+    }
+
     String name;
     String display;
 
+    public CustomRequest(String userId, String healthId, String mobileOTP, String transactionId, String name) {
+        this.userId = userId;
+        this.healthId = healthId;
+        this.mobileOTP = mobileOTP;
+        this.transactionId = transactionId;
+        this.name = name;
+    }
 
     public CustomRequest() {
     }
 
-    public CustomRequest(String healthId, String mobileOTP, String transactionId, String visit, String display) {
-        this.healthId = healthId;
-        this.mobileOTP = mobileOTP;
-        this.transactionId = transactionId;
-        this.name = visit;
-        this.display = display;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getHealthId() {
@@ -51,22 +72,14 @@ public class CustomRequest {
         this.name = name;
     }
 
-    public String getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(String display) {
-        this.display = display;
-    }
-
     @Override
     public String toString() {
         return "CustomRequest{" +
-                "healthId='" + healthId + '\'' +
+                "userId='" + userId + '\'' +
+                ", healthId='" + healthId + '\'' +
                 ", mobileOTP='" + mobileOTP + '\'' +
                 ", transactionId='" + transactionId + '\'' +
-                ", visit=" + name +
-                ", display='" + display + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

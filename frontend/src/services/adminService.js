@@ -6,6 +6,7 @@ const api = axios.create(
     }
 );
 
+// -------Doctor Services--------------
 const getDoctor = async (id) => {
     const response = await api.post(`api/admin/getDoctor/${id}`);
     return response;
@@ -26,6 +27,9 @@ const updateDoctor = async (doctor)=>{
 const deletedoctor = async (id) =>{
     await api.delete(`api/admin/deleteDoctor/${id}`);
 };
+
+// -------Staff Services--------------
+
 const getStaff = async (id) => {
     const response = await api.post(`api/admin/getStaff/${id}`);
     return response;

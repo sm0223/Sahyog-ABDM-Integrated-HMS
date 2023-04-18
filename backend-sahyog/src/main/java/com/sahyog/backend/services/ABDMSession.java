@@ -53,8 +53,8 @@ public class ABDMSession {
         return requestBody;
     }
 
-    public int patientInitUsingMobile(String healthId) throws Exception {
-        String requestBody =  "{\n    \"requestId\": \""+UUID.randomUUID()+"\",\n    \"timestamp\": \""+ Instant.now().toString()+"\",\n    \"query\":{\n        \"id\": \""+healthId+"\",\n        \"purpose\": \"KYC_AND_LINK\",\n        \"authMode\": \"MOBILE_OTP\",\n        \"requester\": {\n            \"type\": \"HIP\",\n            \"id\": \"sahyog-hip-facility-iiitb\"\n        }\n    }\n}";
+    public int patientInitUsingMobile(String UUIDCode, String healthId) throws Exception {
+        String requestBody =  "{\n    \"requestId\": \""+UUIDCode+"\",\n    \"timestamp\": \""+ Instant.now().toString()+"\",\n    \"query\":{\n        \"id\": \""+healthId+"\",\n        \"purpose\": \"KYC_AND_LINK\",\n        \"authMode\": \"MOBILE_OTP\",\n        \"requester\": {\n            \"type\": \"HIP\",\n            \"id\": \"sahyog-hip-facility-iiitb\"\n        }\n    }\n}";
         System.out.println(requestBody);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -69,8 +69,8 @@ public class ABDMSession {
         return response.statusCode();
     }
 
-    public int confirmMobileOTP(String transactionId, String mobileOTP) throws Exception {
-        String requestBody =  "{\n    \"requestId\": \""+ UUID.randomUUID()+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n    \"transactionId\": \""+ transactionId +"\",\n    \"credential\" : {\n        \"authCode\": \""+ mobileOTP +"\"\n    }\n}";
+    public int confirmMobileOTP(String UUIDCode, String transactionId, String mobileOTP) throws Exception {
+        String requestBody =  "{\n    \"requestId\": \""+ UUIDCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n    \"transactionId\": \""+ transactionId +"\",\n    \"credential\" : {\n        \"authCode\": \""+ mobileOTP +"\"\n    }\n}";
         System.out.println(requestBody);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

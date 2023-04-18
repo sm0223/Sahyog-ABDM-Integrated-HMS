@@ -18,7 +18,7 @@ const RegisterPatient = ({patient, handleDashboard}) => {
         <h1> Patient Details </h1>
         <FormGroup>
           <Label for="healthId">Health ID</Label>
-          <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID" value={patient.healthId} />
+          <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID" value={patient.healthId}/>
         </FormGroup>
         <FormGroup>
           <Label for="healthNumber">Health ID Number</Label>

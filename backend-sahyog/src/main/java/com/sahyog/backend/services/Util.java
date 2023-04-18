@@ -16,9 +16,15 @@ public class Util{
 
     public static String getAccessToken(String response)
     {
-        JSONObject responseWebhook = new JSONObject(response);
-        JSONObject auth = (JSONObject) responseWebhook.get("auth");
+
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject auth = (JSONObject) responseObject.get("auth");
         return auth.get("accessToken").toString();
+    }
+    public String getRequestId(String response) {
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject resp = (JSONObject) responseObject.get("resp");
+        return resp.get("requestId").toString();
     }
     public String getValueFromString(String keypath, String text) throws Exception {
         int n1=text.length();

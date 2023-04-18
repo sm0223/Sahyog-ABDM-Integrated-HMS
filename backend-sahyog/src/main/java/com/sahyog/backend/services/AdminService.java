@@ -53,6 +53,10 @@ public class AdminService {
     public List<Staff> findStaffs(){ return staffRepository.findAll();}
     public String deleteStaff(int healthIdNumber){
         staffRepository.deleteById(healthIdNumber);
+//=======
+//    public String deleteStaff(String healthIdNumber){
+//        staffRepository.deleteByHealthIdNumber(healthIdNumber);
+//>>>>>>> origin/main
         return "staff Deleted !!" + healthIdNumber;
     }
     public Staff updateStaff(Staff staff){
@@ -67,8 +71,11 @@ public class AdminService {
         existingStaff.setHealthId(staff.getHealthId());
         return staffRepository.save(existingStaff);
     }
-
+//
+//<<<<<<< HEAD
     public Staff findStaffByHealthId(String healthIdNumber) { return staffRepository.findByHealthIdNumber(healthIdNumber);}
-
+//
+//=======
+//>>>>>>> origin/main
 
 }
