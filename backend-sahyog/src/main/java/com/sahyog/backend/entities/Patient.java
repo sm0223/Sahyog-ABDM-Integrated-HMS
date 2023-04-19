@@ -1,6 +1,7 @@
 package com.sahyog.backend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
 import java.util.ArrayList;
@@ -8,136 +9,46 @@ import java.util.List;
 
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Builder
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                name = "healthId_unique",
+                columnNames = "healthId"
+        )
+)
 public class Patient{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(unique = true)
+    @SequenceGenerator(
+            name = "patient_sequence",
+            sequenceName = "patient_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "patient_sequence"
+    )
+    private int patientId;
     public String healthId;
     public String name;
     public String gender;
-    @OneToMany(cascade = CascadeType.ALL)
-    List<CareContext> careContextList;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
-    public Address address;
     public int yearOfBirth;
     public int dayOfBirth;
     public int monthOfBirth;
     public String healthNumber;
     public String mobile;
-    public Patient() {
-    }
+    @Embedded
+    public Address address;
+    @OneToMany(mappedBy = "patient")
+    List<CareContext> careContextList;
+    @OneToMany(mappedBy = "patient")
+    List<Visit> visitList;
 
-    public Patient(int id, String healthId, String name, String gender, Address address, int yearOfBirth, int dayOfBirth, int monthOfBirth, String healthNumber, String mobile) {
-        this.id = id;
-        this.healthId = healthId;
-        this.name = name;
-        this.gender = gender;
-        this.address = address;
-        this.yearOfBirth = yearOfBirth;
-        this.dayOfBirth = dayOfBirth;
-        this.monthOfBirth = monthOfBirth;
-        this.healthNumber = healthNumber;
-        this.mobile = mobile;
-    }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getHealthId() {
-        return healthId;
-    }
-
-    public void setHealthId(String healthId) {
-        this.healthId = healthId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public int getYearOfBirth() {
-        return yearOfBirth;
-    }
-
-    public void setYearOfBirth(int yearOfBirth) {
-        this.yearOfBirth = yearOfBirth;
-    }
-
-    public int getDayOfBirth() {
-        return dayOfBirth;
-    }
-
-    public void setDayOfBirth(int dayOfBirth) {
-        this.dayOfBirth = dayOfBirth;
-    }
-
-    public int getMonthOfBirth() {
-        return monthOfBirth;
-    }
-
-    public void setMonthOfBirth(int monthOfBirth) {
-        this.monthOfBirth = monthOfBirth;
-    }
-
-    public String getHealthNumber() {
-        return healthNumber;
-    }
-
-    public void setHealthNumber(String healthNumber) {
-        this.healthNumber = healthNumber;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "id=" + id +
-                ", healthId='" + healthId + '\'' +
-                ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
-                ", address=" + address +
-                ", yearOfBirth=" + yearOfBirth +
-                ", dayOfBirth=" + dayOfBirth +
-                ", monthOfBirth=" + monthOfBirth +
-                ", healthNumber='" + healthNumber + '\'' +
-                ", mobile='" + mobile + '\'' +
-                '}';
-    }
 }
 
 

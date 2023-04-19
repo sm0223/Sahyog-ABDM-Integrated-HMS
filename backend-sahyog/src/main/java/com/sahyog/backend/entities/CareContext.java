@@ -1,58 +1,44 @@
 package com.sahyog.backend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "care_context")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Builder
 public class CareContext {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @SequenceGenerator(
+            name = "care_context_sequence",
+            sequenceName = "care_context_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "care_context_sequence"
+    )
+    private int careContextId;
     public String display;
-    public String patientId;
 
-    public CareContext() {
-    }
-
-    public CareContext(int id, String display, String patientId) {
-        this.id = id;
-        this.display = display;
-        this.patientId = patientId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(String display) {
-        this.display = display;
-    }
-
-    public String getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-    //    @OneToMany    public String patientId;
-//    public List<Visit> visitList;
-
-
-
-//    @ManyToOne
-//    @JoinColumn(name = "patient_id_fk")
-//    public Patient patient;
+    @ManyToOne
+    @JoinColumn(
+            name = "patient_id_fk",
+            referencedColumnName = "patientId"
+    )
+    public Patient patient;
+    @ManyToOne
+    @JoinColumn(
+            name = "doctor_id_fk",
+            referencedColumnName = "doctorId"
+    )
+    public Doctor doctor;
+    @OneToMany(mappedBy = "careContext")
+    List<Visit> visitList;
 
 }
