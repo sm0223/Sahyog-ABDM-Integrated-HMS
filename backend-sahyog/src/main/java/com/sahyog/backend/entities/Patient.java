@@ -47,7 +47,8 @@ public class Patient{
     List<CareContext> careContextList;
     @OneToMany(mappedBy = "patient")
     List<Visit> visitList;
-
+    @OneToMany(mappedBy = "patient")
+    List<Consent> consentList;
 
 }
 

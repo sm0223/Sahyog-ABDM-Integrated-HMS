@@ -51,4 +51,6 @@ public class Doctor {
 
     @OneToMany(mappedBy = "doctor")
     public List<Visit> visitList;
+    @OneToMany(mappedBy = "doctor")
+    List<Consent> consentList;
 }

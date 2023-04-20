@@ -24,17 +24,12 @@ public class MyController {
     private static CustomResponse asyncCustomResponse = new CustomResponse();
     private HashMap<String, SseEmitter> emitters = new HashMap<>();
     private Util util = new Util();
-    @GetMapping("/home")
-    public String home()  {
-        System.out.println("home");
-        return "";
-    }
     //Receiving Callback APIs from ABDM and dispatching SSEs
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: ON-INIT " + response);
-        String keyPath = "auth\":{\"transactionId\"";
-        String transactionId = util.getValueFromString(keyPath, response);
+        String transactionId = util.getTransactionId(response);
+
         asyncCustomResponse.setTransactionId(transactionId);
         String requestId = util.getRequestId(response);
 
@@ -59,7 +54,6 @@ public class MyController {
     @PostMapping("/v0.5/consent-requests/on-init")
     public void onConsentRequestInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENT-REQEUST-ON-INIT " + response);
-
     }
     @PostMapping("/v0.5/consents/hiu/notify")
     public void consentsHiuNotify(@RequestBody String response) throws Exception {
@@ -70,9 +64,29 @@ public class MyController {
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
 
+        //Now HIP sends an acknowledgement to the ABDM
+        String consentStatus = util.getConsentStatus(response);
+        if(!consentStatus.equals("GRANTED")) {
+            System.out.println("CONSENT NOT GRANTED");
+            return;
+        }
+        String requestId = util.getABDMRequestID(response);
+        ABDMSession session = new ABDMSession();
+        session.setToken();
+        String consentId = util.getConsentId(response);
+        int ackRes = session.sendNotificationAcknowledgement(consentId, requestId);
+        System.out.println("NOTIFICATION ACKNOWLEDGEMENT SENT STATUS: "+ackRes);
+    }
+
+    @PostMapping("v0.5/health-information/hip/request")
+    public void healthInformationHipRequest(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
+
+        //Now HIP sends an acknowledgement to the ABDM
     }
 
     //Custom APIS for FRONTEND and Initiating SSEs
+
     @PostMapping(value = "/api/register/health-id") // auth/init
     public SseEmitter registerPatientUsinghealthId(@RequestBody CustomRequest customRequest) throws Exception, IOException {
         System.out.println("REQUEST: REGISTER-PATIENT-USING-HEALTH-ID");
@@ -134,6 +148,7 @@ public class MyController {
         System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
         return statusCode;
     }
+
 //    @PostMapping(value = "/api/link/care-context")
 //    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 //        System.out.println("\nIn linking");
@@ -157,7 +172,7 @@ public class MyController {
 //
 //        return statusCode;
 //    }
-//
+
 
 
 //    ---------Patient Services------------
