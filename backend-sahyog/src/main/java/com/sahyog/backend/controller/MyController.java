@@ -62,17 +62,6 @@ public class MyController {
         System.out.println("REQUEST: REGISTER-PATIENT-USING-HEALTH-ID");
         ABDMSession session = new ABDMSession();
         session.setToken();
-//<<<<<<< HEAD
-//        System.out.println("retreived token : " + session.getToken());
-//        int statusCode = session.patientInitUsingMobile(customRequest.getHealthId()); //Calling abha to init patient using mobile otp
-//        SseEmitter sseEmitter = new SseEmitter((long)5000);
-//        if (statusCode == 202) {
-////            sseEmitter.send(SseEmitter.event().name("INIT"));
-//            System.out.println("INIT Patient using mobile (sent to abha): " + statusCode);
-//        } else {
-//            System.out.println("Authentication Error : " + statusCode);
-//        }
-//=======
         String UUIDCode = UUID.randomUUID().toString();
         int statusCode = session.patientInitUsingMobile(UUIDCode, customRequest.getHealthId()); //Calling abha to init patient using mobile otp
 
@@ -90,18 +79,11 @@ public class MyController {
     @PostMapping(value = "/api/register/confirmMobileOTP")
     public SseEmitter confirmMobileOTP(@RequestBody CustomRequest customRequest) throws Exception {
         System.out.println();
-
         ABDMSession session = new ABDMSession();
         session.setToken();
         String UUIDCode = UUID.randomUUID().toString();
 
-//<<<<<<< HEAD
-//        SseEmitter sseEmitter = new SseEmitter((long)5000);
-//        sseEmitter.onCompletion(()->emitters2.remove(sseEmitter));
-//        emitters2.add(sseEmitter);
-//=======
         int statusCode = session.confirmMobileOTP(UUIDCode, customRequest.getTransactionId(), customRequest.getMobileOTP());
-
         SseEmitter sseEmitter = new SseEmitter((long)5000);
         emitters.put(UUIDCode, sseEmitter);
         sseEmitter.onCompletion(()->emitters.remove(sseEmitter));
@@ -109,13 +91,21 @@ public class MyController {
         sseEmitter.onError((e)->emitters.remove(sseEmitter));
 
         System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
-//>>>>>>> origin/main
         return sseEmitter;
+    }
+    @PostMapping(value = "/api/patch")
+    public int patchUrl(@RequestParam String url) throws Exception {
+        System.out.println("REQUEST_PATCH_URL: ");
+        ABDMSession session = new ABDMSession();
+        session.setToken();
+        String UUIDCode = UUID.randomUUID().toString();
 
+        int statusCode = session.patchUrl(UUIDCode, url);
 
+        System.out.println("STATUS: PATCH_URL: " + statusCode);
+        return statusCode;
     }
 
-//<<<<<<< HEAD
 //    @PostMapping(value = "/api/link/care-context")
 //    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 //        System.out.println("\nIn linking");
@@ -170,16 +160,18 @@ public class MyController {
     @Autowired
     private DoctorService doctorService;
 
-//    @PostMapping("/api/doctor/care-context/create")
-//    public int createNewCareContext(@RequestBody CustomRequest customRequest)
-//    {
-//        CareContext careContext = new CareContext();
-//        careContext.patientId = customRequest.getHealthId();
-//        careContext.display = customRequest.getDisplay();
-//        int careContextId = doctorService.addCareContext(careContext).getId();
-//        return 200;
-//    }
+    @PostMapping(value = "/api/doctor/consent/create")
+    public int confirmMobileOTP(@RequestBody String consent) throws Exception {
+        System.out.println("REQUEST: CONSENT-REQUEST :");
+        ABDMSession session = new ABDMSession();
+        session.setToken();
+        String UUIDCode = UUID.randomUUID().toString();
 
+        int statusCode = session.createConsentRequest(UUIDCode, consent);
+
+        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
+        return statusCode;
+    }
 
 
 //    ---------Admin Doctor services-------------

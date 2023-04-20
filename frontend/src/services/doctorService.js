@@ -38,4 +38,18 @@ const getAllCareContextFromPatientID = async (visit, careContextDisplayName) => 
     throw new Error("Unable to create new care-context in Server")
   }
 }
-export default {createNewCareContext}
+
+const createConsentRequest = async (consent) => {
+  console.log("consent: ", JSON.stringify(consent))
+  try {
+    const response = await api.post("api/doctor/consent/create", {
+      consent: JSON.stringify(consent)
+    })
+    return response;
+  }
+  catch (err) {
+    throw new Error("Unable to create new Consent-request in Server")
+  }
+}
+
+export default {createConsentRequest, createNewCareContext}

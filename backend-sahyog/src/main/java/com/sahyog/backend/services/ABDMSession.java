@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sahyog.backend.entities.Patient;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -49,7 +50,6 @@ public class ABDMSession {
         HttpResponse<String> response = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
         this.token = new Util().getValueFromJsonString("accessToken", response.body());
-//        System.out.println("Requestbody="+response.body());
         return requestBody;
     }
 
@@ -115,5 +115,56 @@ public class ABDMSession {
 
         System.out.println("asdfghj  "+response.toString());
         return response.statusCode();
+    }
+
+    public int patchUrl(String uuidCode, String patchUrl) {
+        HttpClient client = HttpClient.newHttpClient();
+        String requestBody =  "{\n    \"url\": \""+patchUrl+"\"\n}";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.ndhm.gov.in/devservice/v1/bridges"))
+                .method("PATCH",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
+    }
+
+    public int createConsentRequest(String UUIDCode, String consent) {
+        HttpClient client = HttpClient.newHttpClient();
+        String requestBody =  "{\n    \"requestId\": \""+ UUIDCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"consent\": " + consent+
+                "\n}";
+
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consent-requests/init"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
     }
 }

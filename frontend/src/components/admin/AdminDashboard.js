@@ -12,17 +12,20 @@ import {
     CDBSidebarMenuItem,
 } from 'cdbreact';
 import Sidebar from "./Sidebar";
+import PatchURL from "./PatchURL";
 function AdminDashboard({user}) {
     const falseState = {
         adminHome: false,
         doctor: false,
-        staff: false
+        staff: false,
+        patch:false
     }
 
     const [adminState,setAdminState] = useState({
         adminHome: true,
         doctor: false,
-        staff: false
+        staff: false,
+        patch:false
     })
     const handleDashboard = (action)=> {
         console.log(action)
@@ -48,6 +51,12 @@ function AdminDashboard({user}) {
                     staff: true
                 })
                 break;
+            case "PATCH":
+                setAdminState({
+                    ...falseState,
+                    patch: true
+                })
+                break;
         }
     }
     return (
@@ -61,6 +70,7 @@ function AdminDashboard({user}) {
                             {adminState.doctor && <Doctor/>}
                             {adminState.staff && <Staff/>}
                             {adminState.adminHome && <AdminHome/>}
+                            {adminState.patch && <PatchURL/>}
                         </div>
                     </div>
                 </div>

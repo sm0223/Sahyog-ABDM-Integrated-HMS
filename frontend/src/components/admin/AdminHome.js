@@ -30,7 +30,7 @@ const AdminHome = () => {
                 <div className="col-md-6 align-right">
                     <div style = {{ width: 250, height: 250}} className="box box-shadow card text-center">
                         <div>
-                        <p><h1 style={{fontSize:150}}>{stats.noDoctors}</h1></p>
+                        <h1 style={{fontSize:150}}>{stats.noDoctors}</h1>
                         </div>
                         <div className="card-body">
                             <h5 className="card-title">Registered Doctors<br/></h5>
@@ -40,7 +40,7 @@ const AdminHome = () => {
                 <div className="col-md-6">
                     <div style = {{ width: 250, height: 250}} className="box box-shadow card text-center">
                         <div>
-                            <p><h1 style={{fontSize:150}}> {stats.noPatients}</h1></p>
+                            <h1 style={{fontSize:150}}> {stats.noPatients}</h1>
                         </div>
                         <div className="card-body">
                             <h5 className="card-title">Registered Patients<br/></h5>
@@ -52,7 +52,7 @@ const AdminHome = () => {
                 <div className="col-md-6">
                     <div style = {{ width: 250, height: 250}} className="box box-shadow card text-center">
                         <div>
-                            <p><h1 style={{fontSize:150}}> {stats.noStaffs}</h1></p>
+                            <h1 style={{fontSize:150}}> {stats.noStaffs}</h1>
                         </div>
                         <div className="card-body">
                             <h5 className="card-title">Registered Staffs<br/></h5>

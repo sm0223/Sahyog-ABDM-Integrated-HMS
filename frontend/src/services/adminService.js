@@ -7,6 +7,11 @@ const api = axios.create(
 );
 
 // -------Doctor Services--------------
+
+const patchUrl = async (url) => {
+    const response = await api.post(`api/patch?url=`+url);
+    return response.data;
+};
 const getDoctor = async (id) => {
     const response = await api.post(`api/admin/getDoctor/${id}`);
     return response;
@@ -52,5 +57,5 @@ const deletestaff = async (id) =>{
 };
 
 
-const aService = { getDoctor,addDoctor,getalldoctor,deletedoctor,updateDoctor, getStaff,addStaff,getallstaff,deletestaff,updateStaff}
+const aService = { patchUrl, getDoctor,addDoctor,getalldoctor,deletedoctor,updateDoctor, getStaff,addStaff,getallstaff,deletestaff,updateStaff}
 export default aService
