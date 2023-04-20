@@ -55,7 +55,7 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
         }
       }
     }
-    const res = await doctorService.createConsentRequest(consent);
+    const res = await doctorService.consentRequestInit(consent);
     console.log(res)
   }
   if(patient == null) return null;

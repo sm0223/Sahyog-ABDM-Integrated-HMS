@@ -3,6 +3,7 @@ package com.sahyog.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sahyog.backend.entities.*;
 import com.sahyog.backend.services.*;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,21 @@ public class MyController {
         SseEmitter sseEmitter = emitters.get(requestId);
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
     }
+    @PostMapping("/v0.5/consent-requests/on-init")
+    public void onConsentRequestInit(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: CONSENT-REQEUST-ON-INIT " + response);
+
+    }
+    @PostMapping("/v0.5/consents/hiu/notify")
+    public void consentsHiuNotify(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: HIU NOTIFY " + response);
+
+    }
+    @PostMapping("/v0.5/consents/hip/notify")
+    public void consentsHipNotify(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
+
+    }
 
     //Custom APIS for FRONTEND and Initiating SSEs
     @PostMapping(value = "/api/register/health-id") // auth/init
@@ -105,7 +121,19 @@ public class MyController {
         System.out.println("STATUS: PATCH_URL: " + statusCode);
         return statusCode;
     }
+    @PostMapping(value = "/api/consent-requests/init")
+    public int consentRequestInit(@RequestBody String consent) throws Exception {
+        System.out.println("REQUEST: CONSENT-REQUEST : \n" );
+        ABDMSession session = new ABDMSession();
+        session.setToken();
+        String UUIDCode = UUID.randomUUID().toString();
+        String temp = consent.substring(12,consent.length()-2).replace("\\", "");
 
+        int statusCode = session.createConsentRequest(UUIDCode, temp );
+
+        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
+        return statusCode;
+    }
 //    @PostMapping(value = "/api/link/care-context")
 //    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 //        System.out.println("\nIn linking");
@@ -160,18 +188,7 @@ public class MyController {
     @Autowired
     private DoctorService doctorService;
 
-    @PostMapping(value = "/api/doctor/consent/create")
-    public int confirmMobileOTP(@RequestBody String consent) throws Exception {
-        System.out.println("REQUEST: CONSENT-REQUEST :");
-        ABDMSession session = new ABDMSession();
-        session.setToken();
-        String UUIDCode = UUID.randomUUID().toString();
 
-        int statusCode = session.createConsentRequest(UUIDCode, consent);
-
-        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
-        return statusCode;
-    }
 
 
 //    ---------Admin Doctor services-------------

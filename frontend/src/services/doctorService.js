@@ -39,10 +39,10 @@ const getAllCareContextFromPatientID = async (visit, careContextDisplayName) => 
   }
 }
 
-const createConsentRequest = async (consent) => {
+const consentRequestInit = async (consent) => {
   console.log("consent: ", JSON.stringify(consent))
   try {
-    const response = await api.post("api/doctor/consent/create", {
+    const response = await api.post("/api/consent-requests/init", {
       consent: JSON.stringify(consent)
     })
     return response;
@@ -52,4 +52,4 @@ const createConsentRequest = async (consent) => {
   }
 }
 
-export default {createConsentRequest, createNewCareContext}
+export default {consentRequestInit, createNewCareContext}
