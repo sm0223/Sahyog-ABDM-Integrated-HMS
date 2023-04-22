@@ -24,7 +24,7 @@ public class MyController {
     private static CustomResponse asyncCustomResponse = new CustomResponse();
     private HashMap<String, SseEmitter> emitters = new HashMap<>();
     private Util util = new Util();
-    //Receiving Callback APIs from ABDM and dispatching SSEs
+    //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: ON-INIT " + response);
@@ -58,7 +58,6 @@ public class MyController {
     @PostMapping("/v0.5/consents/hiu/notify")
     public void consentsHiuNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: HIU NOTIFY " + response);
-
     }
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {

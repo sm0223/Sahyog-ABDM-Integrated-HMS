@@ -32,7 +32,12 @@ const registerPatient = async(patient) => {
     return data;
 }
 const getPatientFromHealthId = async (healthId) => { //Returns Patient Data in object form
-    const response = await api.post('api/patient/' + healthId);
+    console.log("asdjfadsufoihdasnjc");
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJbTAyMjMiLCJpYXQiOjE2ODIxNzQxMTUsImV4cCI6MTY4MjE3NTU1NX0._OY9WZYVAla56jsD7RaRAUXBrV6oX9QFUGXAL9r2UcQ'
+    }
+    const response = (await api.post('api/patient/' + healthId), {headers:headers});
     console.log("response " , response)
     return response.data;
 

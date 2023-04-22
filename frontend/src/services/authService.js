@@ -8,18 +8,12 @@ const api = axios.create(
 
 const login = async (username, password) => {
   console.log("user : ", username, password)
-  if(password =="pass") {
-    const responseData = {
-      userId: "shubham0223@sbx",
-      userName: "Shubham",
-      userType: username,
-      status: "verified",
-    }
-    return responseData;
+  const data = {
+    username: username,
+    password: password
   }
-  else {
-    return null;
-  }
+  const response = await api.post("/api/auth/authenticate", data);
+  console.log(response)
 }
 
 const logout = () => {
