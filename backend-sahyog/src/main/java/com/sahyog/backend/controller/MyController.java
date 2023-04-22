@@ -177,7 +177,7 @@ public class MyController {
         String display = careContext.display;
         String careContextReferenceNumber = ""+doctorService.addCareContext(careContext).getCareContextId();
         String linkToken = customRequest.getTransactionId(); //accessToken
-
+        System.out.println("linkToken transactionId from Frontend: " + linkToken);
         session.setToken();
         System.out.println("Linking retreived token : " + session.getToken());
 
