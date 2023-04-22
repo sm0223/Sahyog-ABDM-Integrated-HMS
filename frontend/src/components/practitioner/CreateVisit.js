@@ -83,7 +83,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           console.log("On confirm response: ", (JSON.parse(response.data)).accessToken)
           setAccessToken((JSON.parse(response.data)).accessToken);
           setViewOTP(false)
-          const res = await doctorService.createNewCareContext(accessToken, visit.patient.id, visit.patient.name, visit.diagnosis)
+          const res = await doctorService.createNewCareContext(accessToken, visit.patient.healthId, visit.patient.name, visit.diagnosis)
           console.log("linkCareContextResponse",res)
           if(res.data = 202) alert('Care Context Saved')
           else alert('unknown error occurred')
