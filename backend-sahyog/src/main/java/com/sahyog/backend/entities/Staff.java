@@ -36,8 +36,7 @@ public class Staff {
 
     @OneToOne(
             cascade = CascadeType.ALL,
-            optional = false,
-            fetch = FetchType.LAZY
+            optional = false
     )
     @JoinColumn(
             name = "user_id_fk",
