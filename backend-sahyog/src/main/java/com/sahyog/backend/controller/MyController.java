@@ -147,36 +147,50 @@ public class MyController {
         System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
         return statusCode;
     }
+    @Autowired
+    private PatientService patientService;
+    @PostMapping(value = "/api/link/care-context")
+    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
+//        ------From FrontEnd--------
+//        healthId: patientId,
+//        transactionId: accessToken,
+//        name: patientName,
+//        display: display
 
-//    @PostMapping(value = "/api/link/care-context")
-//    public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
-//        System.out.println("\nIn linking");
-//        ABDMSession session = new ABDMSession();
-//        CareContext careContext = new CareContext();
-//        careContext.patientId = customRequest.getHealthId();
-//        careContext.display = customRequest.getDisplay();
-//
-//        String patientReferenceNumber = careContext.patientId;
-//        String displayPatientName = customRequest.getName();
-//        String display = careContext.display;
-//        String careContextReferenceNumber = ""+doctorService.addCareContext(careContext).getId();
-//        String linkToken = customRequest.getTransactionId();
-//
-//        session.setToken();
-//        System.out.println("Linking retreived token : " + session.getToken());
-//
-//        System.out.println(patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
-//
-//        int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
-//
-//        return statusCode;
-//    }
+        System.out.println("\nIn Care Context linking");
+        ABDMSession session = new ABDMSession();
+        CareContext careContext = new CareContext();
+
+        System.out.println("customRequest.getHealthId() : "+ customRequest.getHealthId());
+        System.out.println("customRequest.getTransactionId() : "+ customRequest.getTransactionId());
+        System.out.println("customRequest.getDisplay() : "+ customRequest.getDisplay());
+        System.out.println("customRequest.getName() : "+ customRequest.getName());
+
+        Patient patientObj = patientService.findPatientByHealthId(customRequest.getHealthId());
+
+        careContext.patient = patientObj;
+        careContext.display = customRequest.getDisplay();
+
+        String patientReferenceNumber = careContext.patient.healthId;
+        String displayPatientName = customRequest.getName();
+        String display = careContext.display;
+        String careContextReferenceNumber = ""+doctorService.addCareContext(careContext).getCareContextId();
+        String linkToken = customRequest.getTransactionId(); //accessToken
+        System.out.println("linkToken transactionId from Frontend: " + linkToken);
+        session.setToken();
+        System.out.println("Linking retreived token : " + session.getToken());
+
+        System.out.println(patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
+
+        int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
+
+        return statusCode;
+    }
 
 
 
 //    ---------Patient Services------------
-        @Autowired
-        private PatientService patientService;
+
 
     @PostMapping("/api/patient/save")
     public boolean SavePatient(@RequestBody Patient patient)

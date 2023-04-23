@@ -80,10 +80,14 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
         body: JSON.stringify({"healthId": visit.patient.healthId, "transactionId": transactionID, "mobileOTP": OTP}),
 
         async onmessage(response) {
-          console.log("On confirm response: ", (JSON.parse(response.data)).accessToken)
-          setAccessToken((JSON.parse(response.data)).accessToken);
+          console.log("on Search of accessToken    "+response.data)
+          let token = await (JSON.parse(response.data)).authCode
+          console.log("On confirm response: ", token)
+          //------giving null-------
+          // setAccessToken(token);
+          // console.log("AccessToken------"+accessToken)
           setViewOTP(false)
-          const res = await doctorService.createNewCareContext(accessToken, visit.patient.id, visit.patient.name, visit.diagnosis)
+          const res = await doctorService.createNewCareContext(token, visit.patient.healthId, visit.patient.name, visit.diagnosis)
           console.log("linkCareContextResponse",res)
           if(res.data = 202) alert('Care Context Saved')
           else alert('unknown error occurred')
