@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card, CardBody, CardFooter, CardTitle, Container, Form, FormGroup, Input, Label} from "reactstrap";
 
-const Login = ({handleLogin, loginPageData}) => {
+const Login = ({handleLogin, errorMessage}) => {
 
 
   return (
@@ -24,7 +24,7 @@ const Login = ({handleLogin, loginPageData}) => {
                 <Input type="checkbox"/>
                 <Label><b>Remember Me</b></Label>
               </FormGroup>
-              {loginPageData && <p style = {{color:"red"}}> {loginPageData}</p>}
+              {errorMessage && <p style = {{color:"red"}}> {errorMessage}</p>}
               <Input type="submit" className="btn btn-primary" type="submit">
                 Submit
               </Input>

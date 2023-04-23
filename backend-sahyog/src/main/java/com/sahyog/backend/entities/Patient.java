@@ -43,11 +43,20 @@ public class Patient{
     public String mobile;
     @Embedded
     public Address address;
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(
+            mappedBy = "patient",
+            fetch = FetchType.LAZY
+    )
     List<CareContext> careContextList;
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(
+            mappedBy = "patient",
+            fetch = FetchType.LAZY
+    )
     List<Visit> visitList;
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(
+            mappedBy = "patient",
+            fetch = FetchType.LAZY
+    )
     List<Consent> consentList;
 
 }

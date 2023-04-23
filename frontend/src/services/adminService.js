@@ -8,6 +8,17 @@ const api = axios.create(
 
 // -------Doctor Services--------------
 
+api.interceptors.request.use(
+    config =>{
+        const token = localStorage.getItem("token");
+        if(token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => Promise.reject(error)
+);
+
 const patchUrl = async (url) => {
     const response = await api.post(`api/patch?url=`+url);
     return response.data;

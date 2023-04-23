@@ -24,6 +24,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("CHECKING SECURITY");
         http
+                .cors().and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()

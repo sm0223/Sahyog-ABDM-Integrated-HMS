@@ -13,7 +13,7 @@ const login = async (username, password) => {
     password: password
   }
   const response = await api.post("/api/auth/authenticate", data);
-  console.log(response)
+  return response.data;
 }
 
 const logout = () => {

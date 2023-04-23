@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,4 +54,16 @@ public class Doctor {
     public List<Visit> visitList;
     @OneToMany(mappedBy = "doctor")
     List<Consent> consentList;
+
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            optional = false,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(
+            name = "user_id_fk",
+            referencedColumnName = "userId"
+    )
+    @JsonManagedReference
+    public User user;
 }

@@ -16,7 +16,12 @@ const createNewCareContext = async (accessToken,patientId,patientName,display) =
   }
   console.log("temp " , temp)
   try {
-    const response = await api.post("api/link/care-context", temp)
+    const response = await api.post("api/link/care-context", temp, {
+      headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
+    })
     return response;
   }
   catch (err) {
@@ -31,6 +36,11 @@ const getAllCareContextFromPatientID = async (visit, careContextDisplayName) => 
     const response = await api.post("api/doctor/care-context/create", {
       visit: visit,
       displayName: careContextDisplayName
+    }, {
+      headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
     })
     return response;
   }
@@ -44,6 +54,11 @@ const consentRequestInit = async (consent) => {
   try {
     const response = await api.post("/api/consent-requests/init", {
       consent: JSON.stringify(consent)
+    },{
+      headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
     })
     return response;
   }

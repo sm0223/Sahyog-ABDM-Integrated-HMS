@@ -1,11 +1,11 @@
 package com.sahyog.backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sahyog.backend.entities.*;
 import com.sahyog.backend.services.*;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @RestController
@@ -24,6 +23,9 @@ public class MyController {
     private static CustomResponse asyncCustomResponse = new CustomResponse();
     private HashMap<String, SseEmitter> emitters = new HashMap<>();
     private Util util = new Util();
+    private PasswordEncoder passwordEncoder;
+
+
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
@@ -188,6 +190,7 @@ public class MyController {
     @PostMapping("/api/patient/all")
     public List<Patient> getAllPatients()
     {
+        System.out.println("PATIENT-ALL");
         return patientService.findDetails();
     }
     @PostMapping("/api/patient/{healthId}")
@@ -212,13 +215,17 @@ public class MyController {
     @PostMapping("/api/admin/addDoctor")
     public Doctor saveDoctor(@RequestBody Doctor doctor)
     {
+        User user = User.builder()
+                .username(doctor.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
+                .role(doctor.user.getRole())
+                .build();
+        doctor.setUser(user);
         return adminDoctorService.addDoctor(doctor);
     }
-//    @CrossOrigin(origins = "http://172.16.134.145:3000")
     @PostMapping(value="/api/admin/getAllDoctors")
     public List<Doctor> getAllDoctors()
     {
-        System.out.println("asdf");
         return adminDoctorService.findDoctors();
     }
 
@@ -251,7 +258,16 @@ public class MyController {
     @Autowired
     private AdminService adminStaffService;
     @PostMapping("/api/admin/addStaff")
-    public Staff saveStaff(@RequestBody Staff staff){ return adminStaffService.addStaff(staff);}
+    public Staff saveStaff(@RequestBody Staff staff) {
+
+        User user = User.builder()
+                .username(staff.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
+                .role(staff.user.getRole())
+                .build();
+        staff.setUser(user);
+        return adminStaffService.addStaff(staff);
+    }
 
     @PostMapping("/api/admin/getAllStaffs")
 

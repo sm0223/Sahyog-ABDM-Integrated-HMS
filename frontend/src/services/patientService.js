@@ -5,6 +5,17 @@ const api = axios.create(
         baseURL : configData['url']
     }
 );
+api.interceptors.request.use(
+    config =>{
+        const token = localStorage.getItem("token");
+        if(token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => Promise.reject(error)
+);
+
 const registerUsingHealthId = async (healthId) => {
     console.log(healthId);
     const response = await api.post('api/register/health-id', {"healthId": healthId});
@@ -14,13 +25,15 @@ const registerUsingHealthId = async (healthId) => {
 }
 const sendOtpForPatientRegistration = async(healthId, transactionId, mobileOTP) => {
     console.log(transactionId+"trans");
-    const response = await api.post('api/register/confirmMobileOTP', {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
+    const response = await api.post('api/register/confirmMobileOTP',
+        {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
     const data = JSON.parse(response.data.substring(5));
     return data.patient;
 }
 const sendOtpForCareContextLinking = async(healthId, transactionId, mobileOTP) => {
     console.log(transactionId+"trans");
-    const response = await api.post('api/register/confirmMobileOTP', {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
+    const response = await api.post('api/register/confirmMobileOTP',
+        {"healthId" : healthId, "transactionId": transactionId, "mobileOTP":mobileOTP});
     const data = JSON.parse(response.data.substring(5));
     return data.authCode;
 }
@@ -32,12 +45,7 @@ const registerPatient = async(patient) => {
     return data;
 }
 const getPatientFromHealthId = async (healthId) => { //Returns Patient Data in object form
-    console.log("asdjfadsufoihdasnjc");
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJbTAyMjMiLCJpYXQiOjE2ODIxNzQxMTUsImV4cCI6MTY4MjE3NTU1NX0._OY9WZYVAla56jsD7RaRAUXBrV6oX9QFUGXAL9r2UcQ'
-    }
-    const response = (await api.post('api/patient/' + healthId), {headers:headers});
+    const response = (await api.post('api/patient/' + healthId));
     console.log("response " , response)
     return response.data;
 

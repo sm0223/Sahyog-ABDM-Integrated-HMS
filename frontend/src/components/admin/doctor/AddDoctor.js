@@ -9,10 +9,10 @@ const AddDoctor = () => {
 
     let navigate = useNavigate();
 
-    const users = {
+    const user = {
         username: "",
         password: "",
-        userType: ""
+        role: ""
     }
 
     const address = {
@@ -33,7 +33,7 @@ const AddDoctor = () => {
         monthOfBirth:"",
         dayOfBirth:"",
         address: address,
-        users: users
+        user: user
     });
 
     const {
@@ -52,21 +52,20 @@ const AddDoctor = () => {
             state,
             pincode
         },
-        users: {
+        user: {
             username,
             password,
-            userType
+            role
         }
-
     } = doctor;
 
     const onInputChange = (e) => {
         // console.log(e.target.name );
         // console.log(e.target.value);
 
-        if(e.target.name === "username" || e.target.name === "password" || e.target.name === "userType") {
-            setDoctor({...doctor, users : {
-                    ...doctor.users,
+        if(e.target.name === "username" || e.target.name === "password" || e.target.name === "role") {
+            setDoctor({...doctor, user : {
+                    ...doctor.user,
                     [e.target.name]: e.target.value
                 }})
         }
@@ -88,7 +87,9 @@ const AddDoctor = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // await axios.post("http://localhost:9191/api/admin/addDoctor", doctor);
+
+        console.log(doctor)
+
         await adminService.addDoctor(doctor)
         navigate("/admin");
     };
@@ -283,13 +284,13 @@ const AddDoctor = () => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="Name" className="form-label">
-                                UserType
+                                role
                             </label>
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter UserType"
-                                name="userType"
+                                placeholder="Enter role"
+                                name="role"
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>

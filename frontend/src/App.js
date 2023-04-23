@@ -26,7 +26,7 @@ const App = () => {
         setuser(userData)
     }, [])
 
-    const [loginPageData, setLoginPageData] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
 
     const handleLogin = (event) => {
         event.preventDefault();
@@ -35,17 +35,31 @@ const App = () => {
         const password = event.target[1].value;
         const stayLoggedIn = event.target[2].checked;
 
-        authService.login(username, password).then((user) => {
-            if(user) {
-                console.log(user)
-                setuser(user)
-                setLoginPageData(null)
-                if (stayLoggedIn) window.localStorage.setItem("user", JSON.stringify(user))
+        authService.login(username, password).then((responseData) => {
+            if(responseData) {
+                console.log(responseData.token)
+                setErrorMessage(null)
+                window.localStorage.setItem("token", responseData.token)
+                setuser({
+                    userType: responseData.role
+                })
+                if (stayLoggedIn) {
+                    window.localStorage.setItem("user", JSON.stringify({
+                        userType: responseData.role
+                    }))
+                }
             }
             else {
-                setLoginPageData("Invalid Credentials")
+                setErrorMessage("Invalid Credentials")
             }
+        },
+        (error)=>{
+            if(error.code === 'ERR_NETWORK')
+                setErrorMessage("Server Unreachable")
+            else
+                setErrorMessage("Invalid Credentials")
         });
+        console.log("asdf");
     }
     const handleLogout = (event)=> {
         event.preventDefault()
@@ -62,11 +76,10 @@ const App = () => {
                     <Route path="/staff" element={ user?<StaffDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/practitioner" element={ user?<PractitionerDashboard user = {user}/> : <Navigate replace to="/" />}/>
                     <Route path="/admin" element={ user?<AdminDashboard user = {user}/> : <Navigate replace to="/" />}/>
-                    <Route path="/" element={user ? (user.userType == "staff"? <Navigate replace to="/staff" /> :
-
-                            (user.userType == "practitioner"? <Navigate replace to="/practitioner" /> :
-                                (user.userType == "admin"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
-                        : <Login handleLogin={handleLogin} loginPageData= {loginPageData} />} />
+                    <Route path="/" element={user ? (user.userType == "STAFF"? <Navigate replace to="/staff" /> :
+                            (user.userType == "PRACTITIONER"? <Navigate replace to="/practitioner" /> :
+                                (user.userType == "ADMIN"? <Navigate replace to="/admin" /> : <Navigate replace to = "/"/>)))
+                        : <Login handleLogin={handleLogin} errorMessage= {errorMessage} />} />
                     <Route path="/adddoctor" element={<AddDoctor/>} />
                     <Route path="/editdoctor/:id" element={<EditDoctor/>}/>
                     <Route path="/viewdoctor/:id" element={<ViewDoctor/>}/>

@@ -1,7 +1,7 @@
 package com.sahyog.backend.entities;
 
 public enum Role {
-    DOCTOR,
+    PRACTITIONER,
     ADMIN,
     STAFF
 }

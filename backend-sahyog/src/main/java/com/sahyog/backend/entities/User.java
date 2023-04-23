@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,21 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     int userId;
-    String username;
-    String password;
+    private String username;
+    private String password;
     @Enumerated(EnumType.STRING)
     private  Role role;
+    @OneToOne(mappedBy = "user")
+    @JsonBackReference
+    private Staff staff;
+    @OneToOne(mappedBy = "user")
+    @JsonBackReference
+    private Doctor doctor;
+    public User(String username, String password, Role role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
