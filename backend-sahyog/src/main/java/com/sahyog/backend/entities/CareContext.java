@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class CareContext {
             name = "patient_id_fk",
             referencedColumnName = "patientId"
     )
+    @JsonIgnore
     public Patient patient;
     @ManyToOne
     @JoinColumn(
