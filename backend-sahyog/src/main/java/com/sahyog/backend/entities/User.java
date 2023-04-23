@@ -1,6 +1,7 @@
 package com.sahyog.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,16 +23,17 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     int userId;
-    private String username;
-    private String password;
+    public String username;
+    public String password;
     @Enumerated(EnumType.STRING)
-    private  Role role;
+    public  Role role;
     @OneToOne(mappedBy = "user")
-    @JsonBackReference
-    private Staff staff;
+    @JsonBackReference(value = "staffBacKRef")
+    public Staff staff;
+
     @OneToOne(mappedBy = "user")
-    @JsonBackReference
-    private Doctor doctor;
+    @JsonBackReference(value = "doctorBacKRef")
+    public Doctor doctor;
     public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;

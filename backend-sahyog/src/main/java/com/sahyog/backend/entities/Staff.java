@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,7 +43,7 @@ public class Staff {
             name = "user_id_fk",
             referencedColumnName = "userId"
     )
-    @JsonManagedReference
+    @JsonManagedReference(value = "staffBacKRef")
     public User user;
 
 }

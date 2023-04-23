@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,13 +58,12 @@ public class Doctor {
 
     @OneToOne(
             cascade = CascadeType.ALL,
-            optional = false,
-            fetch = FetchType.LAZY
+            optional = false
     )
     @JoinColumn(
             name = "user_id_fk",
             referencedColumnName = "userId"
     )
-    @JsonManagedReference
+    @JsonManagedReference(value = "doctorBacKRef")
     public User user;
 }

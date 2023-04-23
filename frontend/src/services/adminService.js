@@ -56,6 +56,7 @@ const getallstaff = async ()=>{
     return response;
 };
 const addStaff = async (staff) =>{
+  console.log(staff)
     await api.post("api/admin/addStaff", staff);
 };
 

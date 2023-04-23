@@ -13,7 +13,6 @@ import java.util.List;
 @ToString
 @Builder
 public class CareContext {
-
     @Id
     @SequenceGenerator(
             name = "care_context_sequence",

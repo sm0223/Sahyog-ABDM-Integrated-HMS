@@ -91,7 +91,7 @@ const AddDoctor = () => {
         console.log(doctor)
 
         await adminService.addDoctor(doctor)
-        navigate("/admin");
+        // navigate("/admin");
     };
 
     return (

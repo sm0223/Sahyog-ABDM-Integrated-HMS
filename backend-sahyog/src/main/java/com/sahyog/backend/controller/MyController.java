@@ -273,6 +273,7 @@ public class MyController {
     private AdminService adminStaffService;
     @PostMapping("/api/admin/addStaff")
     public Staff saveStaff(@RequestBody Staff staff) {
+        System.out.println("REQUEST ADD STAFF:");
 
         User user = User.builder()
                 .username(staff.user.getUsername())
@@ -287,6 +288,7 @@ public class MyController {
 
     public List<Staff> getAllStaffs()
     {
+        System.out.println("REQUEST GET-ALL-STAFFS");
         return adminStaffService.findStaffs();
     }
 

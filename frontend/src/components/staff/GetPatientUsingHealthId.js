@@ -16,6 +16,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
       await fetchEventSource(configData['url'] + "/api/register/health-id", {
         method: "POST",
         headers: {
+          'Authorization': 'Bearer '+window.localStorage.getItem("token"),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({"healthId": healthId}),
@@ -46,6 +47,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
       await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
         method: "POST",
         headers: {
+          'Authorization': 'Bearer '+window.localStorage.getItem("token"),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({"healthId": healthId, "transactionId": transactionID, "mobileOTP": otp}),
