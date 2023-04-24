@@ -66,9 +66,7 @@ const StaffDashboard = ({user}) => {
     }
   }
   const [patient, setPatient] = useState(null);
-  const handleRegisterPatient = (event) => {
-    console.log(event)
-  }
+
   return (
     <div>
       {staffState.staffHome && <StaffHome handleDashboard = {handleDashboard} />}
@@ -85,12 +83,13 @@ const StaffDashboard = ({user}) => {
           <RegisterPatient
               patient = {patient}
               handleDashboard = {handleDashboard}
-              handleRegisterPatient={handleRegisterPatient}
+              setPatient={setPatient}
           />
       }
       {staffState.createAppointment&& <CreateAppointment
           user ={user}
           patient={patient}
+
           />
       }
     </div>

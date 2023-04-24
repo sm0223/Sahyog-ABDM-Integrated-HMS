@@ -44,6 +44,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
       await fetchEventSource(configData['url'] + "/api/register/health-id", {
         method: "POST",
         headers: {
+          'Authorization': 'Bearer '+window.localStorage.getItem("token"),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({"healthId": visit.patient.healthId}),
@@ -75,6 +76,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
       await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
         method: "POST",
         headers: {
+          'Authorization': 'Bearer '+window.localStorage.getItem("token"),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({"healthId": visit.patient.healthId, "transactionId": transactionID, "mobileOTP": OTP}),

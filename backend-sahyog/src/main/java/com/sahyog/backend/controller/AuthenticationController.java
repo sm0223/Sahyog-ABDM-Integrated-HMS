@@ -28,5 +28,9 @@ public class AuthenticationController {
         System.out.println("USER LOGIN");
         return ResponseEntity.ok(service.authenticate(request));
     }
-
+    @PostMapping("/get")
+    public String get() {
+        System.out.println("Get LOGIN");
+        return "Good";
+    }
 }

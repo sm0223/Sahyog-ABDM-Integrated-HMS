@@ -39,7 +39,7 @@ public class Patient{
     public int yearOfBirth;
     public int dayOfBirth;
     public int monthOfBirth;
-    public String healthNumber;
+    public String healthIdNumber;
     public String mobile;
     @Embedded
     public Address address;
