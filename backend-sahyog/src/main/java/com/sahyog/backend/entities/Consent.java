@@ -27,7 +27,7 @@ public class Consent {
     public String toDate;
     public String eraseDate;
     public String status;
-
+    public String requestId;
     @ManyToOne
     @JoinColumn(
             name = "patient_id_fk",
