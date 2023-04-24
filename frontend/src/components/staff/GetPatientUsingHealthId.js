@@ -1,6 +1,7 @@
 import {useState} from "react";
 import configData from "../../services/apiConfig.json";
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import patientService from "../../services/patientService";
 
 const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [state, setState] = useState({
@@ -36,6 +37,10 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
           console.log("error ", error)
         }
       })
+      // const response = await patientService.getPatientFromHealthId(healthId)
+      // console.log(response);
+      // setPatient(response)
+      // handleDashboard("REGISTER-PATIENT")
     }
     catch (err) {
       console.log(err.toString())
@@ -70,7 +75,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
               pincode: res.address ? res.address.pincode : null,
             },
             mobile: res.identifiers ? res.identifiers.find(identifier => identifier.type === "MOBILE").value : null,
-            healthNumber: res.identifiers ? res.identifiers.find(identifier => identifier.type === "HEALTH_NUMBER").value : null,
+            healthIdNumber: res.identifiers ? res.identifiers.find(identifier => identifier.type === "HEALTH_NUMBER").value : null,
           })
           handleDashboard("REGISTER-PATIENT")
         },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import {Form, FormGroup, Label, Input, Button, Col, Row} from 'reactstrap';
 import registrationService from "../../services/patientService";
 import {useNavigate} from "react-router-dom";
 
@@ -13,17 +13,27 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
     // handleDashboard("REGISTER-PATIENT")
   }
   const onChangeInputs= (event) => {
-    // console.log(event);
-
-    setPatient({
-      ...patient,
-      [event.target.name]: event.target.value
-    })
+    console.log(event.target.name);
+    if(event.target.name.toString()==="birthDate")
+    {
+      setPatient({
+        ...patient,
+        yearOfBirth: event.target.value.substring(0,4),
+        monthOfBirth: event.target.value.substring(5,7),
+        dayOfBirth : event.target.value.substring(8,10)
+      })
+    }
+    else {
+      setPatient({
+        ...patient,
+        [event.target.name]: event.target.value
+      })
+    }
     // console.log(patient)
   }
-  if(patient == null) return "";
+  if(patient == null) return null;
   return (
-    <div className="container">
+    <div className="container shadow-lg" >
       <Form onSubmit={handleRegisterPatient}>
         <h1> Patient Details </h1>
         <FormGroup>
@@ -48,31 +58,44 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
         </FormGroup>
         <FormGroup>
           <Label for="address">Address</Label>
-          <div className="container">
+          <div className="container shadow">
+            <Row>
+              <Col>
+                <FormGroup>
+                  <Label for="line">Line</Label>
+                  <Input type="textarea" name="line" id="line" placeholder="Enter Line" value={patient.address? patient.address.line : ""} onChange={onChangeInputs} />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <FormGroup>
+                  <Label for="line">District</Label>
+                  <Input type="text" name="district" id="district" placeholder="Enter District" value={patient.address? patient.address.district : ""} onChange={onChangeInputs} />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Label for="line">State</Label>
+                  <Input type="text" name="state" id="state" placeholder="Enter State" value={patient.address? patient.address.state : ""} onChange={onChangeInputs} />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
             <FormGroup>
-              <Label for="line">Line</Label>
-              <Input type="textarea" name="line" id="line" placeholder="Enter Line" value={patient.address? patient.address.line : null} onChange={onChangeInputs} />
+              <Label for="pincode">Pincode</Label>
+              <Input type="text" name="pincode" id="pincode" placeholder="Enter Pincode" value={patient.address? patient.address.pincode : ""} onChange={onChangeInputs} />
             </FormGroup>
-
-            <FormGroup>
-              <Label for="line">District</Label>
-              <Input type="textarea" name="district" id="district" placeholder="Enter District" value={patient.address? patient.address.district : null} onChange={onChangeInputs} />
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="line">State</Label>
-              <Input type="textarea" name="state" id="state" placeholder="Enter State" value={patient.address? patient.address.state : null} onChange={onChangeInputs} />
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="line">Line</Label>
-              <Input type="textarea" name="pincode" id="pincode" placeholder="Enter Pincode" value={patient.address? patient.address.pincode : null} onChange={onChangeInputs} />
-            </FormGroup>
+            </Row>
           </div>
         </FormGroup>
         <FormGroup>
           <Label for="birthDate">Birth Date</Label>
-          <Input type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"  value={patient.yearOfBirth+"-"+patient.monthOfBirth+"-"+patient.dayOfBirth} onChange={onChangeInputs} />
+          <Input type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"
+                 value = {new Date(patient.yearOfBirth+"-"+
+                                          patient.monthOfBirth+"-"+
+                                          patient.dayOfBirth).toISOString().split('T')[0]}
+                 onChange={onChangeInputs} />
         </FormGroup>
         <FormGroup>
           <Label for="mobileNumber">Mobile Number</Label>
