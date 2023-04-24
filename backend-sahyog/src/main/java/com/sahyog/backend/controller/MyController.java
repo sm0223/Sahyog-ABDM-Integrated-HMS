@@ -1,6 +1,8 @@
 package com.sahyog.backend.controller;
 
 import com.sahyog.backend.entities.*;
+import com.sahyog.backend.repo.CareContextRepository;
+import com.sahyog.backend.repo.VisitRepository;
 import com.sahyog.backend.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -151,13 +155,17 @@ public class MyController {
     }
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private VisitRepository visitRepository;
     @PostMapping(value = "/api/link/care-context")
     public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 //        ------From FrontEnd--------
 //        healthId: patientId,
 //        transactionId: accessToken,
 //        name: patientName,
-//        display: display
+//        display: display(diagnosis)
+//        reason: reason
 
         System.out.println("\nIn Care Context linking");
         ABDMSession session = new ABDMSession();
@@ -167,11 +175,27 @@ public class MyController {
         System.out.println("customRequest.getTransactionId() : "+ customRequest.getTransactionId());
         System.out.println("customRequest.getDisplay() : "+ customRequest.getDisplay());
         System.out.println("customRequest.getName() : "+ customRequest.getName());
+        System.out.println("customRequest.getReason() : "+ customRequest.getReason());
 
+        LocalDate localDate = LocalDate.now();
         Patient patientObj = patientService.findPatientByHealthId(customRequest.getHealthId());
+        Visit visitObj = new Visit();
 
+//------------Initializing care context object------
         careContext.patient = patientObj;
         careContext.display = customRequest.getDisplay();
+
+//------------Initializing Visit object-------------
+        visitObj.reasonOfVisit = customRequest.getReason();
+        visitObj.diagnosis = customRequest.getDisplay();
+        visitObj.dateOfVisit = localDate.toString();
+        visitObj.careContext = careContext;
+        visitObj.patient = patientObj;
+
+        List<Visit> newList = new ArrayList<>();
+        newList.add(visitObj);
+        careContext.setVisitList(newList);
+
 
         String patientReferenceNumber = careContext.patient.healthId;
         String displayPatientName = customRequest.getName();
@@ -184,9 +208,10 @@ public class MyController {
 
         System.out.println(patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
 
-        int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
-
-        return statusCode;
+//        int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
+//
+//        return statusCode;
+        return 200;
     }
 
 

@@ -39,7 +39,8 @@ public class CareContext {
             referencedColumnName = "doctorId"
     )
     public Doctor doctor;
-    @OneToMany(mappedBy = "careContext")
+
+    @OneToMany(mappedBy = "careContext",cascade = CascadeType.ALL)
     List<Visit> visitList;
 
 }

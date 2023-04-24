@@ -8,9 +8,9 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
   const handleRegisterPatient = async (event) => {
     event.preventDefault();
     console.log(patient)
-    // const response = await registrationService.registerPatient(patient)
-    // alert('Patient Registered')
-    // handleDashboard("REGISTER-PATIENT")
+    const response = await registrationService.registerPatient(patient)
+    alert('Patient Registered')
+    handleDashboard("REGISTER-PATIENT")
   }
   const onChangeInputs= (event) => {
     console.log(event.target.name);
