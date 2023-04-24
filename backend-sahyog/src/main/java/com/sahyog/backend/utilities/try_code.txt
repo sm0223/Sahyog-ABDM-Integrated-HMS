@@ -1,0 +1,42 @@
+http
+                .cors().and()
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/api/auth/**")
+                .permitAll()
+                .requestMatchers("/v0.5/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+        
+        
+        
+        if this doesnt work :
+        http
+                .cors().and()
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/api/auth/**")
+                .permitAll()
+                .requestMatchers("/v0.5")
+                .negate()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
