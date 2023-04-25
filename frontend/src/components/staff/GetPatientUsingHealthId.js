@@ -14,6 +14,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const handleSubmit = async (event)=> {
     event.preventDefault()
     try {
+      const abortController = new AbortController();
       await fetchEventSource(configData['url'] + "/api/register/health-id", {
         method: "POST",
         headers: {
@@ -28,27 +29,26 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
             ...state,
             showOTPInput: true,
           })
+          abortController.abort()
         },
         onclose() {
           console.log("closed")
         },
         onerror(error) {
           throw new Error("Server Un-responsive")
-          console.log("error ", error)
-        }
+        },
+        signal: abortController.signal
       })
-      // const response = await patientService.getPatientFromHealthId(healthId)
-      // console.log(response);
-      // setPatient(response)
-      // handleDashboard("REGISTER-PATIENT")
     }
     catch (err) {
+      alert(err.toString())
       console.log(err.toString())
     }
   }
   const handleOTPSubmit = async (event)=> {
     event.preventDefault()
     try {
+      const abortController = new AbortController();
       await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
         method: "POST",
         headers: {
@@ -77,19 +77,21 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
             mobile: res.identifiers ? res.identifiers.find(identifier => identifier.type === "MOBILE").value : null,
             healthIdNumber: res.identifiers ? res.identifiers.find(identifier => identifier.type === "HEALTH_NUMBER").value : null,
           })
+          abortController.abort()
           handleDashboard("REGISTER-PATIENT")
         },
         onclose() {
           console.log("closed")
         },
         onerror(error) {
-          throw new Error("Server Unresponsive");
-          console.log("error ", error)
-        }
+          throw new Error("Unable to Validate");
+        },
+        signal:abortController.signal
       })
     }
     catch (err){
       console.log(err.toString())
+      alert(err.toString())
     }
   }
   const changeHealthId = (event)=> {
