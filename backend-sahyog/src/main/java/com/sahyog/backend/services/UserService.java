@@ -1,5 +1,6 @@
 package com.sahyog.backend.services;
 
+import com.sahyog.backend.entities.Patient;
 import com.sahyog.backend.entities.User;
 import com.sahyog.backend.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,4 +19,7 @@ public class UserService  {
                 orElseThrow(()->new UsernameNotFoundException("User not found"));
     }
 
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
 }

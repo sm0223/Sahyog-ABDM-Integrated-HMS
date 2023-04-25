@@ -3,7 +3,6 @@ import {Card, CardBody, CardFooter, CardTitle, Container, Form, FormGroup, Input
 
 const Login = ({handleLogin, errorMessage}) => {
 
-
   return (
       <Container style={{marginTop:100,width:"30%"}}>
         <Card style={{backgroundColor: "#212529"}}>
@@ -24,7 +23,8 @@ const Login = ({handleLogin, errorMessage}) => {
                 <Input type="checkbox"/>
                 <Label><b>Remember Me</b></Label>
               </FormGroup>
-              {errorMessage && <p style = {{color:"red"}}> {errorMessage}</p>}
+              {errorMessage && <p style = {{
+                color:"red"}}> {errorMessage}</p>}
               <Input type="submit" className="btn btn-primary" type="submit">
                 Submit
               </Input>

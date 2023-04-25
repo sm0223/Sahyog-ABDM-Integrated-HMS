@@ -14,5 +14,7 @@ public class CustomRequest {
     String transactionId;
     String name;
     String display;
+    String reason;
+    String username;
 }
 

@@ -7,12 +7,14 @@ const api = axios.create(
     }
 );
 
-const createNewCareContext = async (accessToken,patientId,patientName,display) => {
+const createNewCareContext = async (accessToken,patientId,patientName,diagnosis, reason, username) => {
   const temp = {
     healthId: patientId,
     transactionId: accessToken,
     name: patientName,
-    display: display
+    display: diagnosis,
+    reason: reason,
+    username: username
   }
   console.log("temp " , temp)
   try {

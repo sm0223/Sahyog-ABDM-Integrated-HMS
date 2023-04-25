@@ -12,7 +12,7 @@ function BasicNavbar({user, handleLogout}) {
             <Nav.Link href="/">Home</Nav.Link>
             { user ?
               <Container>
-                <NavDropdown title={user.userType} id="nav-dropdown">
+                <NavDropdown title={user.username} id="nav-dropdown">
                   <NavDropdown.Item eventKey="4.1" onClick={handleLogout}>Logout</NavDropdown.Item>
                   <NavDropdown.Item eventKey="4.2">Another action</NavDropdown.Item>
                   <NavDropdown.Item eventKey="4.3">Something else here</NavDropdown.Item>

@@ -20,6 +20,7 @@ import EditStaff from "./components/admin/staff/EditStaff";
 const App = () => {
     const navigate  = useNavigate();
     const [user, setuser] = useState(null);
+
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem("user"));
         console.log('effect',userData)
@@ -41,10 +42,12 @@ const App = () => {
                 setErrorMessage(null)
                 window.localStorage.setItem("token", responseData.token)
                 setuser({
+                    username: username,
                     userType: responseData.role
                 })
                 if (stayLoggedIn) {
                     window.localStorage.setItem("user", JSON.stringify({
+                        username: username,
                         userType: responseData.role
                     }))
                 }
