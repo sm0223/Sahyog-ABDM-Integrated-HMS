@@ -42,6 +42,7 @@ public class MyController {
 
         SseEmitter sseEmitter = emitters.get(requestId);
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
+
     }
     @PostMapping("/v0.5/users/auth/on-confirm")
     public void onConfirm(@RequestBody String response) throws Exception {
@@ -91,7 +92,7 @@ public class MyController {
         //Now HIP sends an acknowledgement to the ABDM
     }
 
-    //------------Custom APIS for FRONTEND and Initiating SSEs----------------------
+    //---------------------------------Custom APIS for FRONTEND and Initiating SSEs-------------------------------------
 
     @PostMapping(value = "/api/register/health-id") // auth/init
     public SseEmitter registerPatientUsinghealthId(@RequestBody CustomRequest customRequest) throws Exception, IOException {
