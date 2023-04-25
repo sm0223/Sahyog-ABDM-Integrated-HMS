@@ -37,6 +37,8 @@ public class Visit {
             referencedColumnName = "patientId"
     )
     public Patient patient;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(
             name = "doctor_id_fk",

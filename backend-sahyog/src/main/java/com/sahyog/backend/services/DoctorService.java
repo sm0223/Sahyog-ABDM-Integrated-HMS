@@ -1,8 +1,10 @@
 package com.sahyog.backend.services;
 
 import com.sahyog.backend.entities.CareContext;
+import com.sahyog.backend.entities.Doctor;
 import com.sahyog.backend.entities.Patient;
 import com.sahyog.backend.repo.CareContextRepository;
+import com.sahyog.backend.repo.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +41,12 @@ public class DoctorService {
 //        return careContextRepository.findByPatient(patient);
 //    }
 
-
+//    @Autowired
+//    private DoctorRepository doctorRepository;
+//
+////    public Doctor findDoctorByUserId(int userId)
+////    {
+////        return doctorRepository.findDoctorByUser(userId);
+////
+////    }
 }

@@ -42,7 +42,6 @@ export default function PractitionerDashboard({user}) {
         }
         setState(newState)
         break;
-        break;
       case "DISCHARGE-PATIENT":
         newState = {
           ...falseState,

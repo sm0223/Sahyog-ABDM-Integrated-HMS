@@ -15,5 +15,6 @@ public class CustomRequest {
     String name;
     String display;
     String reason;
+    String username;
 }
 

@@ -72,6 +72,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
     console.log("todo ")
   }
   const handleOTPSubmit = async (event)=> {
+    console.log(user.username)
     event.preventDefault()
     try {
       await fetchEventSource(configData['url'] + "/api/register/confirmMobileOTP", {
@@ -90,7 +91,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           // setAccessToken(token);
           // console.log("AccessToken------"+accessToken)
           setViewOTP(false)
-          const res = await doctorService.createNewCareContext(token, visit.patient.healthId, visit.patient.name, visit.diagnosis, visit.reasonOfVisit)
+          const res = await doctorService.createNewCareContext(token, visit.patient.healthId, visit.patient.name, visit.diagnosis, visit.reasonOfVisit, user.username)
           console.log("linkCareContextResponse",res)
           if(res.data = 202) alert('Care Context Saved')
           else alert('unknown error occurred')
