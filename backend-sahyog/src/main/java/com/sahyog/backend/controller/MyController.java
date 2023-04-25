@@ -182,6 +182,7 @@ public class MyController {
                     .toDate((String) jsonObject.getJSONObject("permission").getJSONObject("dateRange").get("to"))
                     .eraseDate((String) jsonObject.getJSONObject("permission").get("dataEraseAt"))
                     .patient(patientService.findPatientByHealthId((String) jsonObject.getJSONObject("patient").get("id")))
+                    .status("REQUESTED")
                     .doctor(doctorObj)
                     .build();
             consentService.saveConsent(consentObj);
