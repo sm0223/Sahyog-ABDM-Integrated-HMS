@@ -3,6 +3,7 @@ package com.sahyog.backend.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +15,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ABDMSession {
-
     private String token;
     public ABDMSession() {}
     public ABDMSession(String token) {
@@ -138,12 +138,14 @@ public class ABDMSession {
 
 
     //-------------------CONSENT AND DATA TRANSFER FLOW----------------------
+
     public int createConsentRequest(String UUIDCode, String consent) {
         HttpClient client = HttpClient.newHttpClient();
         String requestBody =  "{\n    \"requestId\": \""+ UUIDCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"consent\": " + consent+
                 "\n}";
 
         System.out.println(requestBody);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consent-requests/init"))
                 .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))

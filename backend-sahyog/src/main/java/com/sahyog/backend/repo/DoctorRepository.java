@@ -1,6 +1,7 @@
 package com.sahyog.backend.repo;
 
 import com.sahyog.backend.entities.Doctor;
+import com.sahyog.backend.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,4 +12,8 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     @Query(value = "select * from doctor d where d.user_id_fk=?1", nativeQuery = true)
     Doctor findDoctorsByUserId(int userId);
+
+    Doctor findDoctorsByUser(User user);
+
+    Doctor findDoctorsByRegistrationNumber(String registrationNumber);
 }

@@ -68,5 +68,21 @@ const consentRequestInit = async (consent) => {
     throw new Error("Unable to create new Consent-request in Server")
   }
 }
-
-export default {consentRequestInit, createNewCareContext}
+const getDoctorByUsername = async(username) => {
+  console.log("consent: ", JSON.stringify({username}))
+  try {
+    const response = await api.post(`/api/doctor/getByUsername/${username}`,
+        null,
+        {
+      headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data;
+  }
+  catch (err) {
+    throw new Error("Unable to create new Consent-request in Server")
+  }
+}
+export default {consentRequestInit, createNewCareContext, getDoctorByUsername}

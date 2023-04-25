@@ -3,10 +3,12 @@ import {Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Lab
 import doctorService from "../../services/doctorService";
 
 const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
+  // console.log("I am in Consent Request  "+JSON.stringify(user))
+
   const [purposeText, setPurposeText] = useState("Consent Required");
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
-  const [eraseDate, setEraseDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear()+1)));
+  const [eraseDate, setEraseDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear())+50000000));
   const [hiTypes, setHiTypes] = useState([
     "OPConsultation",
     "Prescription",
@@ -19,6 +21,9 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
   const toggle = () => handleDashboard("CLOSE-CONSENT-REQUEST");
   const handleSubmit = async (event)=>{
     event.preventDefault();
+    const doctor = await doctorService.getDoctorByUsername(user.username);
+    console.log("doctor",doctor)
+
     console.log(purposeText, hiTypes, fromDate.toISOString())
     const consent  = {
       purpose: {
@@ -33,10 +38,10 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
         id: "sahyog-hip-facility-iiitb"
       },
       requester: {
-        name: "Dr. Manju",
+        name: doctor.name,
         identifier: {
           type: "REGNO",
-          value: "MH1001",
+          value: doctor.registrationNumber,
           system: "https://www.mciindia.org"
         }
       },
@@ -55,6 +60,7 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
         }
       }
     }
+    console.log(consent)
     const res = await doctorService.consentRequestInit(consent);
     console.log(res)
   }

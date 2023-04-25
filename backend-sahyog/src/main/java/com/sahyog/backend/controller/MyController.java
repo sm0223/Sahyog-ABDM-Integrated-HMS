@@ -1,10 +1,9 @@
 package com.sahyog.backend.controller;
 
 import com.sahyog.backend.entities.*;
-import com.sahyog.backend.repo.CareContextRepository;
-import com.sahyog.backend.repo.DoctorRepository;
-import com.sahyog.backend.repo.VisitRepository;
+import com.sahyog.backend.repo.*;
 import com.sahyog.backend.services.*;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,8 @@ public class MyController {
     private Util util = new Util();
     private PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    UserRepository userRepository;
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
@@ -59,13 +60,25 @@ public class MyController {
         SseEmitter sseEmitter = emitters.get(requestId);
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
     }
+
+    @Autowired
+    private ConsentRepository consentRepository;
+    String requestId;
     @PostMapping("/v0.5/consent-requests/on-init")
     public void onConsentRequestInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENT-REQEUST-ON-INIT " + response);
+
+        JSONObject jsonObject = new JSONObject(response);
+
+        String consentId = (String) jsonObject.getJSONObject("consentRequest").get("id");
+
+        consentRepository.updateConsentId(consentId, requestId);
+        System.out.println("Consent Id updated in the table  ");
     }
     @PostMapping("/v0.5/consents/hiu/notify")
     public void consentsHiuNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: HIU NOTIFY " + response);
+
     }
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
@@ -142,17 +155,39 @@ public class MyController {
         System.out.println("STATUS: PATCH_URL: " + statusCode);
         return statusCode;
     }
+    @Autowired
+    public ConsentService consentService;
     @PostMapping(value = "/api/consent-requests/init")
     public int consentRequestInit(@RequestBody String consent) throws Exception {
-        System.out.println("REQUEST: CONSENT-REQUEST : \n" );
+
+        System.out.println("REQUEST: CONSENT-REQUEST INIT: \n" );
+
         ABDMSession session = new ABDMSession();
         session.setToken();
-        String UUIDCode = UUID.randomUUID().toString();
+        requestId = UUID.randomUUID().toString();
+
         String temp = consent.substring(12,consent.length()-2).replace("\\", "");
 
-        int statusCode = session.createConsentRequest(UUIDCode, temp );
+        int statusCode = session.createConsentRequest(requestId, temp );
+        if (statusCode == 202)
+        {
+            JSONObject jsonObject = new JSONObject(temp);
 
-        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
+            Doctor doctorObj = doctorRepository.findDoctorsByRegistrationNumber((String) jsonObject.getJSONObject("requester").getJSONObject("identifier").get("value"));
+
+            Consent consentObj = Consent.builder()
+                    .requestId(requestId)
+                    .purposeText((String) jsonObject.getJSONObject("purpose").get("text"))
+                    .fromDate((String) jsonObject.getJSONObject("permission").getJSONObject("dateRange").get("from"))
+                    .toDate((String) jsonObject.getJSONObject("permission").getJSONObject("dateRange").get("to"))
+                    .eraseDate((String) jsonObject.getJSONObject("permission").get("dataEraseAt"))
+                    .patient(patientService.findPatientByHealthId((String) jsonObject.getJSONObject("patient").get("id")))
+                    .doctor(doctorObj)
+                    .build();
+            consentService.saveConsent(consentObj);
+        }
+
+        System.out.println("STATUS: CONSENT-REQUEST INIT: " + statusCode);
         return statusCode;
     }
     @Autowired
@@ -225,7 +260,12 @@ public class MyController {
         return statusCode;
     }
 
-
+    @PostMapping(value = "/api/doctor/getByUsername/{username}")
+    public Doctor getDoctorByUsername(@PathVariable String username) {
+        System.out.println("REQUEST : GET-DOCTOR-BY-USERNAME: " +username);
+        User user = userRepository.findUserByUsername(username);
+        return doctorRepository.findDoctorsByUser(user);
+    }
 
 //    ---------Patient Services------------
 

@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Consent {
     public String status;
     public String requestId;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(
             name = "patient_id_fk",
             referencedColumnName = "patientId"
@@ -36,6 +38,7 @@ public class Consent {
     public Patient patient;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(
             name = "doctor_id_fk",
             referencedColumnName = "doctorId"
