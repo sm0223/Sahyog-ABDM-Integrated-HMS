@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CareContextRepository extends JpaRepository<CareContext, Integer> {
-
+    public List<CareContext> findCareContextsByPatient(Patient patient);
 }

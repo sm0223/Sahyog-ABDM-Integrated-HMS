@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import ConsentRequest from "./ConsentRequest";
 import CreateVisit from "./CreateVisit";
+import ViewPatientHistory from "./ViewPatientHistory";
+import {Container} from "reactstrap";
 
 const PatientVisit = ({user}) => {
   const falseState = {
@@ -39,6 +41,21 @@ const PatientVisit = ({user}) => {
           ...state,
           createConsentRequest: false
         })
+        break;
+      case "VIEW-PATIENT-HISTORY":
+        setState({
+          ...state,
+          viewPatientHistory: true
+        })
+        break;
+
+      case "CLOSE-PATIENT-HISTORY":
+        setState({
+          ...state,
+          viewPatientHistory: false
+        })
+        break;
+
       default :
         setState({
           ...falseState,
@@ -51,11 +68,11 @@ const PatientVisit = ({user}) => {
     patient: null,
     reasonOfVisit : "",
     diagnosis : "",
-    pdf: null
+    healthRecord: null
   })
 
   return (
-      <>
+      <Container>
         {state.home && <CreateVisit
             user ={user}
             visit = {visit}
@@ -63,9 +80,9 @@ const PatientVisit = ({user}) => {
             handleDashboard = {handleDashboard}
         />
         }
-        {<ConsentRequest modal={state.createConsentRequest} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />
-        }
-      </>
+        {<ConsentRequest modal={state.createConsentRequest} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />}
+        {state.viewPatientHistory&&<ViewPatientHistory modal={state.viewPatientHistory} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />}
+      </Container>
   );
 };
 

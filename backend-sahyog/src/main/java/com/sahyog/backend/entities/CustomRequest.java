@@ -16,5 +16,6 @@ public class CustomRequest {
     String display;
     String reason;
     String username;
+    String healthRecord;
 }
 

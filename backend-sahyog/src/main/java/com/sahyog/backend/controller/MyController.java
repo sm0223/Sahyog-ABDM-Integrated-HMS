@@ -3,8 +3,10 @@ package com.sahyog.backend.controller;
 import com.sahyog.backend.entities.*;
 import com.sahyog.backend.repo.CareContextRepository;
 import com.sahyog.backend.repo.DoctorRepository;
+import com.sahyog.backend.repo.PatientRepository;
 import com.sahyog.backend.repo.VisitRepository;
 import com.sahyog.backend.services.*;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -174,16 +177,12 @@ public class MyController {
 //        reason: reason
 //        username: username
 
+
+
         System.out.println("\nIn Care Context linking");
+        System.out.println("customRequest.getHealthRecord(): "+customRequest.getHealthRecord());
         ABDMSession session = new ABDMSession();
         CareContext careContext = new CareContext();
-
-        System.out.println("customRequest.getHealthId() : "+ customRequest.getHealthId());
-        System.out.println("customRequest.getTransactionId() : "+ customRequest.getTransactionId());
-        System.out.println("customRequest.getDisplay() : "+ customRequest.getDisplay());
-        System.out.println("customRequest.getName() : "+ customRequest.getName());
-        System.out.println("customRequest.getReason() : "+ customRequest.getReason());
-        System.out.println("customRequest.getUsername() : "+ customRequest.getUsername());
 
         LocalDate localDate = LocalDate.now();
         User userObj = userService.findUserByUsername(customRequest.getUsername());
@@ -203,11 +202,11 @@ public class MyController {
         visitObj.careContext = careContext;
         visitObj.patient = patientObj;
         visitObj.doctor = doctorObj;
+        visitObj.setHealthRecord(customRequest.getHealthRecord().getBytes());
 
         List<Visit> newList = new ArrayList<>();
         newList.add(visitObj);
         careContext.setVisitList(newList);
-
 
         String patientReferenceNumber = careContext.patient.healthId;
         String displayPatientName = customRequest.getName();
@@ -218,7 +217,7 @@ public class MyController {
         session.setToken();
         System.out.println("Linking retreived token : " + session.getToken());
 
-        System.out.println(patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
+        System.out.println("\n"+patientReferenceNumber+" "+displayPatientName+" "+display+" "+careContextReferenceNumber+" "+linkToken);
 
         int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
 
@@ -254,11 +253,25 @@ public class MyController {
 
     @Autowired
     private DoctorService doctorService;
+    @Autowired
+    private CareContextRepository careContextRepository;
+    @Autowired
+    private PatientRepository patientRepository;
+
+    @PostMapping(value="/api/care-contexts/get-by-patient")
+    public List<CareContext> getAllCareContextsByPatient(@RequestBody String healthId)
+    {
+        System.out.println("REQUEST: GET ALL CARE-CONTEXTS-BY-PATIENT"+healthId);
+        Patient patient = patientRepository.findByHealthId(healthId);
+        System.out.println(patient.toString());
+
+        return careContextRepository.findCareContextsByPatient(patient);
+    }
 
 
 
 
-//    ---------Admin Doctor services-------------
+    //    ---------Admin Doctor services-------------
     @Autowired
     private AdminService adminDoctorService;
 
@@ -284,12 +297,6 @@ public class MyController {
     {
         return adminDoctorService.findDoctorByHealthId(healthIdNumber);
     }
-
-//    @GetMapping("/api/admin/getDoctor/{id}")
-//    public Doctor getDoctor(@PathVariable int id)
-//    {
-//        return adminDoctorService.findDoctorById(id);
-//    }
 
     @DeleteMapping("/api/admin/deleteDoctor/{id}")
     public String deleteDoctor(@PathVariable int id)

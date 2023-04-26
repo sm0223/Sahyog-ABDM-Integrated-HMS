@@ -3,6 +3,7 @@ package com.sahyog.backend.services;
 import com.sahyog.backend.entities.CareContext;
 import com.sahyog.backend.entities.Doctor;
 import com.sahyog.backend.entities.Patient;
+import com.sahyog.backend.entities.Visit;
 import com.sahyog.backend.repo.CareContextRepository;
 import com.sahyog.backend.repo.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,30 +17,18 @@ public class DoctorService {
 
     @Autowired
     private CareContextRepository careContextRepository;
-//    public Visit addVisit(Visit visit)
-//    {
-//        return visitRepository.save(visit);
-//    }
-//    public List<Visit> findVisitByPatientId(Patient patient)
-//    {
-//        return visitRepository.findByHealthIdNumber(patient);
-//    }
 
-//    public Visit findVisitById(int id)
-//    {
-//        return visitRepository.findById(id);
-//    }
-
+    public List<CareContext> getAllCareContextsByPatient(Patient patient) {
+        return careContextRepository.findCareContextsByPatient(patient);
+    }
 
     public CareContext addCareContext(CareContext careContext)
     {
+        for (Visit visit : careContext.getVisitList()) {
+            System.out.println(visit.healthRecord.toString());
+        }
         return careContextRepository.save(careContext);
     }
-
-//    public List<CareContext> getAllCareContextByPatientId(Patient patient)
-//    {
-//        return careContextRepository.findByPatient(patient);
-//    }
 
 //    @Autowired
 //    private DoctorRepository doctorRepository;

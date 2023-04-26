@@ -22,12 +22,10 @@ public class Visit {
             generator = "visit_sequence"
     )
     private int visitId;
-
-
-
+    @Column(name = "health_record",length=16777214)
+    public byte[] healthRecord;
     public String reasonOfVisit;
     public String diagnosis;
-    public String prescription;
     public String dateOfVisit;
 
     @JsonIgnore

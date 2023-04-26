@@ -97,7 +97,7 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
   }
   if(patient == null) return null;
   return (
-    <div className="container shadow-lg" >
+    <div className="container shadow-lg" style={{padding:30}}>
       <Form onSubmit={handleRegisterPatient}>
         <h1> Patient Details </h1>
         <FormGroup>
@@ -107,26 +107,49 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
         </FormGroup>
 
         <FormGroup>
-          <Label for="healthIdNumber">Health ID Number</Label>
-          <Input valid = {formErrors.healthIdNumber===""} invalid = {formErrors.healthIdNumber!==""}  type="text" name="healthIdNumber" id="healthIdNumber" placeholder="Enter Health ID Number" value={patient.healthIdNumber} onChange={onChangeInputs} />
-        <FormFeedback>{formErrors.healthIdNumber}</FormFeedback>
-        </FormGroup>
-
-        <FormGroup>
           <Label for="name">Name</Label>
           <Input valid = {formErrors.name===""} invalid = {formErrors.name!==""}  type="text" name="name" id="name" placeholder="Enter Name" value={patient.name} onChange={onChangeInputs} />
-        <FormFeedback>{formErrors.name}</FormFeedback>
+          <FormFeedback>{formErrors.name}</FormFeedback>
         </FormGroup>
-
-        <FormGroup>
-          <Label for="gender">Gender</Label>
-          <Input valid = {formErrors.gender===""} invalid = {formErrors.gender!==""}  type="select" name="gender" id="gender" value={patient.gender} onChange={onChangeInputs}>
-            <option id="Male" value="Male">Male</option>
-            <option id= "Female" value="Female">Female</option>
-          </Input>
-        <FormFeedback>{formErrors.gender}</FormFeedback>
+        <Row>
+          <Col>
+            <FormGroup>
+              <Label for="healthIdNumber">Health ID Number</Label>
+              <Input valid = {formErrors.healthIdNumber===""} invalid = {formErrors.healthIdNumber!==""}  type="text" name="healthIdNumber" id="healthIdNumber" placeholder="Enter Health ID Number" value={patient.healthIdNumber} onChange={onChangeInputs} />
+            <FormFeedback>{formErrors.healthIdNumber}</FormFeedback>
+            </FormGroup>
+          </Col>
+          <Col>
+            <FormGroup>
+              <Label for="gender">Gender</Label>
+              <Input valid = {formErrors.gender===""} invalid = {formErrors.gender!==""}  type="select" name="gender" id="gender" value={patient.gender} onChange={onChangeInputs}>
+                <option id="Male" value="Male">Male</option>
+                <option id= "Female" value="Female">Female</option>
+              </Input>
+            <FormFeedback>{formErrors.gender}</FormFeedback>
         </FormGroup>
-
+        </Col>
+        </Row>
+        <Row>
+          <Col>
+            <FormGroup>
+              <Label for="birthDate">Birth Date</Label>
+              <Input valid = {formErrors.birthDate===""} invalid = {formErrors.birthDate!==""}  type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"
+                     value = {new Date(patient.yearOfBirth+"-"+
+                         patient.monthOfBirth+"-"+
+                         patient.dayOfBirth).toISOString().split('T')[0]}
+                     onChange={onChangeInputs} />
+              <FormFeedback>{formErrors.birthDate}</FormFeedback>
+            </FormGroup>
+          </Col>
+          <Col>
+            <FormGroup>
+              <Label for="mobileNumber">Mobile Number</Label>
+              <Input valid = {formErrors.mobile===""} invalid = {formErrors.mobile!==""}  type="text" name="mobile" id="mobile" placeholder="Enter Mobile Number" value={patient.mobile} onChange={onChangeInputs} />
+              <FormFeedback>{formErrors.mobile}</FormFeedback>
+            </FormGroup>
+          </Col>
+        </Row>
         <FormGroup>
           <Label for="address">Address</Label>
           <div className="container shadow">
@@ -137,7 +160,7 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
                   <Input valid = {formErrors.line===""} invalid = {formErrors.line!==""}  type="textarea" name="line" id="line" placeholder="Enter Line"
                          value={patient.address.line? patient.address.line : ""}
                          onChange={onChangeInputs} />
-                <FormFeedback>{formErrors.line}</FormFeedback>
+                  <FormFeedback>{formErrors.line}</FormFeedback>
         </FormGroup>
               </Col>
             </Row>
@@ -167,20 +190,9 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
           </div>
         </FormGroup>
         <FormGroup>
-          <Label for="birthDate">Birth Date</Label>
-          <Input valid = {formErrors.birthDate===""} invalid = {formErrors.birthDate!==""}  type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"
-                 value = {new Date(patient.yearOfBirth+"-"+
-                                          patient.monthOfBirth+"-"+
-                                          patient.dayOfBirth).toISOString().split('T')[0]}
-                 onChange={onChangeInputs} />
-        <FormFeedback>{formErrors.birthDate}</FormFeedback>
+        <Input className="btn btn-primary" type="submit" onClick={handleRegisterPatient}>Submit</Input>
+        <br/>
         </FormGroup>
-        <FormGroup>
-          <Label for="mobileNumber">Mobile Number</Label>
-          <Input valid = {formErrors.mobile===""} invalid = {formErrors.mobile!==""}  type="text" name="mobile" id="mobile" placeholder="Enter Mobile Number" value={patient.mobile} onChange={onChangeInputs} />
-        <FormFeedback>{formErrors.mobile}</FormFeedback>
-        </FormGroup>
-        <Button color="primary" type="submit" onClick={handleRegisterPatient}>Submit</Button>
       </Form>
     </div>
   );

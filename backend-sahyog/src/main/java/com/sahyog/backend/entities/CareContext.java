@@ -43,4 +43,6 @@ public class CareContext {
     @OneToMany(mappedBy = "careContext",cascade = CascadeType.ALL)
     List<Visit> visitList;
 
+
+
 }

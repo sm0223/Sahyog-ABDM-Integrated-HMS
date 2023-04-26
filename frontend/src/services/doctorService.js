@@ -7,14 +7,15 @@ const api = axios.create(
     }
 );
 
-const createNewCareContext = async (accessToken,patientId,patientName,diagnosis, reason, username) => {
+const createNewCareContext = async (accessToken,patientId,patientName,diagnosis, reason, username, healthRecord) => {
   const temp = {
     healthId: patientId,
     transactionId: accessToken,
     name: patientName,
     display: diagnosis,
     reason: reason,
-    username: username
+    username: username,
+    healthRecord:healthRecord
   }
   console.log("temp " , temp)
   try {
@@ -30,25 +31,6 @@ const createNewCareContext = async (accessToken,patientId,patientName,diagnosis,
     throw new Error("Unable to create new care-context in Server")
   }
 
-}
-const getAllCareContextFromPatientID = async (visit, careContextDisplayName) => {
-  console.log("visit: ", visit)
-  console.log("careContextDisplayName", careContextDisplayName)
-  try {
-    const response = await api.post("api/doctor/care-context/create", {
-      visit: visit,
-      displayName: careContextDisplayName
-    }, {
-      headers: {
-        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
-        'Content-Type': 'application/json'
-      }
-    })
-    return response;
-  }
-  catch (err) {
-    throw new Error("Unable to create new care-context in Server")
-  }
 }
 
 const consentRequestInit = async (consent) => {
@@ -68,5 +50,17 @@ const consentRequestInit = async (consent) => {
     throw new Error("Unable to create new Consent-request in Server")
   }
 }
-
-export default {consentRequestInit, createNewCareContext}
+const getCareContextListByPatient = async (patient) => {
+  try {
+    const response = await api.post("/api/care-contexts/get-by-patient", patient.healthId, {
+      headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data;
+  } catch (err) {
+    throw new Error("Unable to get Care Context from Server")
+  }
+}
+export default {consentRequestInit, createNewCareContext, getCareContextListByPatient}
