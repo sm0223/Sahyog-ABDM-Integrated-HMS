@@ -59,6 +59,9 @@ public class Patient{
     )
     List<Consent> consentList;
 
+    @OneToMany(mappedBy = "patient")
+    List<Visit> artifactList;
+
 }
 
 

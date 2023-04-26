@@ -166,6 +166,34 @@ public class ABDMSession {
             return 510;
         }
     }
+
+    public int fetchAllCareContexts(String consentId)
+    {
+        String requestId = UUID.randomUUID().toString();
+
+        String requestBody =  "{\n    \"requestId\": \""+ requestId+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n    \"consentId\": " + consentId+
+                "\n}";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consents/fetch"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
+    }
     public int sendNotificationAcknowledgement(String consentId, String requestID) {
         HttpClient client = HttpClient.newHttpClient();
         String requestBody =  "{\n    \"requestId\": \""+ UUID.randomUUID()+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"acknowledgement\": {\n" +
@@ -179,7 +207,7 @@ public class ABDMSession {
                 "  \"resp\": {\n" +
                 "    \"requestId\": \""+requestID+"\"\n" +
                 "  }\n}";
-        System.out.println(requestBody);
+        System.out.println("Sending to on notify\n"+requestBody);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consents/hip/on-notify"))
                 .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))

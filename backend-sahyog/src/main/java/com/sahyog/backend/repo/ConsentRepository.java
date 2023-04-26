@@ -17,4 +17,15 @@ public interface ConsentRepository extends JpaRepository<Consent, Integer> {
             nativeQuery = true
     )
     void updateConsentId(String consentId, String requestId);
+
+    @Modifying
+    @Transactional
+    @Query(
+            value = "update consent set artifact_id = ?1 where consent_id = ?2",
+            nativeQuery = true
+    )
+    void updateArtifactId(String artifactId, String consentId);
+
+    public Consent findConsentByConsentId(String consentId);
+
 }

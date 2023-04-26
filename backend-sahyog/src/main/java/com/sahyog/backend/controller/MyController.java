@@ -3,6 +3,7 @@ package com.sahyog.backend.controller;
 import com.sahyog.backend.entities.*;
 import com.sahyog.backend.repo.*;
 import com.sahyog.backend.services.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -75,11 +76,40 @@ public class MyController {
         consentRepository.updateConsentId(consentId, requestId);
         System.out.println("Consent Id updated in the table  ");
     }
+
+    @Autowired
+    private ArtifactsRepository artifactsRepository;
     @PostMapping("/v0.5/consents/hiu/notify")
     public void consentsHiuNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: HIU NOTIFY " + response);
 
+        JSONObject jsonObject = new JSONObject(response);
+        String consentStatus = (String) jsonObject.getJSONObject("notification").get("status");
+
+        if(!consentStatus.equals("GRANTED")) {
+            System.out.println("CONSENT NOT GRANTED");
+            return;
+        }
+
+        Consent consentObj = consentRepository.findConsentByConsentId((String) jsonObject.getJSONObject("notification").get("consentRequestId"));
+        Patient patientObj = patientService.findPatientByHealthId(consentObj.patient.getHealthId());
+
+        JSONArray artifactsArray = jsonObject.getJSONObject("notification").getJSONArray("consentArtefacts");
+
+        for (int i=0;i<artifactsArray.length();i++)
+        {
+            Artifacts artifactsObj = new Artifacts();
+            JSONObject obj = artifactsArray.getJSONObject(i);
+            artifactsObj.consentArtifactId = (String) obj.get("id");
+            artifactsObj.patient = patientObj;
+            artifactsObj.consent = consentObj;
+            artifactsRepository.save(artifactsObj);
+        }
+
+
+
     }
+
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
@@ -90,6 +120,7 @@ public class MyController {
             System.out.println("CONSENT NOT GRANTED");
             return;
         }
+
         String requestId = util.getABDMRequestID(response);
         ABDMSession session = new ABDMSession();
         session.setToken();
@@ -103,6 +134,11 @@ public class MyController {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
 
         //Now HIP sends an acknowledgement to the ABDM
+    }
+
+    @PostMapping("/v0.5/consents/on-fetch")
+    public void careContextsFetch(@RequestBody String response) throws Exception {
+        System.out.println("CARE CONTEXT FETCH RESPONSE: " + response);
     }
 
     //---------------------------------Custom APIS for FRONTEND and Initiating SSEs-------------------------------------
@@ -202,13 +238,6 @@ public class MyController {
     private VisitRepository visitRepository;
     @PostMapping(value = "/api/link/care-context")
     public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
-//        ------From FrontEnd--------
-//        healthId: patientId,
-//        transactionId: accessToken,
-//        name: patientName,
-//        display: display(diagnosis)
-//        reason: reason
-//        username: username
 
         System.out.println("\nIn Care Context linking");
         ABDMSession session = new ABDMSession();
@@ -244,7 +273,6 @@ public class MyController {
         newList.add(visitObj);
         careContext.setVisitList(newList);
 
-
         String patientReferenceNumber = careContext.patient.healthId;
         String displayPatientName = customRequest.getName();
         String display = careContext.display;
@@ -260,12 +288,15 @@ public class MyController {
 
         return statusCode;
     }
+    @PostMapping("/api/care_context/fetch")
+    public int fetchAllCareContext(@RequestBody String customRequest) throws Exception {
 
-    @PostMapping(value = "/api/doctor/getByUsername/{username}")
-    public Doctor getDoctorByUsername(@PathVariable String username) {
-        System.out.println("REQUEST : GET-DOCTOR-BY-USERNAME: " +username);
-        User user = userRepository.findUserByUsername(username);
-        return doctorRepository.findDoctorsByUser(user);
+        System.out.println("FETCHING: CARE-CONTEXTS: \n" + customRequest);
+        ABDMSession session = new ABDMSession();
+        session.setToken();
+
+        int statusCode = session.fetchAllCareContexts(customRequest);
+        return statusCode;
     }
 
 //    ---------Patient Services------------
@@ -297,7 +328,12 @@ public class MyController {
     private DoctorService doctorService;
 
 
-
+    @PostMapping(value = "/api/doctor/getByUsername/{username}")
+    public Doctor getDoctorByUsername(@PathVariable String username) {
+        System.out.println("REQUEST : GET-DOCTOR-BY-USERNAME: " +username);
+        User user = userRepository.findUserByUsername(username);
+        return doctorRepository.findDoctorsByUser(user);
+    }
 
 //    ---------Admin Doctor services-------------
     @Autowired
