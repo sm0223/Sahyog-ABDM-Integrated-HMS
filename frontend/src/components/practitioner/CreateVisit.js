@@ -1,18 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Col, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import patientService from "../../services/patientService";
 import doctorService from "../../services/doctorService";
 import {fetchEventSource} from "@microsoft/fetch-event-source";
 import configData from "../../services/apiConfig.json";
-const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
-  console.log("checking user==========="+JSON.stringify(user))
-  const visitState = {
-    getPatientForm: true,
-    visitForm:false,
-    careContextForm:false,
-    consentRequestForm:false,
-  }
-  const [patient, setPatient] = useState();
+import AssignToExistingCareContext from "./AssignToExistingCareContext";
+const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
   const [healthIdSearchInput, setHealthIdSearchInput] = useState("");
   const [visitCreated, setVisitCreated] = useState(false);
   const [viewOTP, setViewOTP] = useState(false);
@@ -22,6 +15,23 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
     name:"",
     data:null
   });
+
+  useEffect(() => {
+    return () => {
+      const updatePatient = async () => {
+        const response = await patientService.getPatientFromHealthId(visit.patient.healthId)
+        setVisit({
+          ...visit,
+          patient : response
+        })
+
+      };
+      console.log("USE EFFECT Triggered")
+      if(visit.patient) updatePatient()
+    };
+  }, [state]);
+
+
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -45,6 +55,12 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           data: dataUri})
       },(err)=>console.log(err.toString()))
     }
+  const handleReEditVisit = () => {
+    console.log(visit)
+    setVisitCreated(false)
+  }
+
+  //-------------------------------------------------Backend Communicating functions------------------------------------
   const handleSearchPatient = async (event) => {
     event.preventDefault()
     const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
@@ -63,10 +79,6 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
     })
     console.log("event " , event)
     setVisitCreated(true)
-  }
-  const handleReEditVisit = () => {
-    console.log(visit)
-    setVisitCreated(false)
   }
   const handleCreateNewCareContext = async () => {
     try {
@@ -98,10 +110,6 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
       console.log(err.toString())
     }
   }
-  const handleAssignCareContext = async()=> {
-    //todo
-    console.log("todo ")
-  }
   const handleOTPSubmit = async (event)=> {
     console.log(user.username)
     event.preventDefault()
@@ -119,9 +127,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
           console.log("on Search of accessToken    "+response.data)
           let token = await (JSON.parse(response.data)).authCode
           console.log("On confirm response: ", token)
-          //------giving null-------
-          // setAccessToken(token);
-          // console.log("AccessToken------"+accessToken)
+
           setViewOTP(false)
           const res = await doctorService.createNewCareContext(token, visit.patient.healthId, visit.patient.name,
               visit.diagnosis, visit.reasonOfVisit, user.username, fileData.data)
@@ -144,7 +150,9 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
       console.log(err.toString())
     }
   }
+  const updateVisit = () => {
 
+  };
   return (
       <div>
         <Form onSubmit={handleSearchPatient}>
@@ -219,7 +227,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                     <Button color="secondary" type='submit' onClick={handleReEditVisit}>Re-Edit</Button>
                     </Col>
                     <Col md = "5">
-                    <Button className="btn btn-block" color = 'primary' type='submit' onClick={handleAssignCareContext}>Assign to Existing Care-Context</Button>
+                    <Button className="btn btn-block" color = 'primary' type='submit' onClick={()=>handleDashboard("ASSIGN-CARE-CONTEXT")}>Assign to Existing Care-Context</Button>
                     </Col>
                     <Col md = "5">
                     <Button color='primary' type='submit' onClick={handleCreateNewCareContext}>Create New Care-context</Button>
@@ -233,7 +241,7 @@ const CreateVisit = ({user, visit, setVisit, handleDashboard}) => {
                   <form onSubmit = {handleSubmitVisit}>
                     <FormGroup>
                       <Label><b>Reason of Visit </b></Label>
-                      <Input type='textarea' id = "reasonOfVisit" name="reasonOfVisit" ></Input>
+                      <Input type='textarea' id = "reasonOfVisit" name="reasonOfVisit" onChange={updateVisit}></Input>
                     </FormGroup>
                     <FormGroup>
                       <Label><b>Diagnosis</b></Label>
