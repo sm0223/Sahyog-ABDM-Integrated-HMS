@@ -24,10 +24,11 @@ public class Visit {
     private int visitId;
 
 
-
+    @Lob
+    @Column(name = "health_record",length=16777214)
+    public byte[] healthRecord;
     public String reasonOfVisit;
     public String diagnosis;
-    public String prescription;
     public String dateOfVisit;
 
     @JsonIgnore
