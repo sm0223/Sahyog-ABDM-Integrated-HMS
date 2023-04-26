@@ -30,7 +30,6 @@ const createNewCareContext = async (accessToken,patientId,patientName,diagnosis,
   catch (err) {
     throw new Error("Unable to create new care-context in Server")
   }
-
 }
 
 const assignCareContext = async (careContext, visit) => {
@@ -54,7 +53,6 @@ const assignCareContext = async (careContext, visit) => {
   catch (err) {
     throw new Error("Unable to assign care-context in Server")
   }
-
 }
 
 const consentRequestInit = async (consent) => {
@@ -97,7 +95,10 @@ const getDoctorByUsername = async(username) => {
          headers: {
         'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
         'Content-Type': 'application/json'
-      } catch (err) {
+      }
+    })
+    return response.data
+  }catch (err) {
     throw new Error("Unable to get Care Context from Server")
   }
 }

@@ -133,6 +133,7 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
         <Row>
           <Col>
             <FormGroup>
+
               <Label for="birthDate">Birth Date</Label>
               <Input valid = {formErrors.birthDate===""} invalid = {formErrors.birthDate!==""}  type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"
                      value = {new Date(patient.yearOfBirth+"-"+

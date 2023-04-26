@@ -25,6 +25,7 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
     console.log("doctor",doctor)
 
     console.log(purposeText, hiTypes, fromDate.toISOString())
+
     const consent  = {
       purpose: {
         text: purposeText,
@@ -60,7 +61,7 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
         }
       }
     }
-    console.log(consent)
+    console.log("consent1", consent)
     const res = await doctorService.consentRequestInit(consent);
     console.log(res)
   }
