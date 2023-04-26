@@ -1,6 +1,10 @@
 package com.sahyog.backend.controller;
 
 import com.sahyog.backend.entities.*;
+import com.sahyog.backend.repo.*;
+import com.sahyog.backend.services.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import com.sahyog.backend.repo.CareContextRepository;
 import com.sahyog.backend.repo.DoctorRepository;
 import com.sahyog.backend.repo.PatientRepository;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,7 +38,8 @@ public class MyController {
     private Util util = new Util();
     private PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    UserRepository userRepository;
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
@@ -62,14 +68,55 @@ public class MyController {
         SseEmitter sseEmitter = emitters.get(requestId);
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
     }
+
+    @Autowired
+    private ConsentRepository consentRepository;
+    String requestId;
     @PostMapping("/v0.5/consent-requests/on-init")
     public void onConsentRequestInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENT-REQEUST-ON-INIT " + response);
+
+        JSONObject jsonObject = new JSONObject(response);
+
+        String consentId = (String) jsonObject.getJSONObject("consentRequest").get("id");
+
+        consentRepository.updateConsentId(consentId, requestId);
+        System.out.println("Consent Id updated in the table  ");
     }
+
+    @Autowired
+    private ArtifactsRepository artifactsRepository;
     @PostMapping("/v0.5/consents/hiu/notify")
     public void consentsHiuNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: HIU NOTIFY " + response);
+
+        JSONObject jsonObject = new JSONObject(response);
+        String consentStatus = (String) jsonObject.getJSONObject("notification").get("status");
+
+        if(!consentStatus.equals("GRANTED")) {
+            System.out.println("CONSENT NOT GRANTED");
+            return;
+        }
+
+        Consent consentObj = consentRepository.findConsentByConsentId((String) jsonObject.getJSONObject("notification").get("consentRequestId"));
+        Patient patientObj = patientService.findPatientByHealthId(consentObj.patient.getHealthId());
+
+        JSONArray artifactsArray = jsonObject.getJSONObject("notification").getJSONArray("consentArtefacts");
+
+        for (int i=0;i<artifactsArray.length();i++)
+        {
+            Artifacts artifactsObj = new Artifacts();
+            JSONObject obj = artifactsArray.getJSONObject(i);
+            artifactsObj.consentArtifactId = (String) obj.get("id");
+            artifactsObj.patient = patientObj;
+            artifactsObj.consent = consentObj;
+            artifactsRepository.save(artifactsObj);
+        }
+
+
+
     }
+
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
@@ -80,6 +127,7 @@ public class MyController {
             System.out.println("CONSENT NOT GRANTED");
             return;
         }
+
         String requestId = util.getABDMRequestID(response);
         ABDMSession session = new ABDMSession();
         session.setToken();
@@ -93,6 +141,11 @@ public class MyController {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
 
         //Now HIP sends an acknowledgement to the ABDM
+    }
+
+    @PostMapping("/v0.5/consents/on-fetch")
+    public void careContextsFetch(@RequestBody String response) throws Exception {
+        System.out.println("CARE CONTEXT FETCH RESPONSE: " + response);
     }
 
     //---------------------------------Custom APIS for FRONTEND and Initiating SSEs-------------------------------------
@@ -145,17 +198,40 @@ public class MyController {
         System.out.println("STATUS: PATCH_URL: " + statusCode);
         return statusCode;
     }
+    @Autowired
+    public ConsentService consentService;
     @PostMapping(value = "/api/consent-requests/init")
     public int consentRequestInit(@RequestBody String consent) throws Exception {
-        System.out.println("REQUEST: CONSENT-REQUEST : \n" );
+
+        System.out.println("REQUEST: CONSENT-REQUEST INIT: \n" );
+
         ABDMSession session = new ABDMSession();
         session.setToken();
-        String UUIDCode = UUID.randomUUID().toString();
+        requestId = UUID.randomUUID().toString();
+
         String temp = consent.substring(12,consent.length()-2).replace("\\", "");
 
-        int statusCode = session.createConsentRequest(UUIDCode, temp );
+        int statusCode = session.createConsentRequest(requestId, temp );
+        if (statusCode == 202)
+        {
+            JSONObject jsonObject = new JSONObject(temp);
 
-        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
+            Doctor doctorObj = doctorRepository.findDoctorsByRegistrationNumber((String) jsonObject.getJSONObject("requester").getJSONObject("identifier").get("value"));
+
+            Consent consentObj = Consent.builder()
+                    .requestId(requestId)
+                    .purposeText((String) jsonObject.getJSONObject("purpose").get("text"))
+                    .fromDate((String) jsonObject.getJSONObject("permission").getJSONObject("dateRange").get("from"))
+                    .toDate((String) jsonObject.getJSONObject("permission").getJSONObject("dateRange").get("to"))
+                    .eraseDate((String) jsonObject.getJSONObject("permission").get("dataEraseAt"))
+                    .patient(patientService.findPatientByHealthId((String) jsonObject.getJSONObject("patient").get("id")))
+                    .status("REQUESTED")
+                    .doctor(doctorObj)
+                    .build();
+            consentService.saveConsent(consentObj);
+        }
+
+        System.out.println("STATUS: CONSENT-REQUEST INIT: " + statusCode);
         return statusCode;
     }
     @Autowired
@@ -169,13 +245,6 @@ public class MyController {
     private VisitRepository visitRepository;
     @PostMapping(value = "/api/link/care-context")
     public int linkingCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
-//        ------From FrontEnd--------
-//        healthId: patientId,
-//        transactionId: accessToken,
-//        name: patientName,
-//        display: display(diagnosis)
-//        reason: reason
-//        username: username
 
 
 
@@ -223,7 +292,14 @@ public class MyController {
 
         return statusCode;
     }
+//     @PostMapping("/api/care_context/fetch")
+//     public int fetchAllCareContext(@RequestBody String customRequest) throws Exception {
 
+// <<<<<<< main
+//         System.out.println("FETCHING: CARE-CONTEXTS: \n" + customRequest);
+//         ABDMSession session = new ABDMSession();
+//         session.setToken();
+// =======
     @PostMapping(value = "api/link/assign-care-context")
     public int assigngCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 
@@ -253,7 +329,11 @@ public class MyController {
         return 202;
     }
 
+// >>>>>>> main
 
+//         int statusCode = session.fetchAllCareContexts(customRequest);
+//         return statusCode;
+//     }
 
 //    ---------Patient Services------------
 
@@ -298,7 +378,12 @@ public class MyController {
     }
 
 
-
+    @PostMapping(value = "/api/doctor/getByUsername/{username}")
+    public Doctor getDoctorByUsername(@PathVariable String username) {
+        System.out.println("REQUEST : GET-DOCTOR-BY-USERNAME: " +username);
+        User user = userRepository.findUserByUsername(username);
+        return doctorRepository.findDoctorsByUser(user);
+    }
 
     //    ---------Admin Doctor services-------------
     @Autowired

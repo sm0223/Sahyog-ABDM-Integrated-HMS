@@ -30,7 +30,6 @@ const createNewCareContext = async (accessToken,patientId,patientName,diagnosis,
   catch (err) {
     throw new Error("Unable to create new care-context in Server")
   }
-
 }
 
 const assignCareContext = async (careContext, visit) => {
@@ -54,7 +53,6 @@ const assignCareContext = async (careContext, visit) => {
   catch (err) {
     throw new Error("Unable to assign care-context in Server")
   }
-
 }
 
 const consentRequestInit = async (consent) => {
@@ -83,8 +81,25 @@ const getCareContextListByPatient = async (patient) => {
       }
     })
     return response.data;
-  } catch (err) {
+  }
+  catch (err) {
+    throw new Error("Unable to create new Consent-request in Server")
+  }
+}
+
+const getDoctorByUsername = async(username) => {
+  console.log("consent: ", JSON.stringify({username}))
+  try {
+    const response = await api.post(`/api/doctor/getByUsername/${username}`,
+        null,{
+         headers: {
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  }catch (err) {
     throw new Error("Unable to get Care Context from Server")
   }
 }
-export default {consentRequestInit, createNewCareContext, getCareContextListByPatient, assignCareContext}
+export default {consentRequestInit, createNewCareContext, getCareContextListByPatient, assignCareContext, getDoctorByUsername}

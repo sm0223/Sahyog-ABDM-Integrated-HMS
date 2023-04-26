@@ -16,20 +16,20 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
     data:null
   });
 
-  useEffect(() => {
-    return () => {
-      const updatePatient = async () => {
-        const response = await patientService.getPatientFromHealthId(visit.patient.healthId)
-        setVisit({
-          ...visit,
-          patient : response
-        })
-
-      };
-      console.log("USE EFFECT Triggered")
-      if(visit.patient) updatePatient()
-    };
-  }, [state]);
+  // useEffect(() => {
+  //   return () => {
+  //     const updatePatient = async () => {
+  //       const response = await patientService.getPatientFromHealthId(visit.patient.healthId)
+  //       setVisit({
+  //         ...visit,
+  //         patient : response
+  //       })
+  //
+  //     };
+  //     console.log("USE EFFECT Triggered")
+  //     if(visit.patient) updatePatient()
+  //   };
+  // }, [state]);
 
 
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
