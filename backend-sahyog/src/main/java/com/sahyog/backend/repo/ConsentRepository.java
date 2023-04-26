@@ -28,4 +28,11 @@ public interface ConsentRepository extends JpaRepository<Consent, Integer> {
 
     public Consent findConsentByConsentId(String consentId);
 
+    @Modifying
+    @Transactional
+    @Query(
+            value = "update consent set status = ?1 where consent_id = ?2",
+            nativeQuery = true
+    )
+    public void updateStatus(String status, String consentId);
 }

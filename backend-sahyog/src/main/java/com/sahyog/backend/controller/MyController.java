@@ -93,12 +93,15 @@ public class MyController {
         JSONObject jsonObject = new JSONObject(response);
         String consentStatus = (String) jsonObject.getJSONObject("notification").get("status");
 
+        Consent consentObj = consentRepository.findConsentByConsentId((String) jsonObject.getJSONObject("notification").get("consentRequestId"));
+
+        consentRepository.updateStatus((String) jsonObject.getJSONObject("notification").get("status"),consentObj.getConsentId());
         if(!consentStatus.equals("GRANTED")) {
+
             System.out.println("CONSENT NOT GRANTED");
             return;
         }
 
-        Consent consentObj = consentRepository.findConsentByConsentId((String) jsonObject.getJSONObject("notification").get("consentRequestId"));
         Patient patientObj = patientService.findPatientByHealthId(consentObj.patient.getHealthId());
 
         JSONArray artifactsArray = jsonObject.getJSONObject("notification").getJSONArray("consentArtefacts");
@@ -112,14 +115,17 @@ public class MyController {
             artifactsObj.consent = consentObj;
             artifactsRepository.save(artifactsObj);
         }
-
-
-
     }
 
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
+        Consent consent = new Consent();
+        JSONObject jsonObject= new JSONObject(response);
+        consent.consentId= (String) jsonObject.getJSONObject("notification").getJSONObject("consentDetail").get("consentId");
+        consent.requestedBy="HIP";
+        consent.status="GRANTED";
+        consentRepository.save(consent);
 
         //Now HIP sends an acknowledgement to the ABDM
         String consentStatus = util.getConsentStatus(response);
@@ -227,6 +233,7 @@ public class MyController {
                     .patient(patientService.findPatientByHealthId((String) jsonObject.getJSONObject("patient").get("id")))
                     .status("REQUESTED")
                     .doctor(doctorObj)
+                    .requestedBy("HIU")
                     .build();
             consentService.saveConsent(consentObj);
         }

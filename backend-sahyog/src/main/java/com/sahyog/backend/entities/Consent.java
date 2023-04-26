@@ -31,6 +31,8 @@ public class Consent {
     public String eraseDate;
     public String status;
     public String requestId;
+    public String requestedBy;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(
