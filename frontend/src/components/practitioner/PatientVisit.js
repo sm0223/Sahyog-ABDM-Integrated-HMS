@@ -3,6 +3,7 @@ import ConsentRequest from "./ConsentRequest";
 import CreateVisit from "./CreateVisit";
 import ViewPatientHistory from "./ViewPatientHistory";
 import {Container} from "reactstrap";
+import AssignToExistingCareContext from "./AssignToExistingCareContext";
 
 const PatientVisit = ({user}) => {
   const falseState = {
@@ -30,6 +31,7 @@ const PatientVisit = ({user}) => {
           home: true
         })
         break;
+
       case "CREATE-CONSENT-REQUEST":
         setState({
           ...state,
@@ -42,13 +44,26 @@ const PatientVisit = ({user}) => {
           createConsentRequest: false
         })
         break;
+
+      case "ASSIGN-CARE-CONTEXT":
+        setState({
+          ...state,
+          assignCareContext: true
+        })
+        break;
+      case "CLOSE-ASSIGN-CARE-CONTEXT":
+        setState({
+          ...state,
+          assignCareContext: false
+        })
+        break;
+
       case "VIEW-PATIENT-HISTORY":
         setState({
           ...state,
           viewPatientHistory: true
         })
         break;
-
       case "CLOSE-PATIENT-HISTORY":
         setState({
           ...state,
@@ -75,13 +90,27 @@ const PatientVisit = ({user}) => {
       <Container>
         {state.home && <CreateVisit
             user ={user}
+            state = {state}
             visit = {visit}
             setVisit = {setVisit}
             handleDashboard = {handleDashboard}
         />
         }
-        {<ConsentRequest modal={state.createConsentRequest} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />}
-        {state.viewPatientHistory&&<ViewPatientHistory modal={state.viewPatientHistory} handleDashboard={handleDashboard} user = {user} patient = {visit.patient} setModal = {setState} />}
+        {<ConsentRequest modal={state.createConsentRequest}
+                         handleDashboard={handleDashboard}
+                         user = {user}
+                         patient = {visit.patient}
+                         setModal = {setState} />}
+        {state.viewPatientHistory&&<ViewPatientHistory modal={state.viewPatientHistory}
+                                                       handleDashboard={handleDashboard}
+                                                       user = {user}
+                                                       patient = {visit.patient}
+                                                       setModal = {setState} />}
+        {state.assignCareContext&&<AssignToExistingCareContext modal={state.assignCareContext}
+                                                                    handleDashboard={handleDashboard}
+                                                                    visit={visit}
+                                                                    careContextList={visit.patient.careContextList}
+                                                                    />}
       </Container>
   );
 };

@@ -17,7 +17,7 @@ import doctorService from "../../services/doctorService";
 import {Link} from "react-router-dom";
 
 const ViewCareContext = ({modal, patient, careContext, setViewCareContext})=> {
-  console.log(careContext)
+  // console.log(careContext)
   const [blobObject, setBlobObject] = useState(null);
   const toggle = () => setViewCareContext({
     state:false,
@@ -35,9 +35,9 @@ const ViewCareContext = ({modal, patient, careContext, setViewCareContext})=> {
           <ModalHeader toggle={toggle}>Care Details</ModalHeader>
           <ModalBody>
             <div className="border rounded p-4 mt-2 shadow">
-              <h5>Patient Details</h5>
               <div className="card">
                 <div className="card-header">
+                  <h5>Patient Details:</h5>
                   <Row>
                     <Col>
                       <p><b>Name : </b>{patient.name}</p>
@@ -61,7 +61,7 @@ const ViewCareContext = ({modal, patient, careContext, setViewCareContext})=> {
                   </Row>
                 </div>
                 <div className="card-body">
-                  <h5>Visits</h5>
+                  <h5>Visits: </h5>
                   {careContext&& careContext.visitList.map((visit, index) => (
                       <Container id={index} name ={index}>
                         <Row>
@@ -91,6 +91,7 @@ const ViewCareContext = ({modal, patient, careContext, setViewCareContext})=> {
                               }</a>}
                           </Col>
                         </Row>
+                        <hr/>
                       </Container>
                     ))
                   }

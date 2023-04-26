@@ -202,7 +202,7 @@ public class MyController {
         visitObj.careContext = careContext;
         visitObj.patient = patientObj;
         visitObj.doctor = doctorObj;
-        visitObj.setHealthRecord(customRequest.getHealthRecord().getBytes());
+        visitObj.setHealthRecord(customRequest.getHealthRecord()!=null?customRequest.getHealthRecord().getBytes():null);
 
         List<Visit> newList = new ArrayList<>();
         newList.add(visitObj);
@@ -222,6 +222,35 @@ public class MyController {
         int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
 
         return statusCode;
+    }
+
+    @PostMapping(value = "api/link/assign-care-context")
+    public int assigngCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
+
+        System.out.println("REQUEST: ASSIGN-CARE-CONTEXT");
+        ABDMSession session = new ABDMSession();
+
+        CareContext careContext = careContextRepository.findCareContextsByCareContextId(customRequest.getCareContextId());
+        LocalDate localDate = LocalDate.now();
+
+        Visit visitObj = new Visit();
+
+        visitObj.setDateOfVisit(localDate.toString());
+        visitObj.setPatient(careContext.patient);
+        visitObj.setDoctor(careContext.doctor);
+        visitObj.setHealthRecord(customRequest.getHealthRecord()!=null?customRequest.getHealthRecord().getBytes():null);
+        visitObj.setReasonOfVisit(customRequest.getReasonOfVisit());
+        visitObj.setDiagnosis(customRequest.getDiagnosis());
+
+        List<Visit> newList = careContext.getVisitList();
+        newList.add(visitObj);
+        careContext.setVisitList(newList);
+        visitObj.setCareContext(careContext);
+
+
+        doctorService.addCareContext(careContext);
+
+        return 202;
     }
 
 

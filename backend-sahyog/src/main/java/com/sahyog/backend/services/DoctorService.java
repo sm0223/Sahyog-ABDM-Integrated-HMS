@@ -24,9 +24,6 @@ public class DoctorService {
 
     public CareContext addCareContext(CareContext careContext)
     {
-        for (Visit visit : careContext.getVisitList()) {
-            System.out.println(visit.healthRecord.toString());
-        }
         return careContextRepository.save(careContext);
     }
 

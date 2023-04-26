@@ -17,5 +17,9 @@ public class CustomRequest {
     String reason;
     String username;
     String healthRecord;
+    String diagnosis;
+    String careContextId;
+    String reasonOfVisit;
+
 }
 
