@@ -58,10 +58,10 @@ const ViewDoctor = () => {
                                     <b>DOB:</b>
                                     <p>{doctor.dayOfBirth}-{doctor.monthOfBirth}-{doctor.yearOfBirth}</p>
                                 </li>
-                                <li className="list-group-item">
+                                {/* <li className="list-group-item">
                                     <b>Credentials: </b>
                                     <p> {doctor.users && doctor.users.username} {doctor.users && doctor.users.password} {doctor.users && doctor.users.userType}</p>
-                                </li>
+                                </li> */}
                                 <li className="list-group-item">
                                     <b>Address: </b>
                                     <p> {doctor.address && doctor.address.line}, {doctor.address && doctor.address.district},  {doctor.address && doctor.address.state}, {doctor.address && doctor.address.pincode}</p>

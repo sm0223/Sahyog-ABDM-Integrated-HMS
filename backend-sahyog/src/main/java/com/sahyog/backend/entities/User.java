@@ -2,6 +2,14 @@ package com.sahyog.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sahyog.backend.config.GrantedAuthorityDeserializer;
+import com.sahyog.backend.config.GrantedAuthorityListSerializer;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,6 +49,9 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+//    @JsonIgnore
+//    @JsonSerialize(using = GrantedAuthorityListSerializer.class)
+//    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

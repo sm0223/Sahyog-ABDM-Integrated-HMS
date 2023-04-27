@@ -228,4 +228,30 @@ public class ABDMSession {
             return 510;
         }
     }
+
+    public int fetchStatus(String uuidCode, String consentRequestId) {
+
+        String requestBody =  "{\n    \"requestId\": \""+ uuidCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n    \"consentRequestId\": " + consentRequestId+
+                "\n}";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consent-requests/status"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
+    }
 }

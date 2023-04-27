@@ -39,12 +39,10 @@ public class MyController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private ConsentRepository consentRepository;
+    @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/v0.5/personal/data")
-    public void receiveData(@RequestBody String response) throws Exception {
-        System.out.println("DATA RESPONSE: ON-INIT " + response);
-    }
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
 
     @PostMapping("/v0.5/users/auth/on-init")
@@ -74,8 +72,6 @@ public class MyController {
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
     }
 
-    @Autowired
-    private ConsentRepository consentRepository;
     String requestId;
     @PostMapping("/v0.5/consent-requests/on-init")
     public void onConsentRequestInit(@RequestBody String response) throws Exception {
@@ -253,6 +249,12 @@ public class MyController {
         System.out.println("STATUS: CONSENT-REQUEST INIT: " + statusCode);
         return statusCode;
     }
+    @PostMapping(value = "/api/consent-requests/fetch-status")
+    public Consent fetchConsentStatus(@RequestBody String consentRequestId) throws Exception {
+        System.out.println("REQUEST_FETCH_STATUS: ");
+        return consentRepository.findConsentByConsentId(consentRequestId);
+    }
+
     @Autowired
     private PatientService patientService;
 
@@ -311,14 +313,7 @@ public class MyController {
 
         return statusCode;
     }
-//     @PostMapping("/api/care_context/fetch")
-//     public int fetchAllCareContext(@RequestBody String customRequest) throws Exception {
 
-// <<<<<<< main
-//         System.out.println("FETCHING: CARE-CONTEXTS: \n" + customRequest);
-//         ABDMSession session = new ABDMSession();
-//         session.setToken();
-// =======
     @PostMapping(value = "api/link/assign-care-context")
     public int assigngCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 
@@ -347,34 +342,6 @@ public class MyController {
 
         return 202;
     }
-
-//    @PostMapping(value = "/api/health-information/cm/request")
-//    public SseEmitter healthDataRequest(@RequestBody CustomRequest customRequest) throws Exception {
-//        System.out.println("\n REQUESTING HEALTH RECORDS --");
-//
-//        ABDMSession session = new ABDMSession();
-//        session.setToken();
-//        String UUIDCode = UUID.randomUUID().toString();
-//
-//        int statusCode = session.confirmMobileOTP(UUIDCode, customRequest.getTransactionId(), customRequest.getMobileOTP());
-//        SseEmitter sseEmitter = new SseEmitter((long)5000);
-//        emitters.put(UUIDCode, sseEmitter);
-//        sseEmitter.onCompletion(()->emitters.remove(sseEmitter));
-//        sseEmitter.onTimeout(()->emitters.remove(sseEmitter));
-//        sseEmitter.onError((e)->emitters.remove(sseEmitter));
-//
-//        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
-//        return sseEmitter;
-//    }
-
-// >>>>>>> main
-
-//         int statusCode = session.fetchAllCareContexts(customRequest);
-//         return statusCode;
-//     }
-
-//    ---------Patient Services------------
-
 
     @PostMapping("/api/patient/save")
     public boolean SavePatient(@RequestBody Patient patient)
@@ -414,6 +381,7 @@ public class MyController {
 
         return careContextRepository.findCareContextsByPatient(patient);
     }
+
 
 
     @PostMapping(value = "/api/doctor/getByUsername/{username}")
@@ -459,6 +427,13 @@ public class MyController {
     @PutMapping("/api/admin/updateDoctor")
     public Doctor updateDoctor(@RequestBody Doctor doctor)
     {
+        User user = User.builder()
+                .username(doctor.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
+                .role(doctor.user.getRole())
+                .build();
+        doctor.setUser(user);
+
         return adminDoctorService.updateDoctor(doctor);
     }
 
@@ -496,6 +471,13 @@ public class MyController {
     @PutMapping("/api/admin/updateStaff")
     public Staff updateStaff(@RequestBody Staff staff)
     {
+        User user = User.builder()
+                .username(staff.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
+                .role(staff.user.getRole())
+                .build();
+        staff.setUser(user);
+
         return adminStaffService.updateStaff(staff);
     }
 
