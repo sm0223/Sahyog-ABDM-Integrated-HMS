@@ -128,6 +128,7 @@ const PatientVisit = ({user}) => {
                                                                     />}
         {state.viewConsentStatus && <ViewAllConsents modal = {state.viewConsentStatus}
                                                      consentList = {visit.patient.consentList}
+                                                     setVisit = {setVisit}
                                                      handleDashboard={handleDashboard} />}
       </Container>
   );

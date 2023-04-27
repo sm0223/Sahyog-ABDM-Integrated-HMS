@@ -9,7 +9,7 @@ const ViewAllConsents = ({modal, consentList, handleDashboard})=> {
   const toggle = () => handleDashboard("CLOSE-VIEW-CONSENT");
 
   const checkStatus = (consent) => {
-
+    const response = doctorService.getConsentStatus("")
   };
   return (
       <div className="container" style={{marginTop:50}}>
