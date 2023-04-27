@@ -440,21 +440,40 @@ public class MyController {
     {
         return adminDoctorService.deleteDoctor(id);
     }
+//
+//    @PutMapping("/api/admin/updateDoctor")
+//    public Doctor updateDoctor(@RequestBody Doctor doctor)
+//    {
+//        User user = User.builder()
+//                .username(doctor.user.getUsername())
+//                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
+//                .role(doctor.user.getRole())
+//                .build();
+//        doctor.setUser(user);
+//
+//        return adminDoctorService.updateDoctor(doctor);
+//    }
+
 
     @PutMapping("/api/admin/updateDoctor")
-    public Doctor updateDoctor(@RequestBody Doctor doctor)
+    public void updateDoctor(@RequestBody Doctor doctor)
     {
-        User user = User.builder()
-                .username(doctor.user.getUsername())
-                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
-                .role(doctor.user.getRole())
-                .build();
-        doctor.setUser(user);
+//        Doctor existingDoctor = doctorRepository.findByHealthIdNumber(doctor.getHealthIdNumber());
 
-        return adminDoctorService.updateDoctor(doctor);
+        doctorRepository.updateDoctor(
+                doctor.getHealthIdNumber(),
+                doctor.getAddress(),
+                doctor.getGender(),
+                doctor.getName(),
+                doctor.getMobile(),
+                doctor.getDayOfBirth(),
+                doctor.getMonthOfBirth(),
+                doctor.getYearOfBirth(),
+                doctor.getRegistrationNumber(),
+                doctor.getHealthId(),
+                doctor.getUser()
+        );
     }
-
-
     //---------Admin Staff services------------------
     @Autowired
     private AdminService adminStaffService;
@@ -485,19 +504,26 @@ public class MyController {
     {
         return adminStaffService.deleteStaff(healthIdNumber);
     }
+//    @PutMapping("/api/admin/updateStaff")
+//    public Staff updateStaff(@RequestBody Staff staff)
+//    {
+//        User user = User.builder()
+//                .username(staff.user.getUsername())
+//                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
+//                .role(staff.user.getRole())
+//                .build();
+//        staff.setUser(user);
+//
+//        return adminStaffService.updateStaff(staff);
+//    }
+
+    @Autowired
+    StaffRepository staffRepository;
     @PutMapping("/api/admin/updateStaff")
-    public Staff updateStaff(@RequestBody Staff staff)
+    public void updateStaff(@RequestBody Staff staff)
     {
-        User user = User.builder()
-                .username(staff.user.getUsername())
-                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
-                .role(staff.user.getRole())
-                .build();
-        staff.setUser(user);
-
-        return adminStaffService.updateStaff(staff);
+        staffRepository.updateStaff(staff.healthIdNumber, staff.getAddress(), staff.getGender(), staff.getName(), staff.getMobile(), staff.getDayOfBirth(), staff.getMonthOfBirth(), staff.getYearOfBirth(), staff.getHealthId(), staff.getUser());
     }
-
     @PostMapping("/api/admin/getStaff/{healthIdNumber}")
     public Staff getStaff(@PathVariable String healthIdNumber)
     {
