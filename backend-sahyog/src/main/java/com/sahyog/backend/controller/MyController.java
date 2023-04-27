@@ -40,7 +40,13 @@ public class MyController {
 
     @Autowired
     UserRepository userRepository;
+
+    @PostMapping("/v0.5/personal/data")
+    public void receiveData(@RequestBody String response) throws Exception {
+        System.out.println("DATA RESPONSE: ON-INIT " + response);
+    }
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
+
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: ON-INIT " + response);
@@ -144,6 +150,13 @@ public class MyController {
     @PostMapping("v0.5/health-information/hip/request")
     public void healthInformationHipRequest(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
+
+        //Now HIP sends an acknowledgement to the ABDM
+    }
+
+    @PostMapping("/v0.5/health-information/hiu/on-request")
+    public void healthInformationHIUONRequest(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: DATA HIU ON-REQUEST " + response);
 
         //Now HIP sends an acknowledgement to the ABDM
     }
@@ -334,6 +347,25 @@ public class MyController {
 
         return 202;
     }
+
+//    @PostMapping(value = "/api/health-information/cm/request")
+//    public SseEmitter healthDataRequest(@RequestBody CustomRequest customRequest) throws Exception {
+//        System.out.println("\n REQUESTING HEALTH RECORDS --");
+//
+//        ABDMSession session = new ABDMSession();
+//        session.setToken();
+//        String UUIDCode = UUID.randomUUID().toString();
+//
+//        int statusCode = session.confirmMobileOTP(UUIDCode, customRequest.getTransactionId(), customRequest.getMobileOTP());
+//        SseEmitter sseEmitter = new SseEmitter((long)5000);
+//        emitters.put(UUIDCode, sseEmitter);
+//        sseEmitter.onCompletion(()->emitters.remove(sseEmitter));
+//        sseEmitter.onTimeout(()->emitters.remove(sseEmitter));
+//        sseEmitter.onError((e)->emitters.remove(sseEmitter));
+//
+//        System.out.println("STATUS: REGISTER-PATIENT-USING-HEALTH-ID: " + statusCode);
+//        return sseEmitter;
+//    }
 
 // >>>>>>> main
 
