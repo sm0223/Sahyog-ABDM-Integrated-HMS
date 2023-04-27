@@ -300,6 +300,13 @@ public class MyController {
     @PutMapping("/api/admin/updateDoctor")
     public Doctor updateDoctor(@RequestBody Doctor doctor)
     {
+        User user = User.builder()
+                .username(doctor.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
+                .role(doctor.user.getRole())
+                .build();
+        doctor.setUser(user);
+
         return adminDoctorService.updateDoctor(doctor);
     }
 
@@ -337,6 +344,13 @@ public class MyController {
     @PutMapping("/api/admin/updateStaff")
     public Staff updateStaff(@RequestBody Staff staff)
     {
+        User user = User.builder()
+                .username(staff.user.getUsername())
+                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
+                .role(staff.user.getRole())
+                .build();
+        staff.setUser(user);
+
         return adminStaffService.updateStaff(staff);
     }
 
