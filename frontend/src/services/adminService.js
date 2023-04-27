@@ -33,15 +33,18 @@ const getalldoctor = async ()=>{
     return response;
 };
 const addDoctor = async (doctor) =>{
-    await api.post("api/admin/addDoctor", doctor);
+    const response=await api.post("api/admin/addDoctor", doctor);
+    return response;
 };
 
 
 const updateDoctor = async (doctor)=>{
-    await api.put("api/admin/updateDoctor", doctor);
+    const response=await api.put("api/admin/updateDoctor", doctor);
+    return response;
 }
 const deletedoctor = async (id) =>{
-    await api.delete(`api/admin/deleteDoctor/${id}`);
+    const response=await api.delete(`api/admin/deleteDoctor/${id}`);
+    return response;
 };
 
 // -------Staff Services--------------
@@ -57,15 +60,18 @@ const getallstaff = async ()=>{
 };
 const addStaff = async (staff) =>{
   console.log(staff)
-    await api.post("api/admin/addStaff", staff);
+  const response=await api.post("api/admin/addStaff", staff);
+  return response;
 };
 
 
 const updateStaff = async (staff)=>{
-    await api.put("api/admin/updateStaff", staff);
-}
+    const response=await api.put("api/admin/updateStaff", staff);
+    return response;
+};
 const deletestaff = async (id) =>{
-    await api.delete(`api/admin/deleteStaff/${id}`);
+    const response=await api.delete(`api/admin/deleteStaff/${id}`);
+    return response
 };
 
 

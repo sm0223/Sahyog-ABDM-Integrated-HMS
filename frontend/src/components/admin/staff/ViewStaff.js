@@ -58,10 +58,10 @@ const ViewStaff = () => {
                                     <b>DOB:</b>
                                     <p>{staff.dayOfBirth}-{staff.monthOfBirth}-{staff.yearOfBirth}</p>
                                 </li>
-                                <li className="list-group-item">
+                                {/* <li className="list-group-item">
                                     <b>Credentials: </b>
-                                    <p> {staff.users && staff.users.username} {staff.users && staff.users.password} {staff.users && staff.users.userType}</p>
-                                </li>
+                                    <p> {staff.user && staff.user.username} {staff.user && staff.user.password} {staff.user && staff.user.userType}</p>
+                                </li> */}
                                 <li className="list-group-item">
                                     <b>Address: </b>
                                     <p> {staff.address && staff.address.line}, {staff.address && staff.address.district},  {staff.address && staff.address.state}, {staff.address && staff.address.pincode}</p>
