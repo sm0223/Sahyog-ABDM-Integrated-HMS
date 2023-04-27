@@ -46,7 +46,7 @@ const Doctor = () => {
                                 {index+1}
                             </th>
                             <td>{doctor.name}</td>
-                            <td>{doctor.users && doctor.users.username}</td>
+                            <td>{doctor.user && doctor.user.username}</td>
                             <td>{doctor.mobile}</td>
                             <td>
                                 <Link

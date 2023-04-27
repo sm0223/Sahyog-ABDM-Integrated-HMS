@@ -44,6 +44,7 @@ public class AdminService {
         existingDoctor.setYearOfBirth(doctor.getYearOfBirth());
         existingDoctor.setRegistrationNumber(doctor.getRegistrationNumber());
         existingDoctor.setHealthId(doctor.getHealthId());
+        existingDoctor.setUser(doctor.getUser());
         return doctorRepository.save(existingDoctor);
     }
 
@@ -69,6 +70,8 @@ public class AdminService {
         existingStaff.setMonthOfBirth(staff.getMonthOfBirth());
         existingStaff.setYearOfBirth(staff.getYearOfBirth());
         existingStaff.setHealthId(staff.getHealthId());
+        existingStaff.setUser(staff.getUser());
+
         return staffRepository.save(existingStaff);
     }
 //
