@@ -16,22 +16,6 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
     data:null
   });
 
-  // useEffect(() => {
-  //   return () => {
-  //     const updatePatient = async () => {
-  //       const response = await patientService.getPatientFromHealthId(visit.patient.healthId)
-  //       setVisit({
-  //         ...visit,
-  //         patient : response
-  //       })
-  //
-  //     };
-  //     console.log("USE EFFECT Triggered")
-  //     if(visit.patient) updatePatient()
-  //   };
-  // }, [state]);
-
-
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -46,17 +30,31 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
         name:"",
         data:null
       });
+      setVisit({
+        ...visit,
+        healthRecord:null
+      })
       return;
     }
     await fileToDataUri(file).then(dataUri => {
       console.log(file)
       setFileData({
           name: file.name,
-          data: dataUri})
-      },(err)=>console.log(err.toString()))
+          data: dataUri
+      })
+      setVisit({
+        ...visit,
+        healthRecord:dataUri
+      })
+      }
+
+      ,(err)=>console.log(err.toString()))
     }
   const handleReEditVisit = () => {
     console.log(visit)
+    setVisit({
+      patient:visit.patient
+    })
     setVisitCreated(false)
   }
 
@@ -130,9 +128,16 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
 
           setViewOTP(false)
           const res = await doctorService.createNewCareContext(token, visit.patient.healthId, visit.patient.name,
-              visit.diagnosis, visit.reasonOfVisit, user.username, fileData.data)
+              visit.diagnosis, visit.reasonOfVisit, user.username, visit.healthRecord)
           console.log("linkCareContextResponse",res)
-          if(res.data = 202) alert('Care Context Saved')
+          if(res.data == 202) {
+            alert('Care Context Saved')
+            const pat = await patientService.getPatientFromHealthId(visit.patient.healthId)
+            setVisit({
+              ...visit,
+              patient:pat
+            })
+          }
           else alert('unknown error occurred')
           abortController.abort()
         },
@@ -150,8 +155,19 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
       console.log(err.toString())
     }
   }
-  const updateVisit = () => {
-
+  const updateDiagnosis = (event) => {
+    console.log(event.target.value);
+    setVisit({
+      ...visit,
+      diagnosis: event.target.value
+    })
+  };
+  const updateReasonOfVisit = (event) => {
+    console.log(event.target.value);
+    setVisit({
+      ...visit,
+      reasonOfVisit: event.target.value
+    })
   };
   return (
       <div>
@@ -160,7 +176,8 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
           {!visit.patient && <Row>
             <Label for="healthId">Health ID</Label>
             <Col>
-              <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID" onChange={(event) => {
+              <Input type="text" name="healthId" id="healthId" placeholder="Enter Health ID"
+                     onChange={(event) => {
                 setHealthIdSearchInput(event.target.value)
               }}/>
             </Col>
@@ -241,11 +258,15 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
                   <form onSubmit = {handleSubmitVisit}>
                     <FormGroup>
                       <Label><b>Reason of Visit </b></Label>
-                      <Input type='textarea' id = "reasonOfVisit" name="reasonOfVisit" onChange={updateVisit}></Input>
+                      <Input type='textarea' id = "reasonOfVisit" name="reasonOfVisit"
+                             value={visit.reasonOfVisit?visit.reasonOfVisit:""}
+                             onChange={updateReasonOfVisit}></Input>
                     </FormGroup>
                     <FormGroup>
                       <Label><b>Diagnosis</b></Label>
-                      <Input type='textarea' id = "diagonsis" name="diagonsis"></Input>
+                      <Input type='textarea' id = "diagonsis" name="diagonsis"
+                             value={visit.diagnosis?visit.diagnosis:""}
+                             onChange={updateDiagnosis}></Input>
                     </FormGroup>
                     <FormGroup>
                       <Label>Attach Prescription </Label>
@@ -268,7 +289,7 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
             </FormGroup>
             <FormGroup>
               <Row>
-                <Button color="primary" outline> View Consent status </Button>
+                <Button color="primary" outline onClick={()=>handleDashboard("VIEW-CONSENT-REQUEST")}> View Consent status </Button>
               </Row>
             </FormGroup>
 

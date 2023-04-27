@@ -51,7 +51,6 @@ public class MyController {
 
         SseEmitter sseEmitter = emitters.get(requestId);
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
-
     }
     @PostMapping("/v0.5/users/auth/on-confirm")
     public void onConfirm(@RequestBody String response) throws Exception {

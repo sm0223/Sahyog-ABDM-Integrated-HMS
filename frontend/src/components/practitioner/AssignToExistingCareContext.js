@@ -14,14 +14,20 @@ import {
   Container
 } from 'reactstrap';
 import doctorService from "../../services/doctorService";
+import patientService from "../../services/patientService";
 
-const AssignToExistingCareContext = ({modal, handleDashboard, visit, careContextList})=> {
+const AssignToExistingCareContext = ({modal, handleDashboard, visit, setVisit, careContextList})=> {
   const toggle = () => handleDashboard("CLOSE-ASSIGN-CARE-CONTEXT");
 
   const handleAssignCareContext = async (careContext) => {
     try {
       const response = await doctorService.assignCareContext(careContext, visit);
       alert('Assigned succesffuly')
+      const pat = await patientService.getPatientFromHealthId(visit.patient.healthId)
+      setVisit({
+        ...visit,
+        patient:pat
+      })
       handleDashboard("CLOSE-ASSIGN-CARE-CONTEXT")
     }
     catch (err){alert(err.toString())

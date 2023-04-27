@@ -4,6 +4,7 @@ import CreateVisit from "./CreateVisit";
 import ViewPatientHistory from "./ViewPatientHistory";
 import {Container} from "reactstrap";
 import AssignToExistingCareContext from "./AssignToExistingCareContext";
+import ViewAllConsents from "./ViewAllConsents";
 
 const PatientVisit = ({user}) => {
   const falseState = {
@@ -42,6 +43,19 @@ const PatientVisit = ({user}) => {
         setState({
           ...state,
           createConsentRequest: false
+        })
+        break;
+
+      case "VIEW-CONSENT-REQUEST":
+        setState({
+          ...state,
+          viewConsentStatus: true
+        })
+        break;
+      case "CLOSE-VIEW-CONSENT-REQUEST":
+        setState({
+          ...state,
+          viewConsentStatus: false
         })
         break;
 
@@ -109,8 +123,12 @@ const PatientVisit = ({user}) => {
         {state.assignCareContext&&<AssignToExistingCareContext modal={state.assignCareContext}
                                                                     handleDashboard={handleDashboard}
                                                                     visit={visit}
+                                                                    setVisit={setVisit}
                                                                     careContextList={visit.patient.careContextList}
                                                                     />}
+        {state.viewConsentStatus && <ViewAllConsents modal = {state.viewConsentStatus}
+                                                     consentList = {visit.patient.consentList}
+                                                     handleDashboard={handleDashboard} />}
       </Container>
   );
 };

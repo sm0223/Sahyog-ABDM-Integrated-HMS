@@ -79,7 +79,7 @@ const ViewCareContext = ({modal, patient, careContext, setViewCareContext})=> {
                         <Row>
                           <Col>
                             <b>Diagnosis :</b>
-                            <p>{visit.reasonOfVisit}</p>
+                            <p>{visit.diagnosis}</p>
                           </Col>
                         </Row>
                         <Row>
