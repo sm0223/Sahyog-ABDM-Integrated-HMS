@@ -39,6 +39,8 @@ public class MyController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private ConsentRepository consentRepository;
+    @Autowired
     UserRepository userRepository;
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
     @PostMapping("/v0.5/users/auth/on-init")
@@ -68,8 +70,6 @@ public class MyController {
         sseEmitter.send(SseEmitter.event().name("ABDM-EVENT").data(asyncCustomResponse));
     }
 
-    @Autowired
-    private ConsentRepository consentRepository;
     String requestId;
     @PostMapping("/v0.5/consent-requests/on-init")
     public void onConsentRequestInit(@RequestBody String response) throws Exception {
@@ -240,6 +240,12 @@ public class MyController {
         System.out.println("STATUS: CONSENT-REQUEST INIT: " + statusCode);
         return statusCode;
     }
+    @PostMapping(value = "/api/consent-requests/fetch-status")
+    public Consent fetchConsentStatus(@RequestBody String consentRequestId) throws Exception {
+        System.out.println("REQUEST_FETCH_STATUS: ");
+        return consentRepository.findConsentByConsentId(consentRequestId);
+    }
+
     @Autowired
     private PatientService patientService;
 
@@ -298,14 +304,7 @@ public class MyController {
 
         return statusCode;
     }
-//     @PostMapping("/api/care_context/fetch")
-//     public int fetchAllCareContext(@RequestBody String customRequest) throws Exception {
 
-// <<<<<<< main
-//         System.out.println("FETCHING: CARE-CONTEXTS: \n" + customRequest);
-//         ABDMSession session = new ABDMSession();
-//         session.setToken();
-// =======
     @PostMapping(value = "api/link/assign-care-context")
     public int assigngCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 
@@ -334,15 +333,6 @@ public class MyController {
 
         return 202;
     }
-
-// >>>>>>> main
-
-//         int statusCode = session.fetchAllCareContexts(customRequest);
-//         return statusCode;
-//     }
-
-//    ---------Patient Services------------
-
 
     @PostMapping("/api/patient/save")
     public boolean SavePatient(@RequestBody Patient patient)
@@ -382,6 +372,7 @@ public class MyController {
 
         return careContextRepository.findCareContextsByPatient(patient);
     }
+
 
 
     @PostMapping(value = "/api/doctor/getByUsername/{username}")
