@@ -1,5 +1,6 @@
 package com.sahyog.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -56,14 +57,14 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor")
     List<Consent> consentList;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            optional = false
-    )
-    @JoinColumn(
-            name = "user_id_fk",
-            referencedColumnName = "userId"
-    )
-    @JsonManagedReference(value = "doctorBacKRef")
+  @OneToOne(
+          cascade = CascadeType.ALL,
+          optional = false
+  )
+  @JoinColumn(
+          name="user_id_fk",
+          referencedColumnName="userID"
+  )
+  @JsonManagedReference(value = "doctorBackRef")
     public User user;
 }

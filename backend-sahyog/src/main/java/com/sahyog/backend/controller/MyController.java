@@ -117,7 +117,8 @@ public class MyController {
             artifactsRepository.save(artifactsObj);
         }
     }
-
+    @Autowired
+    ArtifactsHIPRepository artifactsHIPRepository;
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
@@ -134,6 +135,22 @@ public class MyController {
             System.out.println("CONSENT NOT GRANTED");
             return;
         }
+
+
+//---------------------INSERTING DATA INTO ArtifactsHIP table--------------------
+        ArtifactsHIP artifactsHIP = new ArtifactsHIP();
+        artifactsHIP.artifactsId = (String) jsonObject.getJSONObject("notification").getJSONObject("consentDetail").get("consentId");
+        artifactsHIP.patientHealthId = (String) jsonObject.getJSONObject("notification").getJSONObject("consentDetail").getJSONObject("patient").get("id");
+        JSONArray careContextsArray = jsonObject.getJSONObject("notification").getJSONObject("consentDetail").getJSONArray("careContexts");
+        artifactsHIP.setCareContextIds(new ArrayList<>());
+        for (int i=0;i<careContextsArray.length();i++)
+        {
+            JSONObject obj = careContextsArray.getJSONObject(i);
+            artifactsHIP.careContextIds.add((String) obj.get("careContextReference"));
+        }
+        artifactsHIPRepository.save(artifactsHIP);
+
+//-------------------------------------------------------------------------------
 
         String requestId = util.getABDMRequestID(response);
         ABDMSession session = new ABDMSession();

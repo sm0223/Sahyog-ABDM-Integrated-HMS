@@ -44,7 +44,10 @@ public class AdminService {
         existingDoctor.setYearOfBirth(doctor.getYearOfBirth());
         existingDoctor.setRegistrationNumber(doctor.getRegistrationNumber());
         existingDoctor.setHealthId(doctor.getHealthId());
+
+        System.out.println("Checking user-------"+ doctor.getUser());
         existingDoctor.setUser(doctor.getUser());
+
         return doctorRepository.save(existingDoctor);
     }
 

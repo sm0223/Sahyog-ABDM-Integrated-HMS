@@ -2,6 +2,7 @@ package com.sahyog.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -41,15 +42,16 @@ public class User implements UserDetails {
     public Staff staff;
 
     @OneToOne(mappedBy = "user")
-    @JsonBackReference(value = "doctorBacKRef")
+    @JsonBackReference(value = "doctorBackRef")
     public Doctor doctor;
+
     public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-//    @JsonIgnore
+    @JsonIgnore
 //    @JsonSerialize(using = GrantedAuthorityListSerializer.class)
 //    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
     @Override
