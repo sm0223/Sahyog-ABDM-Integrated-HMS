@@ -16,5 +16,12 @@ public class CustomRequest {
     String display;
     String reason;
     String username;
+    String consentId;
+
+    String healthRecord;
+    String diagnosis;
+    String careContextId;
+    String reasonOfVisit;
+
 }
 

@@ -4,45 +4,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
-public class CareContext {
+public class Artifacts {
     @Id
     @SequenceGenerator(
-            name = "care_context_sequence",
-            sequenceName = "care_context_sequence",
+            name = "artifacts_sequence",
+            sequenceName = "artifacts_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "care_context_sequence"
+            generator = "artifacts_sequence"
     )
-    private int careContextId;
-    public String display;
+    public int artifactId;
 
+    public String consentArtifactId;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(
             name = "patient_id_fk",
             referencedColumnName = "patientId"
     )
-    @JsonIgnore
     public Patient patient;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(
-            name = "doctor_id_fk",
-            referencedColumnName = "doctorId"
+            name = "consent_id_fk",
+            referencedColumnName = "consentIdPK"
     )
-    public Doctor doctor;
-
-    @OneToMany(mappedBy = "careContext",cascade = CascadeType.ALL)
-    List<Visit> visitList;
-
-
+    public Consent consent;
 
 }

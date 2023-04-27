@@ -3,6 +3,7 @@ package com.sahyog.backend.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +15,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ABDMSession {
-
     private String token;
     public ABDMSession() {}
     public ABDMSession(String token) {
@@ -138,12 +138,14 @@ public class ABDMSession {
 
 
     //-------------------CONSENT AND DATA TRANSFER FLOW----------------------
+
     public int createConsentRequest(String UUIDCode, String consent) {
         HttpClient client = HttpClient.newHttpClient();
         String requestBody =  "{\n    \"requestId\": \""+ UUIDCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n  \"consent\": " + consent+
                 "\n}";
 
         System.out.println(requestBody);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consent-requests/init"))
                 .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
@@ -153,6 +155,34 @@ public class ABDMSession {
                 .build();
         HttpResponse<String> response = null;
 
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
+    }
+
+    public int fetchAllCareContexts(String consentId)
+    {
+        String requestId = UUID.randomUUID().toString();
+
+        String requestBody =  "{\n    \"requestId\": \""+ requestId+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n    \"consentId\": " + consentId+
+                "\n}";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consents/fetch"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("RESPONSE : "+response.toString());
@@ -177,7 +207,7 @@ public class ABDMSession {
                 "  \"resp\": {\n" +
                 "    \"requestId\": \""+requestID+"\"\n" +
                 "  }\n}";
-        System.out.println(requestBody);
+        System.out.println("Sending to on notify\n"+requestBody);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/consents/hip/on-notify"))
                 .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
