@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Row, Col} from 'reactstrap';
+import {Button, Modal, ModalHeader, ModalBody,} from 'reactstrap';
 import doctorService from "../../services/doctorService";
-import {Link} from "react-router-dom";
 
 const ViewAllConsents = ({modal, consentList, handleDashboard})=> {
 

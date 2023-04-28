@@ -1,27 +1,28 @@
 package com.sahyog.backend.controller;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+import com.google.gson.Gson;
 import com.sahyog.backend.entities.*;
 import com.sahyog.backend.repo.*;
 import com.sahyog.backend.services.*;
+import com.sahyog.backend.utilities.FhirUtility;
+import com.sahyog.backend.utilities.Util;
+import org.hl7.fhir.r4.model.Bundle;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.sahyog.backend.repo.CareContextRepository;
 import com.sahyog.backend.repo.DoctorRepository;
 import com.sahyog.backend.repo.PatientRepository;
 import com.sahyog.backend.repo.VisitRepository;
-import com.sahyog.backend.services.*;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,15 +143,28 @@ public class MyController {
     }
 
     @PostMapping("v0.5/health-information/hip/request")
-    public void healthInformationHipRequest(@RequestBody String response) throws Exception {
-        System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
+    public String healthInformationHipRequest(@RequestParam String s) throws Exception {
+        System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY "+s);
+        CareContext careContext = careContextRepository.findCareContextsByCareContextId(9);
+        FhirUtility fhirUtility = new FhirUtility();
+        Bundle bundle = fhirUtility.covertCareContextToBundle(careContext);
+        System.out.println("BUNDLE CREATED");
+        FhirContext ctx = FhirContext.forR4();
 
+        IParser parser = ctx.newJsonParser();
+
+    // Serialize it
+        String serialized = parser.encodeResourceToString(bundle);
+//        System.out.println(serialized);
+        return serialized;
         //Now HIP sends an acknowledgement to the ABDM
     }
 
     @PostMapping("/v0.5/consents/on-fetch")
     public void careContextsFetch(@RequestBody String response) throws Exception {
         System.out.println("CARE CONTEXT FETCH RESPONSE: " + response);
+
+
     }
 
     //---------------------------------Custom APIS for FRONTEND and Initiating SSEs-------------------------------------
@@ -311,7 +325,7 @@ public class MyController {
         System.out.println("REQUEST: ASSIGN-CARE-CONTEXT");
         ABDMSession session = new ABDMSession();
 
-        CareContext careContext = careContextRepository.findCareContextsByCareContextId(customRequest.getCareContextId());
+        CareContext careContext = careContextRepository.findCareContextsByCareContextId(Integer.parseInt(customRequest.getCareContextId()));
         LocalDate localDate = LocalDate.now();
 
         Visit visitObj = new Visit();

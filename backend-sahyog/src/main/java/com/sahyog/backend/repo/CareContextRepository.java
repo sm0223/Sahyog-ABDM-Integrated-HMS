@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CareContextRepository extends JpaRepository<CareContext, Integer> {
     public List<CareContext> findCareContextsByPatient(Patient patient);
-    public CareContext findCareContextsByCareContextId(String careContextId);
+    public CareContext findCareContextsByCareContextId(int careContextId);
 }
