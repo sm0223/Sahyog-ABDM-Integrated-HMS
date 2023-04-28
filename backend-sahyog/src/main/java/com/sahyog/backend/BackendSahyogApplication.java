@@ -2,6 +2,7 @@ package com.sahyog.backend;
 import com.sahyog.backend.auth.RegisterRequest;
 import com.sahyog.backend.entities.Role;
 import com.sahyog.backend.entities.User;
+import com.sahyog.backend.repo.ArtifactsHIPRepository;
 import com.sahyog.backend.repo.UserRepository;
 import com.sahyog.backend.services.AuthenticationService;
 import com.sahyog.backend.services.UserService;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @SpringBootApplication
 public class BackendSahyogApplication{
+
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -35,4 +37,7 @@ public class BackendSahyogApplication{
             userRepository.save(user);
         }
     }
+
+
+
 }

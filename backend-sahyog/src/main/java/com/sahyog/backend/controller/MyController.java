@@ -43,7 +43,9 @@ public class MyController {
     private ConsentRepository consentRepository;
     @Autowired
     UserRepository userRepository;
+
     //-------------------------Receiving Callback APIs from ABDM and dispatching SSEs-----------------------------------
+
     @PostMapping("/v0.5/users/auth/on-init")
     public void onInit(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: ON-INIT " + response);
@@ -116,7 +118,8 @@ public class MyController {
             artifactsRepository.save(artifactsObj);
         }
     }
-
+    @Autowired
+    ArtifactsHIPRepository artifactsHIPRepository;
     @PostMapping("/v0.5/consents/hip/notify")
     public void consentsHipNotify(@RequestBody String response) throws Exception {
         System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY " + response);
@@ -133,6 +136,22 @@ public class MyController {
             System.out.println("CONSENT NOT GRANTED");
             return;
         }
+
+
+//---------------------INSERTING DATA INTO ArtifactsHIP table--------------------
+        ArtifactsHIP artifactsHIP = new ArtifactsHIP();
+        artifactsHIP.artifactsId = (String) jsonObject.getJSONObject("notification").getJSONObject("consentDetail").get("consentId");
+        artifactsHIP.patientHealthId = (String) jsonObject.getJSONObject("notification").getJSONObject("consentDetail").getJSONObject("patient").get("id");
+        JSONArray careContextsArray = jsonObject.getJSONObject("notification").getJSONObject("consentDetail").getJSONArray("careContexts");
+        artifactsHIP.setCareContextIds(new ArrayList<>());
+        for (int i=0;i<careContextsArray.length();i++)
+        {
+            JSONObject obj = careContextsArray.getJSONObject(i);
+            artifactsHIP.careContextIds.add((String) obj.get("careContextReference"));
+        }
+        artifactsHIPRepository.save(artifactsHIP);
+
+//-------------------------------------------------------------------------------
 
         String requestId = util.getABDMRequestID(response);
         ABDMSession session = new ABDMSession();
@@ -157,6 +176,13 @@ public class MyController {
         String serialized = parser.encodeResourceToString(bundle);
 //        System.out.println(serialized);
         return serialized;
+        //Now HIP sends an acknowledgement to the ABDM
+    }
+
+    @PostMapping("/v0.5/health-information/hiu/on-request")
+    public void healthInformationHIUONRequest(@RequestBody String response) throws Exception {
+        System.out.println("ABDM RESPONSE: DATA HIU ON-REQUEST " + response);
+
         //Now HIP sends an acknowledgement to the ABDM
     }
 
@@ -428,21 +454,40 @@ public class MyController {
     {
         return adminDoctorService.deleteDoctor(id);
     }
+//
+//    @PutMapping("/api/admin/updateDoctor")
+//    public Doctor updateDoctor(@RequestBody Doctor doctor)
+//    {
+//        User user = User.builder()
+//                .username(doctor.user.getUsername())
+//                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
+//                .role(doctor.user.getRole())
+//                .build();
+//        doctor.setUser(user);
+//
+//        return adminDoctorService.updateDoctor(doctor);
+//    }
+
 
     @PutMapping("/api/admin/updateDoctor")
-    public Doctor updateDoctor(@RequestBody Doctor doctor)
+    public void updateDoctor(@RequestBody Doctor doctor)
     {
-        User user = User.builder()
-                .username(doctor.user.getUsername())
-                .password(new BCryptPasswordEncoder().encode(doctor.user.getPassword()))
-                .role(doctor.user.getRole())
-                .build();
-        doctor.setUser(user);
+//        Doctor existingDoctor = doctorRepository.findByHealthIdNumber(doctor.getHealthIdNumber());
 
-        return adminDoctorService.updateDoctor(doctor);
+        doctorRepository.updateDoctor(
+                doctor.getHealthIdNumber(),
+                doctor.getAddress(),
+                doctor.getGender(),
+                doctor.getName(),
+                doctor.getMobile(),
+                doctor.getDayOfBirth(),
+                doctor.getMonthOfBirth(),
+                doctor.getYearOfBirth(),
+                doctor.getRegistrationNumber(),
+                doctor.getHealthId(),
+                doctor.getUser()
+        );
     }
-
-
     //---------Admin Staff services------------------
     @Autowired
     private AdminService adminStaffService;
@@ -473,19 +518,26 @@ public class MyController {
     {
         return adminStaffService.deleteStaff(healthIdNumber);
     }
+//    @PutMapping("/api/admin/updateStaff")
+//    public Staff updateStaff(@RequestBody Staff staff)
+//    {
+//        User user = User.builder()
+//                .username(staff.user.getUsername())
+//                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
+//                .role(staff.user.getRole())
+//                .build();
+//        staff.setUser(user);
+//
+//        return adminStaffService.updateStaff(staff);
+//    }
+
+    @Autowired
+    StaffRepository staffRepository;
     @PutMapping("/api/admin/updateStaff")
-    public Staff updateStaff(@RequestBody Staff staff)
+    public void updateStaff(@RequestBody Staff staff)
     {
-        User user = User.builder()
-                .username(staff.user.getUsername())
-                .password(new BCryptPasswordEncoder().encode(staff.user.getPassword()))
-                .role(staff.user.getRole())
-                .build();
-        staff.setUser(user);
-
-        return adminStaffService.updateStaff(staff);
+        staffRepository.updateStaff(staff.healthIdNumber, staff.getAddress(), staff.getGender(), staff.getName(), staff.getMobile(), staff.getDayOfBirth(), staff.getMonthOfBirth(), staff.getYearOfBirth(), staff.getHealthId(), staff.getUser());
     }
-
     @PostMapping("/api/admin/getStaff/{healthIdNumber}")
     public Staff getStaff(@PathVariable String healthIdNumber)
     {

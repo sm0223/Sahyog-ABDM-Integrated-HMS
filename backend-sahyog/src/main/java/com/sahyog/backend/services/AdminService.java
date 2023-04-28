@@ -33,20 +33,23 @@ public class AdminService {
         return "doctor deleted !! " + id;
     }
 
-    public Doctor updateDoctor(Doctor doctor){
-        Doctor existingDoctor = doctorRepository.findByHealthIdNumber(doctor.getHealthIdNumber());
-        existingDoctor.setAddress(doctor.getAddress());
-        existingDoctor.setGender(doctor.getGender());
-        existingDoctor.setName(doctor.getName());
-        existingDoctor.setMobile(doctor.getMobile());
-        existingDoctor.setDayOfBirth(doctor.getDayOfBirth());
-        existingDoctor.setMonthOfBirth(doctor.getMonthOfBirth());
-        existingDoctor.setYearOfBirth(doctor.getYearOfBirth());
-        existingDoctor.setRegistrationNumber(doctor.getRegistrationNumber());
-        existingDoctor.setHealthId(doctor.getHealthId());
-        existingDoctor.setUser(doctor.getUser());
-        return doctorRepository.save(existingDoctor);
-    }
+//    public Doctor updateDoctor(Doctor doctor){
+//        Doctor existingDoctor = doctorRepository.findByHealthIdNumber(doctor.getHealthIdNumber());
+//        existingDoctor.setAddress(doctor.getAddress());
+//        existingDoctor.setGender(doctor.getGender());
+//        existingDoctor.setName(doctor.getName());
+//        existingDoctor.setMobile(doctor.getMobile());
+//        existingDoctor.setDayOfBirth(doctor.getDayOfBirth());
+//        existingDoctor.setMonthOfBirth(doctor.getMonthOfBirth());
+//        existingDoctor.setYearOfBirth(doctor.getYearOfBirth());
+//        existingDoctor.setRegistrationNumber(doctor.getRegistrationNumber());
+//        existingDoctor.setHealthId(doctor.getHealthId());
+//
+//        System.out.println("Checking user-------"+ doctor.getUser());
+//        existingDoctor.setUser(doctor.getUser());
+//
+//        return doctorRepository.save(existingDoctor);
+//    }
 
     @Autowired
     private StaffRepository staffRepository;
@@ -60,20 +63,20 @@ public class AdminService {
 //>>>>>>> origin/main
         return "staff Deleted !!" + healthIdNumber;
     }
-    public Staff updateStaff(Staff staff){
-        Staff existingStaff = staffRepository.findByHealthIdNumber(staff.getHealthIdNumber());
-        existingStaff.setAddress(staff.getAddress());
-        existingStaff.setGender(staff.getGender());
-        existingStaff.setName(staff.getName());
-        existingStaff.setMobile(staff.getMobile());
-        existingStaff.setDayOfBirth(staff.getDayOfBirth());
-        existingStaff.setMonthOfBirth(staff.getMonthOfBirth());
-        existingStaff.setYearOfBirth(staff.getYearOfBirth());
-        existingStaff.setHealthId(staff.getHealthId());
-        existingStaff.setUser(staff.getUser());
-
-        return staffRepository.save(existingStaff);
-    }
+//    public Staff updateStaff(Staff staff){
+//        Staff existingStaff = staffRepository.findByHealthIdNumber(staff.getHealthIdNumber());
+//        existingStaff.setAddress(staff.getAddress());
+//        existingStaff.setGender(staff.getGender());
+//        existingStaff.setName(staff.getName());
+//        existingStaff.setMobile(staff.getMobile());
+//        existingStaff.setDayOfBirth(staff.getDayOfBirth());
+//        existingStaff.setMonthOfBirth(staff.getMonthOfBirth());
+//        existingStaff.setYearOfBirth(staff.getYearOfBirth());
+//        existingStaff.setHealthId(staff.getHealthId());
+//        existingStaff.setUser(staff.getUser());
+//
+//        return staffRepository.save(existingStaff);
+//    }
 //
 //<<<<<<< HEAD
     public Staff findStaffByHealthId(String healthIdNumber) { return staffRepository.findByHealthIdNumber(healthIdNumber);}
