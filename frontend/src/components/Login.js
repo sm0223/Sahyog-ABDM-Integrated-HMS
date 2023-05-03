@@ -25,9 +25,7 @@ const Login = ({handleLogin, errorMessage}) => {
               </FormGroup>
               {errorMessage && <p style = {{
                 color:"red"}}> {errorMessage}</p>}
-              <Input type="submit" className="btn btn-primary" type="submit">
-                Submit
-              </Input>
+              <Input type="submit" className="btn btn-primary" type="submit"/>
             </CardBody>
           </Form>
         </Card>

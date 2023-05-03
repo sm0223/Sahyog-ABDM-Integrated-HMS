@@ -60,23 +60,37 @@ function AdminDashboard({user}) {
         }
     }
     return (
-        <div className="row">
-            <Sidebar handleDashboard={handleDashboard}/>
-            <div className="col" style={{height: '100vh'}}>
-                <div className="b-example-divider"></div>
-                <div className="row">
-                    <div className="col-md-9">
-                        <div style={ {height: 1000}}>
-                            {adminState.doctor && <Doctor/>}
-                            {adminState.staff && <Staff/>}
-                            {adminState.adminHome && <AdminHome/>}
-                            {adminState.patch && <PatchURL/>}
-                        </div>
-                    </div>
-                </div>
+
+        <div className="container-fluid">
+            <div className="row">
+                <Col md="3" lg="2">
+                <Sidebar handleDashboard={handleDashboard} state = {adminState}/>
+                </Col>
+                <Col md="9" lg ="8">
+                     <div className="row">
+                         <h5>Dashboard</h5>
+                         <div>
+                             <div style={ {height: 1000}}>
+                                 {adminState.doctor && <Doctor/>}
+                                 {adminState.staff && <Staff/>}
+                                 {adminState.adminHome && <AdminHome/>}
+                                 {adminState.patch && <PatchURL/>}
+                             </div>
+                         </div>
+                     </div>
+                </Col>
             </div>
         </div>
+
+
     )
 }
 
 export default AdminDashboard
+
+// <div className="row">
+//     <Sidebar handleDashboard={handleDashboard}/>
+// <div className="col" style={{height: '100vh'}}>
+//
+// </div>
+// </div>

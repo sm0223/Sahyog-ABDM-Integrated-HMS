@@ -133,7 +133,6 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
         <Row>
           <Col>
             <FormGroup>
-
               <Label for="birthDate">Birth Date</Label>
               <Input valid = {formErrors.birthDate===""} invalid = {formErrors.birthDate!==""}  type="date" name="birthDate" id="birthDate" placeholder="Enter Birth Date"
                      value = {new Date(patient.yearOfBirth+"-"+
@@ -184,14 +183,15 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
             <Row>
             <FormGroup>
               <Label for="pincode">Pincode</Label>
-              <Input valid = {formErrors.pincode===""} invalid = {formErrors.pincode!==""}  type="text" name="pincode" id="pincode" placeholder="Enter Pincode" value={patient.address? patient.address.pincode : ""} onChange={onChangeInputs} />
+              <Input valid = {formErrors.pincode===""} invalid = {formErrors.pincode!==""}  type="text" name="pincode" id="pincode" placeholder="Enter Pincode"
+                     value={patient.address.pincode? patient.address.pincode : ""} onChange={onChangeInputs} />
             <FormFeedback>{formErrors.pincode}</FormFeedback>
         </FormGroup>
             </Row>
           </div>
         </FormGroup>
         <FormGroup>
-        <Input className="btn btn-primary" type="submit" onClick={handleRegisterPatient}>Submit</Input>
+        <Input className="btn btn-primary" type="submit" onClick={handleRegisterPatient}/>
         <br/>
         </FormGroup>
       </Form>

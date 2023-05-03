@@ -1,13 +1,21 @@
 import {Button, Modal, ModalHeader, ModalBody,} from 'reactstrap';
-import doctorService from "../../services/doctorService";
+
+import React, {useState} from "react";
+import DataTransferForm from "./DataTransferForm";
 
 const ViewAllConsents = ({modal, consentList, handleDashboard})=> {
-
+  const [dataTransferForm, setDataTransferForm] = useState({
+    state:false,
+    consent:null
+  });
   console.log("consentList", consentList)
   const toggle = () => handleDashboard("CLOSE-VIEW-CONSENT");
 
-  const checkStatus = (consent) => {
-    const response = doctorService.getConsentStatus("")
+  const handleDataTransferForm = (consent) => {
+    setDataTransferForm({
+      state:true,
+      consent: consent
+    })
   };
   return (
       <div className="container" style={{marginTop:50}}>
@@ -41,11 +49,13 @@ const ViewAllConsents = ({modal, consentList, handleDashboard})=> {
                         <td>{consent.eraseDate.split('T')[0]}</td>
                         <td>{consent.status}</td>
                         <td>
-                          <Button onClick={()=>checkStatus(consent)}>Fetch Status</Button>
+                          {/*{consent.status === "REQUESTED" && <Button onClick={()=>checkStatus(consent)}>Fetch Status</Button>}*/}
+                          {consent.status === "GRANTED" && <Button onClick={()=>handleDataTransferForm(consent)}>Request Data Transfer</Button>}
                         </td>
 
                       </tr>
                   ))}
+                  {consentList.length ==0 && <tr><td></td> <td></td> <td></td><td>No Active Consents to show</td><td></td><td></td><td></td></tr>}
                   </tbody>
                   <tfoot>
                   <tr>
@@ -60,10 +70,10 @@ const ViewAllConsents = ({modal, consentList, handleDashboard})=> {
             </div>
           </ModalBody>
         </Modal>
-        {/*{viewconsentState.state&&<View modal={viewconsentState.state}*/}
-        {/*                                              patient = {patient}*/}
-        {/*                                              consent={viewconsentState.consent}*/}
-        {/*                                              setViewconsent = {setViewconsentState}/> }*/}
+
+        {dataTransferForm.state&&<DataTransferForm modal={dataTransferForm.state}
+                                                      consent = {dataTransferForm.consent}
+                                                      setDataTransferForm= {setDataTransferForm}/> }
       </div>
   );
 }

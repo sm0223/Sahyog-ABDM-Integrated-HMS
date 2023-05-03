@@ -11,7 +11,7 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
   const [healthId, setHealthId] = useState("");
   const [otp, setOTP] = useState("");
   const [transactionID, setTransactionID] = useState("");
-  const handleSubmit = async (event)=> {
+  const handleSendOtp = async (event)=> {
     event.preventDefault()
     try {
       const abortController = new AbortController();
@@ -105,15 +105,16 @@ const GetPatientUsingHealthId = ({user, handleDashboard, setPatient})=> {
 
   return (
       <div className="container">
-        <form onSubmit={handleOTPSubmit}>
+        <form>
           <div className="form">
             <label htmlFor="email">Health ID</label><br/>
-            <input className="input" type="text" id="healthId"  onChange={changeHealthId}/> <br/>
+            <input className="input" type="text" id="healthId"  onChange={changeHealthId}/>
+            <button style={{marginLeft:20}} className= "btn btn-primary" type="button" onClick={handleSendOtp}> {state.showOTPInput?"Re-Send OTP" :"Send OTP" }</button>
+            <br/>
             {state.showOTPInput&& <div> <label htmlFor="email">Enter OTP </label> <br/>
               <input type="text" id="otp" onChange={changeOTP}/>
             </div>}<br/>
           </div>
-          {!state.showOTPInput && <button className= "btn btn-primary" type="button" onClick={handleSubmit}> Submit</button>}
           {state.showOTPInput && <button type="submit" className= "btn btn-primary" onClick={handleOTPSubmit}> Verify OTP</button>}
         </form>
       </div>

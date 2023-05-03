@@ -15,7 +15,7 @@ import ViewStaff from "./components/admin/staff/ViewStaff";
 import AddStaff from "./components/admin/staff/AddStaff";
 import EditStaff from "./components/admin/staff/EditStaff";
 
-
+import './styles.css'
 
 const App = () => {
     const navigate  = useNavigate();

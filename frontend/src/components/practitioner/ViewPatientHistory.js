@@ -10,6 +10,11 @@ const ViewPatientHistory = ({modal, handleDashboard, patient, user})=> {
     state:false,
     careContext:null
   });
+  // useEffect(() => {
+  //   return () => {
+  //     effect
+  //   };
+  // }, []);
 
   console.log(patient)
   const toggle = () => handleDashboard("CLOSE-PATIENT-HISTORY");
@@ -57,6 +62,8 @@ const ViewPatientHistory = ({modal, handleDashboard, patient, user})=> {
 
                       </tr>
                   ))}
+                  {careContextList.length ==0 && <tr><td></td><td></td><td>No Patient History found</td><td></td><td></td><td></td></tr>}
+
                   </tbody>
                   <tfoot>
                   <tr>
