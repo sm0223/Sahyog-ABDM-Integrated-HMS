@@ -43,6 +43,9 @@ public class MyController {
     String HIP_PRIVATE_KEY = "VfAJSicIeu5XqO1EyAwct3RUZc4yYaKyHxTogEbDwg==";
     String HIP_PUBLIC_KEY = "BCFNaWHwbyu/e+f+c/uljadKYTGMPulDEoGsR473pp1kGROQz7NnSFRthJwGdy8TwYQhZrdW6zDhLFJ+G9OFYNc=";
     String HIP_NONCE = "6mCcU6b2ixlYiRb7dUFZVuNUp37TvJ9DILSSTvfIFMo=";
+    String HIU_PRIVATE_KEY = "VfAJSicIeu5XqO1EyAwct3RUZc4yYaKyHxTogEbDwg==";
+    String HIU_PUBLIC_KEY = "BCFNaWHwbyu/e+f+c/uljadKYTGMPulDEoGsR473pp1kGROQz7NnSFRthJwGdy8TwYQhZrdW6zDhLFJ+G9OFYNc=";
+    String HIU_NONCE = "6mCcU6b2ixlYiRb7dUFZVuNUp37TvJ9DILSSTvfIFMo=";
     @Autowired
     private ConsentRepository consentRepository;
     @Autowired
@@ -184,7 +187,7 @@ public class MyController {
             for (String careContextId : careContextListId) {
                 CareContext careContext = careContextRepository.getById(Integer.parseInt(careContextId));
                 System.out.println("CARE_CONTEXT:" + careContext.getCareContextId());
-                System.out.println("CARE_CONTEXT:" + careContext.getPatient().healthId);
+                careContext.setPatient(patientRepository.findByHealthId(careContext.getPatient().getHealthId()));
                 careContextList.add(careContext);
             }
 
@@ -199,14 +202,23 @@ public class MyController {
                 IParser parser = ctx.newJsonParser();
                 String bundleString = parser.encodeResourceToString(bundle);
                 System.out.println("BUNDLE CREATED");
-                EncryptionResponse encryptionResponse;
+                try{
+                    FileWriter fw=new FileWriter("bundle.txt",true);
+                    fw.write(bundleString);
+                    fw.close();
+                }catch(Exception e){System.out.println(e);}
+                System.out.println("Success...");
+                System.out.println();
 
                 String res = abdmSession.getEncryptionKeys();
                 responseObject = new JSONObject(res);
+                HIP_PRIVATE_KEY = responseObject.get("privateKey").toString();
+                HIP_PUBLIC_KEY = responseObject.get("publicKey").toString();
+                HIP_NONCE= responseObject.get("nonce").toString();
 
-                String senderPublicKey = responseObject.get("publicKey").toString();
-                String senderPrivateKey = responseObject.get("privateKey").toString();
-                String senderNonce = responseObject.get("nonce").toString();
+                String senderPublicKey = HIP_PUBLIC_KEY;
+                String senderPrivateKey = HIP_PRIVATE_KEY;
+                String senderNonce = HIP_NONCE;
                 String encryptedResponse = abdmSession.getEncryptedData(dataPushUrl, bundleString, publicKey, nonce, senderPublicKey, senderPrivateKey, senderNonce);
                 abdmSession.sendEncryptedData(dataPushUrl, encryptedResponse,senderNonce);
             }
@@ -227,9 +239,9 @@ public class MyController {
 
         ABDMSession abdmSession = new ABDMSession();
 
-        String receiverPublicKey = HIP_PUBLIC_KEY;
-        String receiverPrivateKey = HIP_PRIVATE_KEY;
-        String receiverNonce = HIP_NONCE;
+        String receiverPublicKey = HIU_PUBLIC_KEY;
+        String receiverPrivateKey = HIU_PRIVATE_KEY;
+        String receiverNonce = HIU_NONCE;
 
         String response2 = abdmSession.getDecryptedData(encryptedData, senderPublicKey, senderNonce, receiverPrivateKey,receiverNonce,receiverPublicKey);
         try{
@@ -425,10 +437,13 @@ public class MyController {
 
             String res = abdmSession.getEncryptionKeys();
             JSONObject responseObject = new JSONObject(res);
+            HIU_PRIVATE_KEY = responseObject.get("privateKey").toString();
+            HIU_PUBLIC_KEY = responseObject.get("publicKey").toString();
+            HIU_NONCE= responseObject.get("nonce").toString();
 
-            String publicKey = responseObject.get("publicKey").toString();
-            String privateKey = responseObject.get("privateKey").toString();
-            String nonce = responseObject.get("nonce").toString();
+            String publicKey = HIU_PUBLIC_KEY;
+            String privateKey = HIU_PRIVATE_KEY;
+            String nonce = HIU_NONCE;
             System.out.println("PUBLIC-KEY: "+publicKey);
             abdmSession.setToken();
             String UUIDCode = UUID.randomUUID().toString();
@@ -477,8 +492,12 @@ public class MyController {
     @PostMapping("/api/patient/save")
     public boolean SavePatient(@RequestBody Patient patient)
     {
-        System.out.println("Patient : "+patient.toString());
-        return patientService.savePatient(patient);
+        try{
+            System.out.println("Patient : " + patient.toString());
+            return patientService.savePatient(patient);
+        }catch (Exception e){
+            return false;
+        }
     }
 
     @PostMapping("/api/patient/all")

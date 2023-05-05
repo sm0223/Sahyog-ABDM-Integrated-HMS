@@ -18,7 +18,7 @@ import patientService from "../../services/patientService";
 
 const AssignToExistingCareContext = ({modal, handleDashboard, visit, setVisit, careContextList})=> {
   const toggle = () => handleDashboard("CLOSE-ASSIGN-CARE-CONTEXT");
-
+  console.log(careContextList)
   const handleAssignCareContext = async (careContext) => {
     try {
       const response = await doctorService.assignCareContext(careContext, visit);
@@ -68,7 +68,7 @@ const AssignToExistingCareContext = ({modal, handleDashboard, visit, setVisit, c
 
                       </tr>
                   ))}
-                  {!careContextList&& <p>No Care-Contexts found</p>}
+                  {careContextList.length ==0 &&<tr><td></td><td></td><td><p>No Care-Contexts found</p></td><td></td><td></td><td></td></tr>}
                   </tbody>
                   <tfoot>
                   <tr>

@@ -66,11 +66,11 @@ const Doctor = () => {
                                     onClick={()=> {
                                         if(window.confirm(`Are you sure you want to remove ${doctor.name} ?` ))
                                         {
-                                            deleteDoctor(doctor.id)
+                                            deleteDoctor(doctor.doctorId)
                                         };
                                     }}
                                 >
-                                    Delete
+                                    Delete{console.log(doctor)}
                                 </button>
 
                             </td>

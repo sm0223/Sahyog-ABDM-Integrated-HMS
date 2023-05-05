@@ -13,8 +13,8 @@ export default function PractitionerDashboard({user}) {
     mySchedule: false
   }
   const [state, setState] = useState({
-    practitionerHome : true,
-    patientVisit : false,
+    practitionerHome : false,
+    patientVisit : true,
     viewAllConsents : false,
     mySchedule: false
   })

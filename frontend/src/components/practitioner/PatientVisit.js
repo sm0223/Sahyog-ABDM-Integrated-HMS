@@ -114,7 +114,8 @@ const PatientVisit = ({user}) => {
                          handleDashboard={handleDashboard}
                          user = {user}
                          patient = {visit.patient}
-                         setModal = {setState} />}
+                         visit = {visit}
+                         setVisit = {setVisit} />}
         {state.viewPatientHistory&&<ViewPatientHistory modal={state.viewPatientHistory}
                                                        handleDashboard={handleDashboard}
                                                        user = {user}

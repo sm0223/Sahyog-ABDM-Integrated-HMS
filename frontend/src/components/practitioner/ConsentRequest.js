@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Row, Col} from 'reactstrap';
 import doctorService from "../../services/doctorService";
+import patientService from "../../services/patientService";
 
-const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
+const ConsentRequest = ({modal, handleDashboard,patient, user, visit, setVisit})=> {
   // console.log("I am in Consent Request  "+JSON.stringify(user))
 
   const [purposeText, setPurposeText] = useState("Consent Required");
@@ -64,6 +65,14 @@ const ConsentRequest = ({modal, handleDashboard,patient, user})=> {
     console.log("consent1", consent)
     const res = await doctorService.consentRequestInit(consent);
     console.log(res)
+    const pat = await patientService.getPatientFromHealthId(visit.patient.healthId)
+    setVisit({
+      ...visit,
+      patient:pat
+    })
+    alert('Consent created Saved')
+    handleDashboard("CLOSE-CONSENT-REQUEST")
+
   }
   if(patient == null) return null;
 

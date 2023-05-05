@@ -23,9 +23,13 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
     Object.values(formErrors).forEach((value) => nerrors += value.length === 0 ? 0 : 1);
     if(nerrors === 0) {
       try {
-        // const response = await registrationService.registerPatient(patient)
-        alert('Patient Registered')
-        handleDashboard("CREATE_APPOINTMENT")
+        const response = await registrationService.registerPatient(patient)
+        console.log(response)
+        if(response == false) alert('Patient or Mobile is already Registered')
+        else {
+          alert('Patient Registered')
+          handleDashboard("STAFF-HOME")
+        }
       }
       catch(err) {
 
@@ -191,8 +195,9 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
           </div>
         </FormGroup>
         <FormGroup>
-        <Input className="btn btn-primary" type="submit" onClick={handleRegisterPatient}/>
-        <br/>
+          <Button className="btn btn-primary" color="primary" type="submit" onClick={handleRegisterPatient}>Register Patient</Button>
+          &nbsp;
+          <Button className="btn" onClick={()=>handleDashboard('STAFF-HOME')}>Close</Button>
         </FormGroup>
       </Form>
     </div>

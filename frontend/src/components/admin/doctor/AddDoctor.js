@@ -65,7 +65,7 @@ const AddDoctor = () => {
     
     const initialError = {
         healthId:"",
-        name: "",
+        name: "Name is Required",
         gender: "",
         birthDate: "",
         line: "",

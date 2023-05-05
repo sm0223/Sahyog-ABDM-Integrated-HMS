@@ -26,13 +26,13 @@ public class FhirUtility {
                 "371530004",
                 "Clinical Consultation Report"))); // SETTING record type
         //SETTING SUBJECT REFERENCE
-        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.getPatient().healthId);
-        patientReference.setDisplay(careContext.getPatient().name);
+        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.getPatient().getHealthId());
+        patientReference.setDisplay(careContext.getPatient().getName());
         composition.setSubject(patientReference);
 
         //SETTING AUTHOR REFERENCE
-        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.getDoctor().healthId);
-        practitionerReference.setDisplay(careContext.getDoctor().name);
+        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.getDoctor().getHealthId());
+        practitionerReference.setDisplay(careContext.getDoctor().getName());
         composition.setAuthor(Collections.singletonList(practitionerReference));
         //SETTING ENCOUNTER REFERENCE
         Reference encounterReference = new Reference("Encounter/"+"encounter-"+careContext.getCareContextId());
@@ -40,7 +40,7 @@ public class FhirUtility {
         //SETTING DATE
         try {
             Visit visit= careContext.getVisitList().get(careContext.getVisitList().size()-1);
-            composition.setDate(new SimpleDateFormat("yyyy-mm-dd").parse(visit.dateOfVisit));
+            composition.setDate(new SimpleDateFormat("yyyy-mm-dd").parse(visit.getDateOfVisit()));
         } catch (Exception e) {
             composition.setDate(new Date());
         };
