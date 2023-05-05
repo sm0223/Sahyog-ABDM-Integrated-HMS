@@ -33,7 +33,7 @@ public class Patient{
             strategy = GenerationType.SEQUENCE,
             generator = "patient_sequence"
     )
-    private int patientId;
+    public int patientId;
     public String healthId;
     public String name;
     public String gender;
@@ -63,6 +63,8 @@ public class Patient{
     @OneToMany(mappedBy = "patient")
     List<Visit> artifactList;
 
+    @OneToMany(mappedBy = "patient")
+    List<Appointment> appointmentList;
 }
 
 

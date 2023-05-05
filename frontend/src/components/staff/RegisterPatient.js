@@ -23,9 +23,9 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
     Object.values(formErrors).forEach((value) => nerrors += value.length === 0 ? 0 : 1);
     if(nerrors === 0) {
       try {
-        const response = await registrationService.registerPatient(patient)
+        // const response = await registrationService.registerPatient(patient)
         alert('Patient Registered')
-        handleDashboard("REGISTER-PATIENT")
+        handleDashboard("CREATE_APPOINTMENT")
       }
       catch(err) {
 

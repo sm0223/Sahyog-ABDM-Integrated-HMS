@@ -131,12 +131,13 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
               visit.diagnosis, visit.reasonOfVisit, user.username, visit.healthRecord)
           console.log("linkCareContextResponse",res)
           if(res.data == 202) {
-            alert('Care Context Saved')
+
             const pat = await patientService.getPatientFromHealthId(visit.patient.healthId)
             setVisit({
               ...visit,
               patient:pat
             })
+            alert('Care Context Saved')
           }
           else alert('unknown error occurred')
           abortController.abort()

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -252,6 +253,182 @@ public class ABDMSession {
             return 510;
         } catch (InterruptedException e) {
             return 510;
+        }
+    }
+    public int healthInformationRequest(String uuidCode, String fromDate, String toDate, String consentId, String publicKey, String nonce) {
+
+        String requestBody =  "{\n    \"requestId\": \""+ uuidCode+"\",\n    \"timestamp\": \""+ Instant.now()+"\",\n\"hiRequest\": {\n" +
+                "    \"consent\": {\n" +
+                "      \"id\": \""+consentId+"\"\n" +
+                "    },\n" +
+                "    \"dateRange\": {\n" +
+                "      \"from\": \""+fromDate+"\",\n" +
+                "      \"to\": \""+toDate+"\"\n" +
+                "    },\n" +
+                "    \"dataPushUrl\": \"https://1197-103-156-19-229.ngrok-free.app/v0.5/api/health-information/receive\",\n" +
+                "    \"keyMaterial\": {\n" +
+                "      \"cryptoAlg\": \"ECDH\",\n" +
+                "      \"curve\": \"Curve25519\",\n" +
+                "      \"dhPublicKey\": {\n" +
+                "        \"expiry\": \""+toDate+"\",\n" +
+                "        \"parameters\": \"Curve25519/32byte random key\",\n" +
+                "        \"keyValue\": \""+publicKey+"\"\n" +
+                "      },\n" +
+                "      \"nonce\": \""+nonce+"\"\n" +
+                "    }\n" +
+                "  }\n"+
+                "\n}";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://dev.abdm.gov.in/gateway/v0.5/health-information/cm/request"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .header("X-CM-ID", "sbx")
+                .header("Authorization", "Bearer "+token)
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.toString());
+            System.out.println(response.body().toString());
+            return response.statusCode();
+
+        } catch (IOException e) {
+            return 510;
+        } catch (InterruptedException e) {
+            return 510;
+        }
+    }
+    public String getEncryptionKeys() {
+        System.out.println("GETTING-ENCRYPTION-KEYS");
+        String requestBody =  "";
+        System.out.println(requestBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8090/keys/generate"))
+                .method("GET",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE : "+response.body().toString());
+            return response.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public String getEncryptedData(String dataPushUrl, String bundleString, String publicKey, String nonce, String senderPublicKey, String senderPrivateKey, String senderNonce) {
+        System.out.println("GET-ENCRYPTED DATA: ");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("receiverPublicKey",publicKey);
+        jsonObject.put("receiverNonce",nonce);
+        jsonObject.put("senderPrivateKey",senderPrivateKey);
+        jsonObject.put("senderPublicKey",senderPublicKey);
+        jsonObject.put("senderNonce",senderNonce);
+        jsonObject.put("plainTextData",bundleString);
+
+        String requestBody =  jsonObject.toString();
+        try{
+            FileWriter fw=new FileWriter("testout.txt");
+            fw.write(requestBody);
+            fw.close();
+        }catch(Exception e){System.out.println(e);}
+        System.out.println("Success...");
+        System.out.println();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8090/encrypt"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE ENCRYPTED: "+response.body().toString().length());
+            return response.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    public String getDecryptedData(String encryptedString, String publicKey, String nonce,
+                                   String receiverPrivateKey, String receiverNonce,
+                                   String receiverPublicKey) {
+        System.out.println("GET-ENCRYPTED DATA: ");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("receiverPublicKey",receiverPublicKey);
+        jsonObject.put("receiverPrivateKey",receiverPrivateKey);
+        jsonObject.put("receiverNonce",receiverNonce);
+        jsonObject.put("senderPublicKey",publicKey);
+        jsonObject.put("senderNonce",nonce);
+        jsonObject.put("encryptedData",encryptedString);
+
+        String requestBody =  jsonObject.toString();
+        try{
+            FileWriter fw=new FileWriter("testout3.txt");
+            fw.write(requestBody);
+            fw.close();
+        }catch(Exception e){System.out.println(e);}
+        System.out.println("Success...");
+        System.out.println();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8090/decrypt"))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE DECRYPTED: "+response.body().toString().length());
+            return response.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    public String sendEncryptedData(String dataPushUrl, String encryptedData, String senderNonce) {
+        System.out.println("SEMD-ENCRYPTED DATA: ");
+
+
+        JSONObject jsonObject = new JSONObject(encryptedData);
+        jsonObject.put("nonce", senderNonce);
+        String requestBody = jsonObject.toString() ;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(dataPushUrl))
+                .method("POST",HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = null;
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("RESPONSE ENCRYPTED LENGTH: "+response.body().toString().length());
+            return response.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }

@@ -25,10 +25,14 @@ const DataTransferForm = ({modal, consent, setDataTransferForm})=> {
     consent:null
   });
   console.log(fromDate.toISOString().split('T')[0])
-  const handleDataTransfer = (event) => {
+  const handleDataTransfer = async (event) => {
     event.preventDefault();
-    const response = doctorService.sendDataTransferRequest(fromDate, toDate, consent.consent);
-
+    const response = await doctorService.sendDataTransferRequest(fromDate, toDate, consent)
+    alert('Data Transfer Request Initiated');
+    setDataTransferForm({
+      state:false,
+      consent:null
+    })
   };
   return (
       <div className="container" style={{marginTop:50}}>

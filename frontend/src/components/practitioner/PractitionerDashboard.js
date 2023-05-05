@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Container} from 'react-bootstrap';
 import PractitionerHome from "./PractitionerHome";
 import ViewAllConsents from "./ViewAllConsents";
 import MySchedule from "./MySchedule";
 import PatientVisit from "./PatientVisit";
+import doctorService from "../../services/doctorService";
 export default function PractitionerDashboard({user}) {
   const falseState = {
     practitionerHome : false,
@@ -17,6 +18,11 @@ export default function PractitionerDashboard({user}) {
     viewAllConsents : false,
     mySchedule: false
   })
+  const getAppointmentList = ()=>{
+    const response = doctorService.getAppointmentListToday();
+    console.log(response)
+
+  }
   const handleDashboard = (action) => {
     console.log(action)
     let newState={}
@@ -52,6 +58,12 @@ export default function PractitionerDashboard({user}) {
       default:
     }
   }
+  useEffect(() => {
+    return () => {
+      getAppointmentList();
+    };
+  }, []);
+
   return (
     <Container>
       {state.practitionerHome && <PractitionerHome user = {user} handleDashboard = {handleDashboard} />}

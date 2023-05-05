@@ -57,14 +57,17 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor")
     List<Consent> consentList;
 
-  @OneToOne(
+    @OneToOne(
           cascade = CascadeType.ALL,
           optional = false
-  )
-  @JoinColumn(
+    )
+    @JoinColumn(
           name="user_id_fk",
           referencedColumnName="userID"
-  )
-  @JsonManagedReference(value = "doctorBackRef")
+    )
+    @JsonManagedReference(value = "doctorBackRef")
     public User user;
+
+    @OneToMany(mappedBy = "doctor")
+    List<Appointment> appointmentList;
 }

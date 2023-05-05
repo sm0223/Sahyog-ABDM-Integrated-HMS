@@ -14,12 +14,16 @@ import javax.print.Doc;
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     Doctor findByHealthIdNumber(String healthId);
 
+    Doctor findDoctorByHealthId(String healthId);
+
     @Query(value = "select * from doctor d where d.user_id_fk=?1", nativeQuery = true)
     Doctor findDoctorsByUserId(int userId);
 
     Doctor findDoctorsByUser(User user);
 
     Doctor findDoctorsByRegistrationNumber(String registrationNumber);
+
+
 
 //    @Modifying
 //    @Transactional

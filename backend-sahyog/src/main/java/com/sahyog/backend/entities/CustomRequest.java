@@ -17,11 +17,14 @@ public class CustomRequest {
     String reason;
     String username;
     String consentId;
-
+    String doctorHealthId;
     String healthRecord;
     String diagnosis;
     String careContextId;
     String reasonOfVisit;
+    String fromDate;
+    String toDate;
+
 
 }
 

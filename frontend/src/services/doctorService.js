@@ -102,4 +102,52 @@ const getDoctorByUsername = async(username) => {
     throw new Error("Unable to get Care Context from Server")
   }
 }
-export default {consentRequestInit, createNewCareContext, getCareContextListByPatient, assignCareContext, getDoctorByUsername}
+const getAppointmentListToday = async (healthId) => {
+  try {
+    const response = await api.post(`/api/appointments/get-by-doctor-today`,
+        {healthId:healthId}, {
+          headers: {
+            'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+            'Content-Type': 'application/json'
+          }
+        })
+    return response.data
+  } catch (err) {
+    throw new Error("Unable to get Care Context from Server")
+  }
+};
+const createNewAppointment = async (patientHealthId, doctorHealthId, date) => {
+  try {
+    const response = await api.post(`/api/appointments/create`,
+        {healthId:patientHealthId, doctorHealthId: doctorHealthId, toDate:date }, {
+          headers: {
+            'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+            'Content-Type': 'application/json'
+          }
+        })
+    return response.data
+  } catch (err) {
+    throw new Error("Unable to add Appointment  Server")
+  }
+};
+const sendDataTransferRequest = async (fromDate, toDate, consent) => {
+  try {
+    console.log(fromDate.toISOString().split('T')[0], toDate.toISOString().split('T')[0], consent.consentId)
+    const data = {
+      fromDate: fromDate,
+      toDate: toDate,
+      consentId: consent.consentId
+    }
+    const response = await api.post(`api/health-information/hiu/request`,
+        data, {
+          headers: {
+            'Authorization': 'Bearer ' + window.localStorage.getItem("token"),
+            'Content-Type': 'application/json'
+          }
+        })
+    return response.data;
+  } catch (err) {
+    throw new Error("Unable to add Appointment  Server")
+  }
+};
+export default {sendDataTransferRequest,createNewAppointment, consentRequestInit, createNewCareContext, getCareContextListByPatient, assignCareContext, getDoctorByUsername, getAppointmentListToday}

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class MyController {
     private Util util = new Util();
     private PasswordEncoder passwordEncoder;
 
+    String HIP_PRIVATE_KEY = "VfAJSicIeu5XqO1EyAwct3RUZc4yYaKyHxTogEbDwg==";
+    String HIP_PUBLIC_KEY = "BCFNaWHwbyu/e+f+c/uljadKYTGMPulDEoGsR473pp1kGROQz7NnSFRthJwGdy8TwYQhZrdW6zDhLFJ+G9OFYNc=";
+    String HIP_NONCE = "6mCcU6b2ixlYiRb7dUFZVuNUp37TvJ9DILSSTvfIFMo=";
     @Autowired
     private ConsentRepository consentRepository;
     @Autowired
@@ -147,7 +151,7 @@ public class MyController {
         for (int i=0;i<careContextsArray.length();i++)
         {
             JSONObject obj = careContextsArray.getJSONObject(i);
-            artifactsHIP.careContextIds.add((String) obj.get("careContextReference"));
+                artifactsHIP.careContextIds.add((String) obj.get("careContextReference"));
         }
         artifactsHIPRepository.save(artifactsHIP);
 
@@ -162,26 +166,86 @@ public class MyController {
     }
 
     @PostMapping("v0.5/health-information/hip/request")
-    public String healthInformationHipRequest(@RequestParam String s) throws Exception {
-        System.out.println("ABDM RESPONSE: CONSENTS HIP NOTIFY "+s);
-        CareContext careContext = careContextRepository.findCareContextsByCareContextId(9);
-        FhirUtility fhirUtility = new FhirUtility();
-        Bundle bundle = fhirUtility.covertCareContextToBundle(careContext);
-        System.out.println("BUNDLE CREATED");
-        FhirContext ctx = FhirContext.forR4();
+    public int healthInformationHipRequest(@RequestBody String response) throws Exception {
+        try{
+            System.out.println("ABDM RESPONSE: HEALTH-INFORMATION-HIP-REQUEST: " + response);
+            JSONObject responseObject = new JSONObject(response);
+            String consentArtefactId = (String) responseObject.getJSONObject("hiRequest").getJSONObject("consent").get("id");
+            String dataPushUrl = (String) responseObject.getJSONObject("hiRequest").get("dataPushUrl");
+            String publicKey = (String) responseObject.getJSONObject("hiRequest").getJSONObject("keyMaterial").getJSONObject("dhPublicKey").get("keyValue");
+            String nonce = (String) responseObject.getJSONObject("hiRequest").getJSONObject("keyMaterial").get("nonce");
+            ArtifactsHIP artifact = artifactsHIPRepository.findArtifactsHIPByArtifactsId(consentArtefactId);
+            List<String> careContextListId = artifact.getCareContextIds();
+            List<CareContext> careContextList = new ArrayList<>();
 
-        IParser parser = ctx.newJsonParser();
+            ABDMSession abdmSession = new ABDMSession();
+            abdmSession.setToken();
 
-    // Serialize it
-        String serialized = parser.encodeResourceToString(bundle);
-//        System.out.println(serialized);
-        return serialized;
+            for (String careContextId : careContextListId) {
+                CareContext careContext = careContextRepository.getById(Integer.parseInt(careContextId));
+                System.out.println("CARE_CONTEXT:" + careContext.getCareContextId());
+                System.out.println("CARE_CONTEXT:" + careContext.getPatient().healthId);
+                careContextList.add(careContext);
+            }
+
+            for (CareContext careContext : careContextList) {
+                FhirUtility fhirUtility = new FhirUtility();
+
+                Bundle bundle = fhirUtility.covertCareContextToBundle(careContext);
+                if (bundle == null) {
+                    continue;
+                }
+                FhirContext ctx = FhirContext.forR4();
+                IParser parser = ctx.newJsonParser();
+                String bundleString = parser.encodeResourceToString(bundle);
+                System.out.println("BUNDLE CREATED");
+                EncryptionResponse encryptionResponse;
+
+                String res = abdmSession.getEncryptionKeys();
+                responseObject = new JSONObject(res);
+
+                String senderPublicKey = responseObject.get("publicKey").toString();
+                String senderPrivateKey = responseObject.get("privateKey").toString();
+                String senderNonce = responseObject.get("nonce").toString();
+                String encryptedResponse = abdmSession.getEncryptedData(dataPushUrl, bundleString, publicKey, nonce, senderPublicKey, senderPrivateKey, senderNonce);
+                abdmSession.sendEncryptedData(dataPushUrl, encryptedResponse,senderNonce);
+            }
+            return 200;
+        }catch (Exception e){
+            return 500;
+        }
         //Now HIP sends an acknowledgement to the ABDM
+    }
+    @PostMapping("v0.5/health-information/hiu/receive-data")
+    public int healthInformationHiuReceive(@RequestBody String response) throws Exception {
+        System.out.println("ENCRYPTED RESPONSE FROM HIP RECEIVED:");
+        JSONObject jsonObject = new JSONObject(response);
+
+        String encryptedData = jsonObject.get("encryptedData").toString();
+        String senderPublicKey = jsonObject.get("keyToShare").toString();
+        String senderNonce = jsonObject.get("nonce").toString();
+
+        ABDMSession abdmSession = new ABDMSession();
+
+        String receiverPublicKey = HIP_PUBLIC_KEY;
+        String receiverPrivateKey = HIP_PRIVATE_KEY;
+        String receiverNonce = HIP_NONCE;
+
+        String response2 = abdmSession.getDecryptedData(encryptedData, senderPublicKey, senderNonce, receiverPrivateKey,receiverNonce,receiverPublicKey);
+        try{
+            FileWriter fw=new FileWriter("testout4.txt", true);
+            fw.write(response2);
+            fw.close();
+        }catch(Exception e){System.out.println(e);}
+        System.out.println("Success...");
+        System.out.println();
+        return 200;
     }
 
     @PostMapping("/v0.5/health-information/hiu/on-request")
     public void healthInformationHIUONRequest(@RequestBody String response) throws Exception {
-        System.out.println("ABDM RESPONSE: DATA HIU ON-REQUEST " + response);
+        System.out.println("ABDM RESPONSE: DATA HIU ON-REQUEST " );
+
 
         //Now HIP sends an acknowledgement to the ABDM
     }
@@ -192,6 +256,8 @@ public class MyController {
 
 
     }
+
+
 
     //---------------------------------Custom APIS for FRONTEND and Initiating SSEs-------------------------------------
 
@@ -345,6 +411,40 @@ public class MyController {
         return statusCode;
     }
 
+    @PostMapping(value="/api/health-information/hiu/request")
+    public int initiateDataTransfer(@RequestBody CustomRequest customRequest){
+        try{
+
+            String fromDate = customRequest.getFromDate();
+            String toDate = customRequest.getToDate();
+            String consentId = customRequest.getConsentId();
+
+            System.out.println("REQUEST: HEALTH-INFORMATION-REQUEST : " + fromDate + "," + toDate + "," + consentId);
+
+            ABDMSession abdmSession = new ABDMSession();
+
+            String res = abdmSession.getEncryptionKeys();
+            JSONObject responseObject = new JSONObject(res);
+
+            String publicKey = responseObject.get("publicKey").toString();
+            String privateKey = responseObject.get("privateKey").toString();
+            String nonce = responseObject.get("nonce").toString();
+            System.out.println("PUBLIC-KEY: "+publicKey);
+            abdmSession.setToken();
+            String UUIDCode = UUID.randomUUID().toString();
+
+            int statusCode = abdmSession.healthInformationRequest(UUIDCode, fromDate, toDate,consentId, publicKey,nonce);
+
+            System.out.println("STATUS-CODE" + statusCode);
+            return  200;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return 500;
+        }
+    }
+
+    //--------------------------------------Custom APIs for Database Related Queries------------------------------------
     @PostMapping(value = "api/link/assign-care-context")
     public int assigngCareContext(@RequestBody CustomRequest customRequest) throws Exception, IOException {
 
@@ -402,6 +502,38 @@ public class MyController {
     private CareContextRepository careContextRepository;
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    AppointmentRepository appointmentRepository;
+    @PostMapping("/api/appointments/create")
+    public int createAppointment(@RequestBody CustomRequest customRequest) {
+        try{
+            Doctor doctor = doctorRepository.findDoctorByHealthId(customRequest.getDoctorHealthId());
+            Patient patient = patientRepository.findByHealthId(customRequest.getHealthId());
+            Appointment appointment = new Appointment();
+            appointment.setDoctor(doctor);
+            appointment.setPatient(patient);
+            appointment.setDate(LocalDate.now().toString());
+            Appointment appointment1 = appointmentRepository.save(appointment);
+            int count = appointmentRepository.findAppointmentsByDoctorAndDate(appointment1.doctor, appointment1.date).size();
+            return count;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    @PostMapping("/api/appointments/get-by-doctor-today")
+    public List<Appointment> getAppointmentsByDoctor(@RequestBody CustomRequest customRequest) {
+        try{
+            Doctor doctor = doctorRepository.findDoctorByHealthId(customRequest.getHealthId());
+            return appointmentRepository.findAppointmentsByDoctorAndDate(doctor, LocalDate.now().toString());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @PostMapping(value="/api/care-contexts/get-by-patient")
     public List<CareContext> getAllCareContextsByPatient(@RequestBody String healthId)

@@ -26,13 +26,13 @@ public class FhirUtility {
                 "371530004",
                 "Clinical Consultation Report"))); // SETTING record type
         //SETTING SUBJECT REFERENCE
-        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.patient.healthId);
-        patientReference.setDisplay(careContext.patient.name);
+        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.getPatient().healthId);
+        patientReference.setDisplay(careContext.getPatient().name);
         composition.setSubject(patientReference);
 
         //SETTING AUTHOR REFERENCE
-        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.doctor.healthId);
-        practitionerReference.setDisplay(careContext.doctor.name);
+        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.getDoctor().healthId);
+        practitionerReference.setDisplay(careContext.getDoctor().name);
         composition.setAuthor(Collections.singletonList(practitionerReference));
         //SETTING ENCOUNTER REFERENCE
         Reference encounterReference = new Reference("Encounter/"+"encounter-"+careContext.getCareContextId());
@@ -119,49 +119,55 @@ public class FhirUtility {
         return encounter;
     }
     public Bundle covertCareContextToBundle(CareContext careContext) {
-        Bundle bundle = new Bundle();
+        try{
+            Bundle bundle = new Bundle();
 
-        //SETTING ID of the Bundle
-        bundle.setId(UUID.randomUUID().toString());
-        //SETTING META data of the Bundle
-        bundle.setMeta(new Meta().setVersionId("1"));
-        //SETTING Identifiers
-        bundle.setIdentifier(new Identifier()
-                .setSystem("sahyog-hip-facility-iiitb")
-                .setValue("bundle-"+careContext.getCareContextId()));
-        //SETTING Type of bundle
-        bundle.setType(Bundle.BundleType.DOCUMENT);
-        //SETTING DATE TIME of Bundle
-        bundle.setTimestamp(new Date());
-        //CREATING ENTRY list
-        List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
-        //CREATING FIRST COMPONENT=COMPOSITION COMPONENT
-        Bundle.BundleEntryComponent compositionEntry = new Bundle.BundleEntryComponent();
-        compositionEntry.setFullUrl("Composition/"+"comp-"+careContext.getCareContextId());
-        compositionEntry.setResource(getCompositionFromCareContext(careContext));
-        //SETTING COMPOSITION ENTRY
-        bundleEntryComponentList.add(compositionEntry);
-        //SETTING PATIENT ENTRY
-        Bundle.BundleEntryComponent patientEntry = new Bundle.BundleEntryComponent();
-        patientEntry.setFullUrl("Patient/"+"patient-"+careContext.getPatient().getHealthId());
-        patientEntry.setResource(getPatient(careContext));
-        //SETTING PRACTITIONER ENTRY
-        Bundle.BundleEntryComponent practitionerEntry = new Bundle.BundleEntryComponent();
-        patientEntry.setFullUrl("Practitioner/"+"practitioner-"+careContext.getDoctor().getHealthId());
-        patientEntry.setResource(getPatient(careContext));
-        //SETTING ENCOUNTER ENTRY
-        Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
-        encounterEntry.setFullUrl("Encounter/"+"encounter-"+careContext.getCareContextId());
-        encounterEntry.setResource(getEncounter(careContext));
-        //SETTING VISIT BINARY-ies
-        for(Visit visit: careContext.getVisitList()) {
-            Bundle.BundleEntryComponent bundleEntryComponent = new Bundle.BundleEntryComponent();
-            bundleEntryComponent.setFullUrl("Binary/"+"visit-doc-"+visit.getVisitId());
-            bundleEntryComponent.setResource(getBinaryFromVisit(visit));
-            bundleEntryComponentList.add(bundleEntryComponent);
+            //SETTING ID of the Bundle
+            bundle.setId(UUID.randomUUID().toString());
+            //SETTING META data of the Bundle
+            bundle.setMeta(new Meta().setVersionId("1"));
+            //SETTING Identifiers
+            bundle.setIdentifier(new Identifier()
+                    .setSystem("sahyog-hip-facility-iiitb")
+                    .setValue("bundle-" + careContext.getCareContextId()));
+            //SETTING Type of bundle
+            bundle.setType(Bundle.BundleType.DOCUMENT);
+            //SETTING DATE TIME of Bundle
+            bundle.setTimestamp(new Date());
+            //CREATING ENTRY list
+            List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
+            //CREATING FIRST COMPONENT=COMPOSITION COMPONENT
+            Bundle.BundleEntryComponent compositionEntry = new Bundle.BundleEntryComponent();
+            compositionEntry.setFullUrl("Composition/" + "comp-" + careContext.getCareContextId());
+            compositionEntry.setResource(getCompositionFromCareContext(careContext));
+            //SETTING COMPOSITION ENTRY
+            bundleEntryComponentList.add(compositionEntry);
+            //SETTING PATIENT ENTRY
+            Bundle.BundleEntryComponent patientEntry = new Bundle.BundleEntryComponent();
+            patientEntry.setFullUrl("Patient/" + "patient-" + careContext.getPatient().getHealthId());
+            patientEntry.setResource(getPatient(careContext));
+            //SETTING PRACTITIONER ENTRY
+            Bundle.BundleEntryComponent practitionerEntry = new Bundle.BundleEntryComponent();
+            patientEntry.setFullUrl("Practitioner/" + "practitioner-" + careContext.getDoctor().getHealthId());
+            patientEntry.setResource(getPatient(careContext));
+            //SETTING ENCOUNTER ENTRY
+            Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
+            encounterEntry.setFullUrl("Encounter/" + "encounter-" + careContext.getCareContextId());
+            encounterEntry.setResource(getEncounter(careContext));
+            //SETTING VISIT BINARY-ies
+            for (Visit visit : careContext.getVisitList()) {
+                Bundle.BundleEntryComponent bundleEntryComponent = new Bundle.BundleEntryComponent();
+                bundleEntryComponent.setFullUrl("Binary/" + "visit-doc-" + visit.getVisitId());
+                bundleEntryComponent.setResource(getBinaryFromVisit(visit));
+                bundleEntryComponentList.add(bundleEntryComponent);
+            }
+            //SETTING ENTRY TO THE CREATED BUNDLE ENTRY
+            bundle.setEntry(bundleEntryComponentList);
+            return bundle;
         }
-        //SETTING ENTRY TO THE CREATED BUNDLE ENTRY
-        bundle.setEntry(bundleEntryComponentList);
-        return bundle;
+        catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
     }
 }
