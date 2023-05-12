@@ -50,10 +50,11 @@ const CreateVisit = ({user, state, visit, setVisit, handleDashboard}) => {
 
       ,(err)=>console.log(err.toString()))
     }
-  const handleReEditVisit = () => {
-    console.log(visit)
+  const handleReEditVisit = async () => {
+    const response = await patientService.getPatientFromHealthId(healthIdSearchInput)
     setVisit({
-      patient:visit.patient
+      ...visit,
+      patient: response
     })
     setVisitCreated(false)
   }

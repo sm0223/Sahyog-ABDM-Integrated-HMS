@@ -46,7 +46,7 @@ const Staff = () => {
                                 {index+1}
                             </th>
                             <td>{staff.name}</td>
-                            <td>{staff.users && staff.users.username}</td>
+                            <td>{staff && staff.name}</td>
                             <td>{staff.mobile}</td>
                             <td>
                                 <Link

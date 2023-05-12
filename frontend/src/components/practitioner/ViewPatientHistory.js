@@ -30,7 +30,7 @@ const ViewPatientHistory = ({modal, handleDashboard, patient, user})=> {
   return (
       <div className="container" style={{marginTop:50}}>
         <Modal style={{marginTop  :60}}
-            backdrop={"static"} fade={false} fullscreen={true} isOpen={modal} toggle={toggle}>
+            backdrop={"static"} fade={false} size="xl" isOpen={modal} toggle={toggle}>
           <ModalHeader toggle={toggle}>View Patient History</ModalHeader>
           <ModalBody>
             <div className="container">

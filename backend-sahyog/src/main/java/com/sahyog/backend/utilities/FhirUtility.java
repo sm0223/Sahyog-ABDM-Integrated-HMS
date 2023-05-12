@@ -1,5 +1,6 @@
 package com.sahyog.backend.utilities;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sahyog.backend.entities.CareContext;
 import com.sahyog.backend.entities.Visit;
 import lombok.Data;
@@ -26,12 +27,12 @@ public class FhirUtility {
                 "371530004",
                 "Clinical Consultation Report"))); // SETTING record type
         //SETTING SUBJECT REFERENCE
-        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.getPatient().getHealthId());
+        Reference patientReference = new Reference("Patient/"+"patient-"+careContext.getPatient().getPatientId());
         patientReference.setDisplay(careContext.getPatient().getName());
         composition.setSubject(patientReference);
 
         //SETTING AUTHOR REFERENCE
-        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.getDoctor().getHealthId());
+        Reference practitionerReference = new Reference("Practitioner/"+"practitioner-"+careContext.getDoctor().getDoctorId());
         practitionerReference.setDisplay(careContext.getDoctor().getName());
         composition.setAuthor(Collections.singletonList(practitionerReference));
         //SETTING ENCOUNTER REFERENCE
@@ -45,13 +46,15 @@ public class FhirUtility {
             composition.setDate(new Date());
         };
         //SETTING TITLE
-        composition.setTitle(careContext.display);
+        composition.setTitle(careContext.getDisplay());
         //SETTING SECTION
         Composition.SectionComponent sectionComponent = new Composition.SectionComponent();
         List<Reference> referenceList = new ArrayList<>();
+        System.out.println("no of visits"+careContext.getVisitList().size());
         for(Visit visit :careContext.getVisitList()){
             Reference reference = new Reference("Binary/"+"visit-doc-"+visit.getVisitId());
             reference.setDisplay("Visit Document"+ visit.getVisitId());
+            referenceList.add(reference);
         }
         sectionComponent.setEntry(referenceList);
         composition.setSection(Collections.singletonList(sectionComponent));
@@ -80,7 +83,7 @@ public class FhirUtility {
     public Patient getPatient(CareContext careContext){
         Patient patient = new Patient();
         //SETTING ID
-        patient.setId("patient-"+careContext.getPatient().getHealthId());
+        patient.setId("patient-"+careContext.getPatient().getPatientId());
         //SETTING IDENTIFIER
         Identifier identifier = new Identifier();
         identifier.setType((new CodeableConcept(new Coding(
@@ -95,7 +98,7 @@ public class FhirUtility {
     public Practitioner getPractitioner(CareContext careContext)  {
         Practitioner practitioner = new Practitioner();
         //SETTING ID
-        practitioner.setId("practitioner-"+careContext.getDoctor().getHealthId());
+        practitioner.setId("practitioner-"+careContext.getDoctor().getDoctorId());
         //SETTING IDENTIFIER
         Identifier identifier = new Identifier();
         identifier.setType((new CodeableConcept(new Coding(
@@ -123,13 +126,14 @@ public class FhirUtility {
             Bundle bundle = new Bundle();
 
             //SETTING ID of the Bundle
-            bundle.setId(UUID.randomUUID().toString());
+            String UUIDCode = UUID.randomUUID().toString();
+            bundle.setId(UUIDCode);
             //SETTING META data of the Bundle
             bundle.setMeta(new Meta().setVersionId("1"));
             //SETTING Identifiers
             bundle.setIdentifier(new Identifier()
-                    .setSystem("sahyog-hip-facility-iiitb")
-                    .setValue("bundle-" + careContext.getCareContextId()));
+                    .setSystem("https://c8c2-103-156-19-229.ngrok-free.app")
+                    .setValue(UUID.randomUUID().toString()));
             //SETTING Type of bundle
             bundle.setType(Bundle.BundleType.DOCUMENT);
             //SETTING DATE TIME of Bundle
@@ -144,16 +148,20 @@ public class FhirUtility {
             bundleEntryComponentList.add(compositionEntry);
             //SETTING PATIENT ENTRY
             Bundle.BundleEntryComponent patientEntry = new Bundle.BundleEntryComponent();
-            patientEntry.setFullUrl("Patient/" + "patient-" + careContext.getPatient().getHealthId());
-            patientEntry.setResource(getPatient(careContext));
+            patientEntry.setFullUrl("Patient/" + "patient-" + careContext.getPatient().getPatientId());
+            Patient patient = getPatient(careContext);
+            patientEntry.setResource(patient);
+            bundleEntryComponentList.add(patientEntry);
             //SETTING PRACTITIONER ENTRY
             Bundle.BundleEntryComponent practitionerEntry = new Bundle.BundleEntryComponent();
-            patientEntry.setFullUrl("Practitioner/" + "practitioner-" + careContext.getDoctor().getHealthId());
-            patientEntry.setResource(getPatient(careContext));
+            practitionerEntry.setFullUrl("Practitioner/" + "practitioner-" + careContext.getDoctor().getDoctorId());
+            practitionerEntry.setResource(getPractitioner(careContext));
+            bundleEntryComponentList.add(practitionerEntry);
             //SETTING ENCOUNTER ENTRY
             Bundle.BundleEntryComponent encounterEntry = new Bundle.BundleEntryComponent();
             encounterEntry.setFullUrl("Encounter/" + "encounter-" + careContext.getCareContextId());
             encounterEntry.setResource(getEncounter(careContext));
+            bundleEntryComponentList.add(encounterEntry);
             //SETTING VISIT BINARY-ies
             for (Visit visit : careContext.getVisitList()) {
                 Bundle.BundleEntryComponent bundleEntryComponent = new Bundle.BundleEntryComponent();
@@ -166,7 +174,7 @@ public class FhirUtility {
             return bundle;
         }
         catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
             return null;
         }
     }

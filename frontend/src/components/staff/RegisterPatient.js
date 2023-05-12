@@ -106,7 +106,7 @@ const RegisterPatient = ({patient, handleDashboard, setPatient}) => {
         <h1> Patient Details </h1>
         <FormGroup>
           <Label for="healthId">Health ID</Label>
-          <Input valid = {formErrors.healthId===""} invalid = {formErrors.healthId!==""} type="text" name="healthId" id="healthId" placeholder="Enter Health ID" value={patient.healthId} onChange={onChangeInputs}/>
+          <Input valid = {formErrors.healthId===""} invalid = {formErrors.healthId!==""} disabled={true} type="text" name="healthId" id="healthId" placeholder="Enter Health ID" value={patient.healthId} onChange={onChangeInputs}/>
           <FormFeedback>{formErrors.healthId}</FormFeedback>
         </FormGroup>
 

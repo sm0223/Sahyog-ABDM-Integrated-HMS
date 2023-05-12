@@ -203,7 +203,7 @@ public class MyController {
                 String bundleString = parser.encodeResourceToString(bundle);
                 System.out.println("BUNDLE CREATED");
                 try{
-                    FileWriter fw=new FileWriter("bundle.txt",true);
+                    FileWriter fw=new FileWriter("bundle",false );
                     fw.write(bundleString);
                     fw.close();
                 }catch(Exception e){System.out.println(e);}
@@ -224,13 +224,14 @@ public class MyController {
             }
             return 200;
         }catch (Exception e){
+            e.printStackTrace();
             return 500;
         }
         //Now HIP sends an acknowledgement to the ABDM
     }
     @PostMapping("v0.5/health-information/hiu/receive-data")
     public int healthInformationHiuReceive(@RequestBody String response) throws Exception {
-        System.out.println("ENCRYPTED RESPONSE FROM HIP RECEIVED:");
+        System.out.println("ENCRYPTED RESPONSE FROM HIP RECEIVED: " + response.length());
         JSONObject jsonObject = new JSONObject(response);
 
         String encryptedData = jsonObject.get("encryptedData").toString();
@@ -242,17 +243,61 @@ public class MyController {
         String receiverPublicKey = HIU_PUBLIC_KEY;
         String receiverPrivateKey = HIU_PRIVATE_KEY;
         String receiverNonce = HIU_NONCE;
-
         String response2 = abdmSession.getDecryptedData(encryptedData, senderPublicKey, senderNonce, receiverPrivateKey,receiverNonce,receiverPublicKey);
+        System.out.println("RESPONSE AFTER DECRYPTION : "+ response2.length());
+
+        JSONObject jsonObject1 = new JSONObject(response2);
+        String decryptedStringData = (String) jsonObject1.get("decryptedData");
+
         try{
-            FileWriter fw=new FileWriter("testout4.txt", true);
-            fw.write(response2);
+            FileWriter fw=new FileWriter("decryptedFile");
+            fw.write(decryptedStringData);
             fw.close();
-        }catch(Exception e){System.out.println(e);}
-        System.out.println("Success...");
+        }catch(Exception e){
+            e.printStackTrace();
+            System.out.println("ERROR WHILE WRITING TO FILE");
+        }
+        System.out.println("REQUEST DECRYPTED AND SAVED...");
         System.out.println();
         return 200;
     }
+
+    @PostMapping(value="/api/health-information/hiu/request")
+    public int initiateDataTransfer(@RequestBody CustomRequest customRequest){
+        try{
+
+            String fromDate = customRequest.getFromDate();
+            String toDate = customRequest.getToDate();
+            String consentId = customRequest.getConsentId();
+
+            System.out.println("REQUEST: HEALTH-INFORMATION-REQUEST : " + fromDate + "," + toDate + "," + consentId);
+
+            ABDMSession abdmSession = new ABDMSession();
+
+            String res = abdmSession.getEncryptionKeys();
+            JSONObject responseObject = new JSONObject(res);
+            HIU_PRIVATE_KEY = responseObject.get("privateKey").toString();
+            HIU_PUBLIC_KEY = responseObject.get("publicKey").toString();
+            HIU_NONCE= responseObject.get("nonce").toString();
+
+            String publicKey = HIU_PUBLIC_KEY;
+            String privateKey = HIU_PRIVATE_KEY;
+            String nonce = HIU_NONCE;
+            System.out.println("PUBLIC-KEY: "+publicKey);
+            abdmSession.setToken();
+            String UUIDCode = UUID.randomUUID().toString();
+
+            int statusCode = abdmSession.healthInformationRequest(UUIDCode, fromDate, toDate,consentId, publicKey,nonce);
+
+            System.out.println("STATUS-CODE" + statusCode);
+            return  200;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return 500;
+        }
+    }
+
 
     @PostMapping("/v0.5/health-information/hiu/on-request")
     public void healthInformationHIUONRequest(@RequestBody String response) throws Exception {
@@ -421,42 +466,6 @@ public class MyController {
         int statusCode = session.careContextLinking(patientReferenceNumber, displayPatientName, display, careContextReferenceNumber, linkToken);
 
         return statusCode;
-    }
-
-    @PostMapping(value="/api/health-information/hiu/request")
-    public int initiateDataTransfer(@RequestBody CustomRequest customRequest){
-        try{
-
-            String fromDate = customRequest.getFromDate();
-            String toDate = customRequest.getToDate();
-            String consentId = customRequest.getConsentId();
-
-            System.out.println("REQUEST: HEALTH-INFORMATION-REQUEST : " + fromDate + "," + toDate + "," + consentId);
-
-            ABDMSession abdmSession = new ABDMSession();
-
-            String res = abdmSession.getEncryptionKeys();
-            JSONObject responseObject = new JSONObject(res);
-            HIU_PRIVATE_KEY = responseObject.get("privateKey").toString();
-            HIU_PUBLIC_KEY = responseObject.get("publicKey").toString();
-            HIU_NONCE= responseObject.get("nonce").toString();
-
-            String publicKey = HIU_PUBLIC_KEY;
-            String privateKey = HIU_PRIVATE_KEY;
-            String nonce = HIU_NONCE;
-            System.out.println("PUBLIC-KEY: "+publicKey);
-            abdmSession.setToken();
-            String UUIDCode = UUID.randomUUID().toString();
-
-            int statusCode = abdmSession.healthInformationRequest(UUIDCode, fromDate, toDate,consentId, publicKey,nonce);
-
-            System.out.println("STATUS-CODE" + statusCode);
-            return  200;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return 500;
-        }
     }
 
     //--------------------------------------Custom APIs for Database Related Queries------------------------------------
